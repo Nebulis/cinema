@@ -1,0 +1,57 @@
+<md-content layout="column" layout-fill infinite-scroll="main.loadDatas()" infinite-scroll-distance="2" infinite-scroll-immediate-check="true">
+  <header>
+    <acme-navbar creationDate="main.creationDate" />
+  </header>
+  <table md-colresize="md-colresize" class="md-table">
+    <thead>
+      <tr class="md-table-headers-row">
+        <th style="width: 4%;" class="md-table-header"></th>
+        <th style="width: 24%;" class="md-table-header">
+          <div class="ui-select-container ui-select-multiple ui-select-bootstrap dropdown form-control ng-valid" theme="bootstrap" style="width:100%">
+            <input type="text" class="ui-select-search input-xs" placeholder="Title" ng-model="main.search.title">
+          </div>
+        </th>
+        <th style="width: 24%;" class="md-table-header">
+          <ui-select multiple ng-model="main.search.genres" theme="bootstrap" reset-search-input="false" style="width:100%">
+            <ui-select-match placeholder="Genre">{{$item}}</ui-select-match>
+            <ui-select-choices repeat="genre in main.genres.$object">
+              <div ng-bind-html="genre | highlight: $select.search"></div>
+            </ui-select-choices>
+          </ui-select>
+        </th>
+        <th style="width: 24%;" class="md-table-header">
+          <ui-select multiple ng-model="main.search.types" theme="bootstrap" reset-search-input="false" style="width:100%">
+            <ui-select-match placeholder="Type">{{$item.label}}</ui-select-match>
+            <ui-select-choices repeat="type in main.types track by type.id">
+              <div ng-bind-html="type.label | highlight: $select.search"></div>
+            </ui-select-choices>
+          </ui-select>
+        </th>
+        <th style="width: 24%;" class="md-table-header">
+          <ui-select multiple ng-model="main.search.states" theme="bootstrap" reset-search-input="false" style="width:100%">
+            <ui-select-match placeholder="State">{{$item.label}}</ui-select-match>
+            <ui-select-choices repeat="state in main.states.$object track by state.id">
+              <div ng-bind-html="state.label | highlight: $select.search"></div>
+            </ui-select-choices>
+          </ui-select>
+        </th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr ng-repeat="movie in main.movies | search:main.search | limitTo:main.limit track by movie._id" ng-mouseover="main.hover(movie)" ng-mouseleave="main.leave(movie)" ng-click="main.edit(movie, $event)">
+        <td class="md-table-content">
+          <md-button class="md-icon-button state_{{movie.state}} action" ng-click="main.changeState($event, movie)" aria-label="Changer l'état du film">
+            <md-icon md-svg-src="assets/svg/ic_play_arrow_black_24px.svg"></md-icon>
+          </md-button>
+          <md-button class="md-icon-button md-primary action" ng-click="main.allocine($event, movie)" aria-label="Changer l'état du film">
+            <md-icon md-svg-src="assets/svg/ic_remove_red_eye_black_24px.svg"></md-icon>
+          </md-button>
+        </td>
+        <td class="md-table-content">{{movie.title}}<span ng-if="!main.isMovie(movie)"> - Saison {{movie.season}}</span></td>
+        <td class="md-table-content">{{movie.genre}}</td>
+        <td class="md-table-content">{{movie.type}}</td>
+        <td class="md-table-content">{{movie.state | state}}</td>
+      </tr>
+    </tbody>
+  </table>
+</md-content>

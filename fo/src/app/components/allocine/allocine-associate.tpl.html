@@ -1,0 +1,26 @@
+<md-dialog aria-label="Allocine association">
+  <form>
+    <md-toolbar>
+      <div class="md-toolbar-tools">
+        <h2>Associer avec allociné</h2>
+      </div>
+    </md-toolbar>
+    <md-dialog-content style="max-width:800px;max-height:810px;min-width:800px;" layout="column">
+      <md-content layout-padding layout="row" layout-sm="column" layout-align="center center">
+        <md-input-container flex="90">
+          <label>Identifiant Manuel</label>
+          <input ng-model="allocine.fakeMovie.code">
+        </md-input-container>
+        <md-button flex="10" class="md-icon-button" aria-label="More" ng-click="allocine.manuelAssociate()">
+          <md-icon md-svg-src="assets/svg/ic_check_black_24px.svg" aria-label="Link"></md-icon>
+        </md-button>
+      </md-content>
+      <div ng-repeat="movie in allocine.movies track by movie.code">
+        <md-button class="md-icon-button" aria-label="More" ng-click="allocine.associate(movie)">
+          <md-icon md-svg-src="assets/svg/ic_link_black_24px.svg" class="s24" aria-label="Link"></md-icon>
+        </md-button>
+        <a ng-href="{{movie.link[0].href}}" target="blank">{{allocine.title(movie)}} ({{allocine.year(movie)}})</a>
+      </div>
+    </md-dialog-content>
+  </form>
+</md-dialog>
