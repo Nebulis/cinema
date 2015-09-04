@@ -8,8 +8,11 @@
   /* @ngInject */
   function Allocine(Restangular) {
     return {
-      get: function (id) {
-        return Restangular.one("allocine", id).get();
+      getMovie: function (id) {
+        return Restangular.one("allocine/movie", id).get();
+      },
+      getSerie: function (id) {
+        return Restangular.one("allocine/serie", id).get();
       },
       query: function (movie) {
         return Restangular.all("allocine").getList({

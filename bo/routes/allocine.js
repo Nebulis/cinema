@@ -26,8 +26,21 @@ router.get('/', function (req, res) {
 /*
  * GET
  */
-router.get('/:id', function (req, res) {
+router.get('/movie/:id', function (req, res) {
   allocine.api('movie', {
+    code: req.params.id
+  }, function (error, result) {
+    if (error) {
+      console.log('Error : ' + error);
+      return;
+    }
+
+    res.json(result);
+  });
+});
+
+router.get('/serie/:id', function (req, res) {
+  allocine.api('tvseries', {
     code: req.params.id
   }, function (error, result) {
     if (error) {

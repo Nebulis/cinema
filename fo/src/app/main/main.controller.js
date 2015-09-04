@@ -35,13 +35,16 @@
     }, true);
 
     function showAllocineDetails($event, movie) {
-      Allocine.get(movie.id_allocine).then(function (result) {
+      var promise = movie.type === 'Film' ?
+        Allocine.getMovie(movie.id_allocine) : Allocine.getSerie(movie.id_allocine);
+
+      promise.then(function (result) {
         $mdDialog.show({
           controller: "AllocineController",
           controllerAs: 'allocine',
           resolve: {
             allocine: function () {
-              return result.movie;
+              return result.movie || result.tvseries;
             },
             movie: function () {
               return movie;
@@ -138,7 +141,6 @@
           var index = _.findIndex(vm.movies, function (arrayMovie) {
             return movie._id === arrayMovie._id;
           });
-          console.log(index);
           vm.movies.splice(index, 1);
         } else {
           angular.extend(movie, newMovie);
