@@ -16,15 +16,17 @@
     vm.unlink = unlink;
 
     function unlink() {
-      var old_id_allocine = movie.id_allocine;
-      movie.id_allocine = null;
-      movie.save().then(function () {
-        Toast.success("Suppression du lien avec allocine");
-        $mdDialog.hide();
-      }, function (error) {
-        movie.id_allocine = old_id_allocine;
-        Toast.error("Probleme lors de la suppression du lien avec allocine - " + error.statusText);
-      });
+      if (confirm('Confirmer la suppression du lien allocine ?')) {
+        var old_id_allocine = movie.id_allocine;
+        movie.id_allocine = null;
+        movie.save().then(function () {
+          Toast.success('Suppression du lien avec allocine');
+          $mdDialog.hide();
+        }, function (error) {
+          movie.id_allocine = old_id_allocine;
+          Toast.error('Probleme lors de la suppression du lien avec allocine - ' + error.statusText);
+        });
+      }
     }
 
   }
@@ -60,11 +62,11 @@
 
     function validate() {
       movie.save().then(function () {
-        Toast.success("Association réalisée avec succès");
+        Toast.success('Association réalisée avec succès');
         $mdDialog.hide(movie);
       }, function (error) {
         movie.id_allocine = undefined;
-        Toast.error("Probleme lors de l'association - " + error.statusText);
+        Toast.error('Probleme lors de l\' association - ' + error.statusText);
       });
     }
 
