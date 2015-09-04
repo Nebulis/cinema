@@ -40,7 +40,7 @@
 
       promise.then(function (result) {
         $mdDialog.show({
-          controller: "AllocineController",
+          controller: 'AllocineController',
           controllerAs: 'allocine',
           resolve: {
             allocine: function () {
@@ -67,7 +67,7 @@
       } else {
         Allocine.query(movie).then(function (result) {
           $mdDialog.show({
-            controller: "AllocineAssociateController",
+            controller: 'AllocineAssociateController',
             controllerAs: 'allocine',
             resolve: {
               movies: function () {
@@ -117,11 +117,12 @@
       if (oldState !== newState) {
         movie.state = newState;
         movie.save().then(function () {
-          Toast.success("Changement d'état réalisé avec succès");
-        }, function (error) {
-          movie.state = oldState;
-          Toast.error("Probleme lors du changement d'état - " + error.statusText);
-        });
+            Toast.success('Changement d\'état réalisé avec succès ');
+          },
+          function (error) {
+            movie.state = oldState;
+            Toast.error('Probleme lors du changement d\'état - ' + error.statusText);
+          });
       }
     }
 

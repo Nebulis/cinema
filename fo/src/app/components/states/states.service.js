@@ -7,7 +7,7 @@
   /** ngInject **/
   function States(Restangular) {
     return {
-      get: Restangular.all("states").getList,
+      get: Restangular.all('states').getList,
       getNextState: nextState,
       getInitialState: getInitialState
     };

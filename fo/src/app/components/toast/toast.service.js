@@ -17,11 +17,11 @@
     ////////////////
 
     function success(content) {
-      $mdToast.show($mdToast.simple().content(content).theme("success-toast").position("top right").hideDelay(20000));
+      $mdToast.show($mdToast.simple().content(content).theme('success-toast').position('top right').hideDelay(20000));
     }
 
     function error(content) {
-      $mdToast.show($mdToast.simple().content(content).theme("error-toast").position("top right"));
+      $mdToast.show($mdToast.simple().content(content).theme('error-toast').position('top right'));
     }
   }
 })();

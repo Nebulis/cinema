@@ -7,6 +7,6 @@
 
   /* @ngInject */
   function Movies(Restangular) {
-    return Restangular.all("movies");
+    return Restangular.all('movies');
   }
 })();

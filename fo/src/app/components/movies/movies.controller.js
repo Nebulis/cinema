@@ -33,11 +33,11 @@
       //https://github.com/angular/material/issues/3072
       if (confirm('Confirmer la suppression ?')) {
         vm.movie.remove().then(function () {
-            Toast.success("Suppression réalisée avec succès");
+            Toast.success('Suppression réalisée avec succès');
             $mdDialog.hide();
           },
           function (error) {
-            Toast.error("Problème rencontrée lors de la suppression - " + error.statusText);
+            Toast.error('Problème rencontrée lors de la suppression - ' + error.statusText);
             $mdDialog.cancel();
           });
       }
@@ -56,17 +56,17 @@
 
       vm.movie.save().then(function (movie) {
         if (!vm.movie._id) {
-          Toast.success("Insertion réalisée avec succès");
-          return Restangular.one("movies", movie._id).get();
+          Toast.success('Insertion réalisée avec succès');
+          return Restangular.one('movies', movie._id).get();
         } else {
-          Toast.success("Modification réalisée avec succès");
+          Toast.success('Modification réalisée avec succès');
           $mdDialog.hide(movie);
         }
       }, function (error) {
         if (!vm.movie._id) {
-          Toast.error("Problème rencontrée lors de l'insertion - " + error.statusText);
+          Toast.error('Problème rencontrée lors de l\'insertion - ' + error.statusText);
         } else {
-          Toast.error("Problème rencontrée lors de la modification - " + error.statusText);
+          Toast.error('Problème rencontrée lors de la modification - ' + error.statusText);
         }
         $mdDialog.cancel();
       }).then(function (movie) { // bug on clone after creation, so get the film and return it

@@ -8,6 +8,7 @@
   "undef": true,
   "unused": true,
   "validthis": true,
+  "quotmark": "single",
   "jasmine": true,
   "globals": {
     "angular": false,
