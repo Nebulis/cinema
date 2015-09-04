@@ -43,7 +43,7 @@
           <md-button class="md-icon-button state_{{movie.state}} action" ng-click="main.changeState($event, movie)" aria-label="Changer l'état du film">
             <md-icon md-svg-src="assets/svg/ic_play_arrow_black_24px.svg"></md-icon>
           </md-button>
-          <md-button class="md-icon-button md-primary action" ng-click="main.allocine($event, movie)" aria-label="Changer l'état du film">
+          <md-button class="md-icon-button md-primary action" ng-click="main.allocine($event, movie)" aria-label="Changer l'état du film" ng-class="{'unlinked' : !movie.id_allocine}">
             <md-icon md-svg-src="assets/svg/ic_remove_red_eye_black_24px.svg"></md-icon>
           </md-button>
         </td>
