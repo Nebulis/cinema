@@ -15,6 +15,7 @@
     "module": false,
     "document": false,
     "_": false,
+    "confirm": false,
     "moment": false
   }
 }

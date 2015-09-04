@@ -29,13 +29,18 @@
     }
 
     vm.delete = function () {
-      vm.movie.remove().then(function () {
-        Toast.success("Suppression réalisée avec succès");
-        $mdDialog.hide();
-      }, function (error) {
-        Toast.error("Problème rencontrée lors de la suppression - " + error.statusText);
-        $mdDialog.cancel();
-      });
+      //native js confirm
+      //https://github.com/angular/material/issues/3072
+      if (confirm('Confirmer la suppression ?')) {
+        vm.movie.remove().then(function () {
+            Toast.success("Suppression réalisée avec succès");
+            $mdDialog.hide();
+          },
+          function (error) {
+            Toast.error("Problème rencontrée lors de la suppression - " + error.statusText);
+            $mdDialog.cancel();
+          });
+      }
     };
 
 
