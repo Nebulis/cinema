@@ -39,9 +39,6 @@
       <span ng-if="form.movie._id">Modifier</span>
       <span ng-if="!form.movie._id">Ajouter</span>
     </md-button>
-    <md-button ng-click="form.cancel()" class="md-raised md-warn">
-      Annuler
-    </md-button>
     <md-button ng-if="form.movie._id" ng-click="form.delete()" class="md-raised md-accent">
       Supprimer
     </md-button>

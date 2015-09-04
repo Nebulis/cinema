@@ -18,7 +18,7 @@
 
     States.get().then(function (states) {
       vm.states = states;
-    })
+    });
 
     function search(genre) {
       var query = vm.searchGenre;
@@ -67,10 +67,6 @@
       }).then(function (movie) { // bug on clone after creation, so get the film and return it
         $mdDialog.hide(movie);
       });
-    };
-
-    vm.cancel = function () {
-      $mdDialog.cancel();
     };
   }
 })();
