@@ -21,6 +21,12 @@
           <md-option ng-repeat="type in form.types" value="{{type.label}}">{{type.label}}</md-option>
         </md-select>
       </md-input-container>
+      <md-input-container ng-if="form.movie._id">
+        <label>État</label>
+        <md-select ng-model="form.movie.state" required>
+          <md-option ng-repeat="state in form.states" value="{{state.id}}">{{state.label}}</md-option>
+        </md-select>
+      </md-input-container>
       <md-input-container ng-if="form.movie.type === 'Série'">
         <label>Saison</label>
         <input type="number" ng-model="form.movie.season" type="text" ng-required="form.movie.type">

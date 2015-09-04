@@ -13,7 +13,12 @@
     vm.types = Types;
     vm.genres = Genres;
     vm.search = search;
+    vm.states = {};
     vm.title = movie._id ? 'Modifier' : 'Créer';
+
+    States.get().then(function (states) {
+      vm.states = states;
+    })
 
     function search(genre) {
       var query = vm.searchGenre;
@@ -31,7 +36,7 @@
         Toast.error("Problème rencontrée lors de la suppression - " + error.statusText);
         $mdDialog.cancel();
       });
-    }
+    };
 
 
     vm.save = function () {
