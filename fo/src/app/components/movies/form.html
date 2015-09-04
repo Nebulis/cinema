@@ -35,7 +35,7 @@
   </md-dialog-content>
   <div class="md-actions" layout="row">
     <span flex></span>
-    <md-button ng-click="form.save()" ng-disabled="form.movieForm.$invalid" class="md-raised md-primary">
+    <md-button ng-click="form.save()" ng-disabled="form.movieForm.$invalid" class="md-raised md-primary" aria-label="Save">
       <span ng-if="form.movie._id">Modifier</span>
       <span ng-if="!form.movie._id">Ajouter</span>
     </md-button>

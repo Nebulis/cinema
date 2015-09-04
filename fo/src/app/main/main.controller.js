@@ -54,6 +54,8 @@
           parent: angular.element(document.body),
           targetEvent: $event,
           clickOutsideToClose: true
+        }).then(function () {
+          getAllocineDatas($event, movie);
         });
       });
     }
