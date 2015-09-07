@@ -14,7 +14,7 @@
         <th style="width: 24%;" class="md-table-header">
           <ui-select multiple ng-model="main.search.genres" theme="bootstrap" reset-search-input="false" style="width:100%">
             <ui-select-match placeholder="Genre">{{$item}}</ui-select-match>
-            <ui-select-choices repeat="genre in main.genres.$object">
+            <ui-select-choices repeat="genre in main.genres.$object | orderBy:'toString()'">
               <div ng-bind-html="genre | highlight: $select.search"></div>
             </ui-select-choices>
           </ui-select>

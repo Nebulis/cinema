@@ -10,7 +10,7 @@
         <label>Titre</label>
         <input ng-model="form.movie.title" type="text" required>
       </md-input-container>
-      <md-autocomplete md-selected-item="form.movie.genre" md-search-text="form.searchGenre" md-items="genre in form.genres.$object | filter:form.search" md-min-length="0" md-floating-label="Genre" md-input-name="autocompleteField" md-item-text="genre" required>
+      <md-autocomplete md-selected-item="form.movie.genre" md-search-text="form.searchGenre" md-items="genre in form.genres.$object | filter:form.search | orderBy:'toString()'" md-min-length="0" md-floating-label="Genre" md-input-name="autocompleteField" md-item-text="genre" required>
         <md-item-template>
           <span md-highlight-text="form.searchGenre">{{genre}}</span>
         </md-item-template>
