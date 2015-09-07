@@ -53,6 +53,7 @@ module.exports = {
       genre: req.body.genre,
       state: req.body.state,
       season: req.body.season,
+      seen: false,
       id_allocine: req.body.id_allocine
     });
 
@@ -97,6 +98,7 @@ module.exports = {
       movie.state = req.body.state && req.body.state > 0 && req.body.state < 6 ? req.body.state : movie.state;
       movie.season = req.body.season ? req.body.season : movie.season;
       movie.season = req.body.type === 'Film' ? null : movie.season;
+      movie.seen = req.body.seen ? req.body.seen : false;
 
       movie.save(function (err, movie) {
         if (err) {

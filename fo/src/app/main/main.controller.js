@@ -25,6 +25,7 @@
     vm.limit = minObj;
     vm.loadDatas = load;
     vm.allocine = getAllocineDatas;
+    vm.seen = seen;
 
     activate();
 
@@ -124,6 +125,22 @@
             Toast.error('Probleme lors du changement d\'état - ' + error.statusText);
           });
       }
+    }
+
+    function seen($event, movie) {
+      $event.stopPropagation();
+      movie.seen = !movie.seen;
+      movie.save().then(function () {
+          if (movie.seen) {
+            Toast.success('Film vu');
+          } else {
+            Toast.success('Film pas vu');
+          }
+        },
+        function (error) {
+          movie.seen = !movie.seen;
+          Toast.error('Probleme rencontré - ' + error.statusText);
+        });
     }
 
     function edit(movie, event) {

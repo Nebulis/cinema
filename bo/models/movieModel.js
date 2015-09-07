@@ -7,7 +7,8 @@ var movieSchema = new Schema({
   "type": String,
   "season": Number,
   "id_allocine": Number,
-  "state": Number
+  "state": Number,
+  "seen": Boolean
 });
 
 module.exports = mongoose.model('movie', movieSchema);
