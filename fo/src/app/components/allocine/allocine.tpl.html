@@ -1,20 +1,18 @@
-<md-dialog aria-label="Mango (Fruit)">
-  <form>
-    <md-toolbar>
-      <div class="md-toolbar-tools">
-        <h2>{{allocine.title}}</h2>
-        <span flex></span>
-        <md-button class="md-icon-button" aria-label="More" ng-click="allocine.unlink()">
-          <md-icon md-svg-src="assets/svg/ic_refresh_black_24px.svg" class="s24" aria-label="Link"></md-icon>
-        </md-button>
-      </div>
-    </md-toolbar>
-    <md-dialog-content layout="row">
-      <div>
-        <img ng-src="{{allocine.image}}" class="poster" />
-      </div>
-      <div ng-bind-html="allocine.synopsis" class="synopsis">
-      </div>
-    </md-dialog-content>
-  </form>
+<md-dialog aria-label="Allocine association">
+  <md-toolbar>
+    <div class="md-toolbar-tools">
+      <h2>{{allocine.title}}</h2>
+      <span flex></span>
+      <md-button class="md-icon-button" aria-label="More" ng-click="allocine.unlink()">
+        <md-icon md-svg-src="assets/svg/ic_refresh_black_24px.svg" class="s24" aria-label="Link"></md-icon>
+      </md-button>
+    </div>
+  </md-toolbar>
+  <md-dialog-content layout="row">
+    <div flex="33">
+      <img ng-src="{{allocine.image}}" class="poster" />
+    </div>
+    <div flex="66" ng-bind-html="allocine.synopsis" class="synopsis">
+    </div>
+  </md-dialog-content>
 </md-dialog>
