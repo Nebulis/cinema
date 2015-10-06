@@ -11,8 +11,6 @@
 
     vm.creationDate = 1439925166810;
     vm.movies = [];
-    vm.hover = hover;
-    vm.leave = leave;
     vm.edit = edit;
     vm.isMovie = isMovie;
     vm.changeState = changeState;
@@ -123,14 +121,6 @@
 
     function load() {
       vm.limit += step;
-    }
-
-    function hover(movie) {
-      movie.hover = true;
-    }
-
-    function leave(movie) {
-      delete movie.hover;
     }
 
     function isMovie(movie) {
