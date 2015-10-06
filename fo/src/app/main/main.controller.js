@@ -169,7 +169,7 @@
         clickOutsideToClose: true,
         resolve: {
           movie: function () {
-            return movie.clone();
+            return Restangular.copy(movie);
           }
         }
       }).then(function (newMovie) {
