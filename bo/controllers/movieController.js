@@ -1,5 +1,5 @@
 var model = require('../models/movieModel.js');
-
+var fs = require("fs");
 /**
  * movieController.js
  *
@@ -54,7 +54,9 @@ module.exports = {
       state: req.body.state,
       season: req.body.season,
       seen: false,
-      id_allocine: req.body.id_allocine
+      id_allocine: req.body.id_allocine,
+      file: req.body.file,
+      summary: req.body.summary
     });
 
     movie.save(function (err, movie) {
@@ -99,20 +101,33 @@ module.exports = {
       movie.season = req.body.season ? req.body.season : movie.season;
       movie.season = req.body.type === 'Film' ? null : movie.season;
       movie.seen = req.body.seen ? req.body.seen : false;
+      movie.summary = req.body.summary ? req.body.summary : null;
+      movie.filedata = null;
+      if (req.file && req.file.path) {
+        fs.readFile(req.file.path, function (err, datas) {
+          movie.filedata = new Buffer(datas, 'binary').toString('base64');
+          fs.unlink(req.file.path);
+          save();
+        })
+      } else {
+        save();
+      }
 
-      movie.save(function (err, movie) {
-        if (err) {
-          return res.json(500, {
-            message: 'Error getting movie.'
-          });
-        }
-        if (!movie) {
-          return res.json(404, {
-            message: 'No such movie'
-          });
-        }
-        return res.json(movie);
-      });
+      function save() {
+        movie.save(function (err, movie) {
+          if (err) {
+            return res.json(500, {
+              message: 'Error getting movie.'
+            });
+          }
+          if (!movie) {
+            return res.json(404, {
+              message: 'No such movie'
+            });
+          }
+          return res.json(movie);
+        });
+      }
     });
   },
 

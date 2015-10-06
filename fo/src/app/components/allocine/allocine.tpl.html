@@ -10,7 +10,8 @@
   </md-toolbar>
   <md-dialog-content layout="row">
     <div flex="33">
-      <img ng-src="{{allocine.image}}" class="poster" />
+      <img ng-src="{{allocine.image}}" class="poster" ng-if="allocine.image" />
+      <img data-ng-src="data:image/png;base64,{{allocine.image64}}" class="poster" ng-if="allocine.image64" />
     </div>
     <div flex="66" ng-bind-html="allocine.synopsis" class="synopsis">
     </div>

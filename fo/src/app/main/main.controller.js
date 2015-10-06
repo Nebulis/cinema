@@ -61,10 +61,36 @@
       });
     }
 
+    function showCustomDetails($event, movie) {
+      $mdDialog.show({
+        controller: 'AllocineController',
+        controllerAs: 'allocine',
+        resolve: {
+          allocine: function () {
+            return {
+              poster64: movie.filedata,
+              synopsis: movie.summary
+            };
+          },
+          movie: function () {
+            return movie;
+          }
+        },
+        templateUrl: 'app/components/allocine/allocine.tpl.html',
+        parent: angular.element(document.body),
+        targetEvent: $event,
+        clickOutsideToClose: true
+      }).then(function () {
+        getAllocineDatas($event, movie);
+      });
+    }
+
     function getAllocineDatas($event, movie) {
       $event.stopPropagation();
       if (movie.id_allocine) {
         showAllocineDetails($event, movie);
+      } else if (movie.filedata) {
+        showCustomDetails($event, movie);
       } else {
         Allocine.query(movie).then(function (result) {
           $mdDialog.show({
@@ -83,7 +109,7 @@
             targetEvent: $event,
             clickOutsideToClose: true
           }).then(function (movie) {
-            showAllocineDetails($event, movie);
+            getAllocineDatas($event, movie);
           });
         });
       }

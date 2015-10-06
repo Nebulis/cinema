@@ -46,7 +46,7 @@
           <md-button class="md-icon-button md-primary action" ng-click="main.seen($event, movie)" aria-label="Vu - Pas vu" ng-class="{'unseen' : !movie.seen}">
             <md-icon md-svg-src="assets/svg/ic_remove_red_eye_black_24px.svg"></md-icon>
           </md-button>
-          <md-button class="md-icon-button md-primary action" ng-click="main.allocine($event, movie)" aria-label="Changer l'état du film" ng-class="{'unlinked' : !movie.id_allocine}">
+          <md-button class="md-icon-button md-primary action" ng-click="main.allocine($event, movie)" aria-label="Changer l'état du film" ng-class="{'unlinked' : !movie.id_allocine && ! movie.filedata}">
             <md-icon md-svg-src="assets/svg/ic_link_black_24px.svg"></md-icon>
           </md-button>
         </td>
