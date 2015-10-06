@@ -50,7 +50,7 @@
       </div>
       <div flex="20">{{movie.genre}}</div>
       <div flex="20">{{movie.type}}</div>
-      <div flex="20">{{movie.state | state}}</div>
+      <div flex="20">{{movie.state | state}}<span ng-if="movie.stateSummary && movie.state === 3"> - {{movie.stateSummary}}</span></div>
     </div>
   </div>
 </md-content>
