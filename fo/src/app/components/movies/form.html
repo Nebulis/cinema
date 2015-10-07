@@ -27,13 +27,13 @@
           <md-option ng-repeat="state in form.states" value="{{state.id}}">{{state.label}}</md-option>
         </md-select>
       </md-input-container>
-      <md-input-container ng-if="form.movie.type === 'Série'">
-        <label>Saison</label>
-        <input type="number" ng-model="form.movie.season" type="text" ng-required="form.movie.type">
-      </md-input-container>
       <md-input-container ng-if="form.movie.state === '3'">
         <label>Description état</label>
         <input ng-model="form.movie.stateSummary" type="text">
+      </md-input-container>
+      <md-input-container ng-if="form.movie.type === 'Série'">
+        <label>Saison</label>
+        <input type="number" ng-model="form.movie.season" type="text" ng-required="form.movie.type">
       </md-input-container>
     </form>
   </md-dialog-content>
