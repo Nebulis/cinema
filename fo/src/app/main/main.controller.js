@@ -24,6 +24,7 @@
     vm.loadDatas = load;
     vm.allocine = getAllocineDatas;
     vm.seen = seen;
+    vm.popupOpen = false;
 
     activate();
 
@@ -53,8 +54,11 @@
           parent: angular.element(document.body),
           targetEvent: $event,
           clickOutsideToClose: true
-        }).then(function () {
-          getAllocineDatas($event, movie);
+        }).then(function (action) {
+          // bug fix if double click on show allocine details button -> infinite loop
+          if (action === 'manuel') {
+            getAllocineDatas($event, movie);
+          }
         });
       });
     }
@@ -78,8 +82,11 @@
         parent: angular.element(document.body),
         targetEvent: $event,
         clickOutsideToClose: true
-      }).then(function () {
-        getAllocineDatas($event, movie);
+      }).then(function (action) {
+        // bug fix if double click on show allocine details button -> infinite loop
+        if (action === 'manuel') {
+          getAllocineDatas($event, movie);
+        }
       });
     }
 

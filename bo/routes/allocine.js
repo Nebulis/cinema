@@ -17,7 +17,7 @@ router.get('/', function (req, res) {
       console.log('Error : ' + error);
       return;
     }
-
+    console.log(results);
     var datas = results.feed.movie || results.feed.tvseries;
     res.json(datas);
   });

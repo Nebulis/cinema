@@ -26,7 +26,7 @@
         movie.summary = null;
         movie.save().then(function () {
           Toast.success('Suppression du lien avec allocine');
-          $mdDialog.hide();
+          $mdDialog.hide("manuel");
         }, function (error) {
           movie.id_allocine = old_id_allocine;
           movie.filedata = old_filedata;
