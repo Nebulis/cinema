@@ -27,10 +27,11 @@
           <md-option ng-repeat="state in form.states" value="{{state.id}}">{{state.label}}</md-option>
         </md-select>
       </md-input-container>
-      <md-input-container ng-if="form.movie.state === '3'">
-        <label>Description état</label>
-        <input ng-model="form.movie.stateSummary" type="text">
-      </md-input-container>
+      <md-autocomplete md-selected-item="form.movie.stateSummary" md-items="stateDescription in form.stateDescriptions" md-min-length="0" md-floating-label="Description état" md-input-name="autocompleteFieldStateSummary" md-item-text="genre" ng-if="form.movie.state === '3'">
+        <md-item-template>
+          <span>{{stateDescription}}</span>
+        </md-item-template>
+      </md-autocomplete>
       <md-input-container ng-if="form.movie.type === 'Série'">
         <label>Saison</label>
         <input type="number" ng-model="form.movie.season" type="text" ng-required="form.movie.type">

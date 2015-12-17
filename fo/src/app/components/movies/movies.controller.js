@@ -15,6 +15,7 @@
     vm.search = search;
     vm.states = {};
     vm.title = movie._id ? 'Modifier' : 'Créer';
+    vm.stateDescriptions = ["Externe Laurent", "Externe Servane"];
 
     States.get().then(function (states) {
       vm.states = states;
