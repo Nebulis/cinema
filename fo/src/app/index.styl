@@ -26,10 +26,6 @@ div[ui-view]
 [layout=row]
   flex-direction row
 
-md-toolbar
-  &.md-default-theme
-    background-color purple
-
 md-dialog-content
   max-width 800px
   max-height 810px
@@ -63,7 +59,7 @@ md-input-container
 
 .movie
   div
-    height 50px
+    min-height 50px
   &:hover
     background-color lightgrey
 
@@ -223,6 +219,12 @@ span.btn-default
   color #000
   text-shadow 0 1px 0 #fff
   opacity .2
+
+.trash
+  text-decoration line-through
+
+.main-grid > div
+  text-align center
 
 
 // end bootstrap style to ui-select

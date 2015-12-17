@@ -57,7 +57,8 @@ module.exports = {
       seen: false,
       id_allocine: req.body.id_allocine,
       file: req.body.file,
-      summary: req.body.summary
+      summary: req.body.summary,
+      trash: req.body.trash
     });
 
     movie.save(function (err, movie) {
@@ -103,6 +104,7 @@ module.exports = {
       movie.season = req.body.season ? req.body.season : movie.season;
       movie.season = req.body.type === 'Film' ? null : movie.season;
       movie.seen = req.body.seen ? req.body.seen : false;
+      movie.trash = req.body.trash ? req.body.trash : false;
       movie.summary = req.body.summary ? req.body.summary : null;
       movie.filedata = null;
       if (req.file && req.file.path) {

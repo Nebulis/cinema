@@ -1,5 +1,5 @@
 <md-dialog aria-label="Gestion" class="long-dialog">
-  <md-toolbar>
+  <md-toolbar class="md-accent">
     <div class="md-toolbar-tools">
       <h2>{{form.title}}</h2>
     </div>
@@ -36,6 +36,9 @@
         <label>Saison</label>
         <input type="number" ng-model="form.movie.season" type="text" ng-required="form.movie.type">
       </md-input-container>
+      <md-checkbox ng-model="form.movie.trash" aria-label="Trash">
+        Trash
+      </md-checkbox>
     </form>
   </md-dialog-content>
   <div class="md-actions" layout="row">

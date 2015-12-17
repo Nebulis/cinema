@@ -11,7 +11,8 @@ var movieSchema = new Schema({
   "stateSummary": String,
   "seen": Boolean,
   "filedata": String,
-  "summary": String
+  "summary": String,
+  "trash": Boolean
 });
 
 module.exports = mongoose.model('movie', movieSchema);
