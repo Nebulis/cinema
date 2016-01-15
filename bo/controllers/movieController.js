@@ -106,7 +106,7 @@ module.exports = {
       movie.seen = req.body.seen ? req.body.seen : false;
       movie.trash = req.body.trash ? req.body.trash : false;
       movie.summary = req.body.summary ? req.body.summary : null;
-      movie.filedata = null;
+      movie.filedata = req.body.filedata ? req.body.filedata : null;
       if (req.file && req.file.path) {
         fs.readFile(req.file.path, function (err, datas) {
           movie.filedata = new Buffer(datas, 'binary').toString('base64');

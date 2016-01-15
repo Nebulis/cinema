@@ -21,9 +21,12 @@ app.locals.ENV_DEVELOPMENT = env == 'development';
 
 // app.use(favicon(__dirname + '/public/img/favicon.ico'));
 app.use(logger('dev'));
-app.use(bodyParser.json());
+app.use(bodyParser.json({
+  limit: '50mb'
+}));
 app.use(bodyParser.urlencoded({
-  extended: true
+  extended: true,
+  limit: '50mb'
 }));
 app.use(cookieParser());
 
@@ -45,7 +48,7 @@ app.use(function (req, res, next) {
 // will print stacktrace
 
 if (app.get('env') === 'development') {
-  app.use(function (err, req, res, next) {
+  app.use(function (err, req, res) {
     res.status(err.status || 500);
     res.render('error', {
       message: err.message,
@@ -57,8 +60,8 @@ if (app.get('env') === 'development') {
 
 // production error handler
 // no stacktraces leaked to user
-app.use(function (err, req, res, next) {
-  console.log(err)
+app.use(function (err, req, res) {
+  console.log(err);
   res.status(err.status || 500);
   res.json({
     message: err.message,
