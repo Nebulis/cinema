@@ -1,0 +1,43 @@
+<md-dialog aria-label="Allocine association" class="long-dialog">
+  <form name="allocine.form">
+    <md-toolbar>
+      <div class="md-toolbar-tools">
+        <h2>Associer avec allociné</h2>
+      </div>
+    </md-toolbar>
+    <md-dialog-content layout="column">
+      <md-radio-group ng-model="allocine.formType" layout="row" layout-align="center center">
+        <md-radio-button value="allocine" class="md-primary">Allocine</md-radio-button>
+        <md-radio-button value="custom"> Manuel </md-radio-button>
+      </md-radio-group>
+      <md-content layout-padding layout="row" layout-sm="column" layout-align="center center" ng-show="allocine.formType === 'allocine'">
+        <md-input-container flex="90">
+          <label>Identifiant</label>
+          <input ng-model="allocine.fakeMovie.code">
+        </md-input-container>
+        <md-button flex="10" class="md-icon-button" aria-label="More" ng-click="allocine.manuelAssociate()">
+          <md-icon md-svg-src="assets/svg/ic_check_black_24px.svg" aria-label="Link"></md-icon>
+        </md-button>
+      </md-content>
+      <div ng-repeat="movie in allocine.movies track by movie.code" ng-show="allocine.formType === 'allocine'">
+        <md-button class="md-icon-button" aria-label="More" ng-click="allocine.associate(movie)">
+          <md-icon md-svg-src="assets/svg/ic_link_black_24px.svg" class="s24" aria-label="Link"></md-icon>
+        </md-button>
+        <a ng-href="{{movie.link[0].href}}" target="blank">{{allocine.title(movie)}} ({{allocine.year(movie)}})</a>
+      </div>
+      <md-content ng-show="allocine.formType === 'custom'">
+        <input type="file" ngf-select ng-model="allocine.file" name="file" accept="image/*" ng-required="allocine.formType === 'custom'" ngf-max-size="20MB">
+      </md-content>
+      <md-input-container ng-show="allocine.formType === 'custom'">
+        <label>Description</label>
+        <textarea ng-model="allocine.summary" ng-required="allocine.formType === 'custom'"></textarea>
+      </md-input-container>
+      <div class="md-actions" layout="row">
+        <span flex></span>
+        <md-button ng-disabled="allocine.form.$invalid" ng-click="allocine.save()" class="md-raised md-primary" aria-label="Save" ng-show="allocine.formType === 'custom'">
+          <span>Enregistrer</span>
+        </md-button>
+      </div>
+    </md-dialog-content>
+  </form>
+</md-dialog>

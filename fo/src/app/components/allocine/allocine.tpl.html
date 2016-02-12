@@ -1,0 +1,19 @@
+<md-dialog aria-label="Allocine association">
+  <md-toolbar class="md-accent">
+    <div class="md-toolbar-tools">
+      <h2>{{allocine.title}}</h2>
+      <span flex></span>
+      <md-button class="md-icon-button" aria-label="More" ng-click="allocine.unlink()">
+        <md-icon md-svg-src="assets/svg/ic_refresh_black_24px.svg" class="s24" aria-label="Link"></md-icon>
+      </md-button>
+    </div>
+  </md-toolbar>
+  <md-dialog-content layout="row">
+    <div flex="33">
+      <img ng-src="{{allocine.image}}" class="poster" ng-if="allocine.image" />
+      <img data-ng-src="data:image/png;base64,{{allocine.image64}}" class="poster" ng-if="allocine.image64" />
+    </div>
+    <div flex="66" ng-bind-html="allocine.synopsis" class="synopsis">
+    </div>
+  </md-dialog-content>
+</md-dialog>

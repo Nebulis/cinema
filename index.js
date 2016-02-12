@@ -14,6 +14,7 @@ var allocine = require('./routes/allocine');
 mongoose.connect('mongodb://cinema:cinema@ds059365.mongolab.com:59365/cinema');
 
 var app = express();
+var context = '/api';
 
 var env = process.env.NODE_ENV || 'development';
 app.locals.ENV = env;
@@ -30,10 +31,16 @@ app.use(bodyParser.urlencoded({
 }));
 app.use(cookieParser());
 
-app.use('/', routes);
-app.use('/movies', movies);
-app.use('/states', states);
-app.use('/allocine', allocine);
+app.use(context + '/', routes);
+app.use(context + '/movies', movies);
+app.use(context + '/states', states);
+app.use(context + '/allocine', allocine);
+
+//front
+app.use('/front', express.static('./.tmp/serve/'));
+app.use('/bower_components', express.static('./bower_components'));
+app.use('/front/app', express.static('./fo/src/app'));
+app.use('/front/assets', express.static('./fo/src/assets'));
 
 /// catch 404 and forward to error handler
 app.use(function (req, res, next) {
