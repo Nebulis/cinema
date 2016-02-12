@@ -11,7 +11,7 @@ var movies = require('./routes/movies');
 var states = require('./routes/states');
 var allocine = require('./routes/allocine');
 
-mongoose.connect('mongodb://cinema:cinema@ds059365.mongolab.com:59365/cinema');
+mongoose.connect('mongodb://'+process.env.MONGO_USER+':'+process.env.MONGO_PASSWD+'@ds059365.mongolab.com:59365/cinema');
 
 var app = express();
 var context = '/api';
