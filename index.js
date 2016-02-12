@@ -11,7 +11,7 @@ var movies = require('./routes/movies');
 var states = require('./routes/states');
 var allocine = require('./routes/allocine');
 
-mongoose.connect('mongodb://'+process.env.MONGO_USER+':'+process.env.MONGO_PASSWD+'@ds059365.mongolab.com:59365/cinema');
+mongoose.connect('mongodb://'+process.env.MONGO_USER+':'+process.env.MONGO_PASSWD+'@'+process.env.MONGO_HOSTNAME+':'+process.env.MONGO_PORT+'/cinema');
 
 var app = express();
 var context = '/api';
@@ -20,7 +20,6 @@ var env = process.env.NODE_ENV || 'development';
 app.locals.ENV = env;
 app.locals.ENV_DEVELOPMENT = env == 'development';
 
-// app.use(favicon(__dirname + '/public/img/favicon.ico'));
 app.use(logger('dev'));
 app.use(bodyParser.json({
   limit: '50mb'
