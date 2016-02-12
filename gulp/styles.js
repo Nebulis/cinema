@@ -4,7 +4,6 @@ var path = require('path');
 var gulp = require('gulp');
 var conf = require('./conf');
 
-var browserSync = require('browser-sync');
 
 var $ = require('gulp-load-plugins')();
 
@@ -39,5 +38,4 @@ gulp.task('styles', function () {
     .pipe($.autoprefixer()).on('error', conf.errorHandler('Autoprefixer'))
     .pipe($.sourcemaps.write())
     .pipe(gulp.dest(path.join(conf.paths.tmp, '/serve/app/')))
-    .pipe(browserSync.reload({ stream: true }));
 });

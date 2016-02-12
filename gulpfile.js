@@ -7,7 +7,7 @@ var gulp = require('gulp'),
 gulp.task('develop', function () {
   livereload.listen();
   nodemon({
-    script: 'bin/www',
+    script: 'index',
     ext: 'js jade coffee',
     stdout: false
   }).on('readable', function () {
@@ -22,5 +22,19 @@ gulp.task('develop', function () {
 });
 
 gulp.task('default', [
-  'develop'
+  'develop',
+  'inject'
 ]);
+
+var gulp = require('gulp');
+var wrench = require('wrench');
+
+/**
+ *  This will load all js or coffee files in the gulp directory
+ *  in order to load all gulp tasks
+ */
+wrench.readdirSyncRecursive('./gulp').filter(function(file) {
+  return (/\.(js|coffee)$/i).test(file);
+}).map(function(file) {
+  require('./gulp/' + file);
+});
