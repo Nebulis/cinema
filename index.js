@@ -11,6 +11,9 @@ var movies = require('./routes/movies');
 var states = require('./routes/states');
 var allocine = require('./routes/allocine');
 
+var jwt = require('jsonwebtoken');
+var expressJwt = require('express-jwt');
+
 mongoose.connect('mongodb://'+process.env.MONGO_USER+':'+process.env.MONGO_PASSWD+'@'+process.env.MONGO_HOSTNAME+':'+process.env.MONGO_PORT+'/cinema');
 
 var app = express();
@@ -29,6 +32,20 @@ app.use(bodyParser.urlencoded({
   limit: '50mb'
 }));
 app.use(cookieParser());
+
+var secret = 'shhhhhhared-secret';
+app.use(expressJwt({ secret: secret }).unless({ path: [ '/login' ]}));
+app.post('/login', function (req, res) {
+  if (req.body.password === process.env.PASSWORD) {
+    var token = jwt.sign({ }, secret);
+    res.send({
+      token: token
+    });
+  } else {
+    res.status(401).send('Unauthorized')
+  }
+});
+
 
 app.use(context + '/', routes);
 app.use(context + '/movies', movies);
