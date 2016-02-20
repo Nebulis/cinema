@@ -12,7 +12,17 @@
         url: '/',
         templateUrl: 'app/main/main.html',
         controller: 'MainController',
-        controllerAs: 'main'
+        controllerAs: 'main',
+        resolve : {
+          user : function(UserService) {
+            return UserService.getUser();
+          }
+        }
+      }).state('login', {
+        url : '/login',
+        templateUrl : 'app/components/auth/login.html',
+        controller : 'LoginController',
+        controllerAs : 'login'
       });
 
     $urlRouterProvider.otherwise('/');

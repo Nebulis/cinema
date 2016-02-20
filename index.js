@@ -34,15 +34,15 @@ app.use(bodyParser.urlencoded({
 app.use(cookieParser());
 
 var secret = 'shhhhhhared-secret';
-app.use(expressJwt({ secret: secret }).unless({ path: [ '/login' ]}));
+app.use('/api', expressJwt({ secret: secret }).unless({ path: [ '/login' ]}));
 app.post('/login', function (req, res) {
   if (req.body.password === process.env.PASSWORD) {
-    var token = jwt.sign({ }, secret);
+    var token = jwt.sign({ }, secret, {expiresIn : '7 days'});
     res.send({
       token: token
     });
   } else {
-    res.status(401).send('Unauthorized')
+    res.status(400).send('Bad password')
   }
 });
 

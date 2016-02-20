@@ -1,0 +1,13 @@
+<div layout="row" flex id="content" role="main" layout-align="center center" layout-fill>
+    <md-content>
+      <md-input-container>
+        <label>Password</label>
+        <input ng-model="login.password" type="password" ng-keyup="login.keyup($event)">
+      </md-input-container>
+      <md-input-container layout-align="center center">
+        <div layout="row" >
+          <md-button class="md-raised" ng-click="login.login()" type="submit">Login</md-button>
+        </div>
+      </md-input-container>
+    </md-content>
+</div>
