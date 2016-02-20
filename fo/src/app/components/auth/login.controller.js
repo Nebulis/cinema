@@ -4,7 +4,7 @@ angular.module('auth')
     var vm = this;
     vm.login = function() {
       UserService.login(vm.password).then(function() {
-        $state.go('home')
+        $state.go('home');
       });
     };
 

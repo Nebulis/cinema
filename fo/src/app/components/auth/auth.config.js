@@ -1,6 +1,6 @@
 angular.module('auth')
   .config(function($httpProvider) {
-    $httpProvider.interceptors.push(function($injector) {
+    $httpProvider.interceptors.push(function($injector, $q) {
       return {
         'request': function(config) {
           var UserService = $injector.get('UserService');
@@ -14,11 +14,10 @@ angular.module('auth')
           }
         },
         'responseError' : function(response) {
-          if(response.status === 401) {
-            var $state = $injector.get('$state');
-            $state.go('login');
+          if(response.status === 401 && response.config.url != '/login') {
+            $injector.get('$state').go('login');
           }
-          return response
+          return $q.reject(response);
         }
       }
     })
