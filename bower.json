@@ -2,8 +2,8 @@
   "name": "fo",
   "version": "0.0.0",
   "dependencies": {
-    "angular-animate": "~1.4.0",
     "jquery": "~2.1.4",
+    "angular-animate": "~1.4.0",
     "restangular": "~1.5.1",
     "angular-ui-router": "~0.2.15",
     "angular-material": "~0.10.1",
