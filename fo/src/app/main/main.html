@@ -1,63 +1,81 @@
-<md-content layout="column" layout-fill infinite-scroll="main.loadDatas()" infinite-scroll-distance="2" infinite-scroll-immediate-check="true">
-  <header>
-    <acme-navbar creationDate="main.creationDate" />
-  </header>
-  <div layout="column">
-    <div layout="row" layout-wrap class="header">
-      <div flex="10"></div>
-      <div flex="30">
-        <div class="ui-select-container ui-select-multiple ui-select-bootstrap dropdown form-control ng-valid" theme="bootstrap" style="width:100%">
-          <input type="text" class="ui-select-search input-xs" placeholder="Title" ng-model="main.search.title">
-        </div>
-      </div>
-      <div flex="20">
-        <ui-select multiple ng-model="main.search.genres" theme="bootstrap" reset-search-input="false" style="width:100%">
-          <ui-select-match placeholder="Genre">{{$item}}</ui-select-match>
-          <ui-select-choices repeat="genre in main.genres.$object | orderBy:'toString()'">
-            <div ng-bind-html="genre | highlight: $select.search"></div>
-          </ui-select-choices>
-        </ui-select>
-      </div>
-      <div flex="20">
-        <ui-select multiple ng-model="main.search.types" theme="bootstrap" reset-search-input="false" style="width:100%">
-          <ui-select-match placeholder="Type">{{$item.label}}</ui-select-match>
-          <ui-select-choices repeat="type in main.types track by type.id">
-            <div ng-bind-html="type.label | highlight: $select.search"></div>
-          </ui-select-choices>
-        </ui-select>
-      </div>
-      <div flex="20">
-        <ui-select multiple ng-model="main.search.states" theme="bootstrap" reset-search-input="false" style="width:100%">
-          <ui-select-match placeholder="State">{{$item.label}}</ui-select-match>
-          <ui-select-choices repeat="state in main.states.$object track by state.id">
-            <div ng-bind-html="state.label | highlight: $select.search"></div>
-          </ui-select-choices>
-        </ui-select>
-      </div>
+<header>
+  <acme-navbar creationDate="main.creationDate"/>
+</header>
+<div layout="row" layout-wrap class="header">
+  <div flex="10"></div>
+  <div flex="30">
+    <div class="ui-select-container ui-select-multiple ui-select-bootstrap dropdown form-control ng-valid"
+         theme="bootstrap" style="width:100%">
+      <input type="text" class="ui-select-search input-xs" placeholder="Title" ng-model="main.search.title">
     </div>
-    <div layout="row" ng-repeat="movie in main.movies | search:main.search | limitTo:main.limit track by movie._id" ng-click="main.edit(movie, $event)" class="movie" layout-align="center center">
+  </div>
+  <div flex="20">
+    <ui-select multiple ng-model="main.search.genres" theme="bootstrap" reset-search-input="false" style="width:100%">
+      <ui-select-match placeholder="Genre">{{$item}}</ui-select-match>
+      <ui-select-choices repeat="genre in main.genres.$object | orderBy:'toString()'">
+        <div ng-bind-html="genre | highlight: $select.search"></div>
+      </ui-select-choices>
+    </ui-select>
+  </div>
+  <div flex="20">
+    <ui-select multiple ng-model="main.search.types" theme="bootstrap" reset-search-input="false" style="width:100%">
+      <ui-select-match placeholder="Type">{{$item.label}}</ui-select-match>
+      <ui-select-choices repeat="type in main.types track by type.id">
+        <div ng-bind-html="type.label | highlight: $select.search"></div>
+      </ui-select-choices>
+    </ui-select>
+  </div>
+  <div flex="20">
+    <ui-select multiple ng-model="main.search.states" theme="bootstrap" reset-search-input="false" style="width:100%">
+      <ui-select-match placeholder="State">{{$item.label}}</ui-select-match>
+      <ui-select-choices repeat="state in main.states.$object track by state.id">
+        <div ng-bind-html="state.label | highlight: $select.search"></div>
+      </ui-select-choices>
+    </ui-select>
+  </div>
+</div>
+<md-content layout="column" md-scroll-y class="container">
+  <div infinite-scroll="main.loadDatas()"
+       infinite-scroll-distance="1"
+       infinite-scroll-immediate-check="true"
+        infinite-scroll-container='".container"'>
+
+    <div layout="row" ng-repeat="movie in main.movies | search:main.search | limitTo:main.limit track by movie._id"
+         ng-click="main.edit(movie, $event)" class="movie" layout-align="center center">
       <div flex="40" layout="row">
         <div flex="35">
-          <md-button ng-hide="movie.trash" class="md-icon-button state_{{movie.state}} action" ng-click="main.changeState($event, movie)" aria-label="Changer l'état du film">
+          <md-button ng-hide="movie.trash" class="md-icon-button state_{{movie.state}} action"
+                     ng-click="main.changeState($event, movie)" aria-label="Changer l'état du film">
             <md-icon md-svg-src="assets/svg/ic_play_arrow_black_24px.svg"></md-icon>
           </md-button>
-          <md-button ng-hide="movie.trash" class="md-icon-button md-primary action" ng-click="main.seen($event, movie)" aria-label="Vu - Pas vu" ng-class="{'unseen' : !movie.seen}">
+          <md-button ng-hide="movie.trash" class="md-icon-button md-primary action" ng-click="main.seen($event, movie)"
+                     aria-label="Vu - Pas vu" ng-class="{'unseen' : !movie.seen}">
             <md-icon md-svg-src="assets/svg/ic_remove_red_eye_black_24px.svg"></md-icon>
           </md-button>
-          <md-button ng-hide="movie.trash" class="md-icon-button md-primary action" ng-click="main.allocine($event, movie)" aria-label="Changer l'état du film" ng-class="{'unlinked' : !movie.id_allocine && ! movie.filedata}">
+          <md-button ng-hide="movie.trash" class="md-icon-button md-primary action"
+                     ng-click="main.allocine($event, movie)" aria-label="Changer l'état du film"
+                     ng-class="{'unlinked' : !movie.id_allocine && ! movie.filedata}">
             <md-icon md-svg-src="assets/svg/ic_link_black_24px.svg"></md-icon>
           </md-button>
         </div>
         <div ng-class="{trash : movie.trash}" flex layout="row" layout-align="center center" class="main-grid">
           <div flex layout="row" layout-align="center center" ng-if="main.isMovie(movie)">{{movie.title}}</div>
-          <div flex layout="row" layout-align="center center" ng-if="!main.isMovie(movie)">{{movie.title}} - Saison {{movie.season}}</div>
+          <div flex layout="row" layout-align="center center" ng-if="!main.isMovie(movie)">{{movie.title}} - Saison
+            {{movie.season}}
+          </div>
         </div>
       </div>
       <div ng-class="{trash : movie.trash}" flex="20" layout="row" layout-align="center center">{{movie.genre}}</div>
       <div ng-class="{trash : movie.trash}" flex="20" layout="row" layout-align="center center">{{movie.type}}</div>
       <div flex="20" layout="row" layout-align="center center" class="main-grid">
-        <div flex layout="row" layout-align="center center" ng-show="!movie.trash && (movie.state !== 3 || (movie.state === 3 && !movie.stateSummary))">{{movie.state | state}}</div>
-        <div flex layout="row" layout-align="center center" ng-show="!movie.trash && movie.stateSummary && movie.state === 3">{{movie.state | state}} - {{movie.stateSummary}}</div>
+        <div flex layout="row" layout-align="center center"
+             ng-show="!movie.trash && (movie.state !== 3 || (movie.state === 3 && !movie.stateSummary))">{{movie.state |
+          state}}
+        </div>
+        <div flex layout="row" layout-align="center center"
+             ng-show="!movie.trash && movie.stateSummary && movie.state === 3">{{movie.state | state}} -
+          {{movie.stateSummary}}
+        </div>
       </div>
     </div>
   </div>

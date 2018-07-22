@@ -171,7 +171,6 @@
         controller: 'FormController',
         controllerAs: 'form',
         templateUrl: 'app/components/movies/form.html',
-        parent: angular.element(document.body),
         targetEvent: event,
         clickOutsideToClose: true,
         resolve: {
