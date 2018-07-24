@@ -11,7 +11,7 @@ module.exports = {
    * movieController.list()
    */
   list: function (req, res) {
-    model.find(function (err, movies) {
+    model.find({}).sort('title').exec(function (err, movies) {
       if (err) {
         return res.json(500, {
           message: 'Error getting movie.'
