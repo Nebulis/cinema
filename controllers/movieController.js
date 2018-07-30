@@ -11,10 +11,11 @@ module.exports = {
    * movieController.list()
    */
   list: function (req, res) {
-    model.find({}).sort('title').exec(function (err, movies) {
+    model.find({}).sort('title season').exec(function (err, movies) {
       if (err) {
         return res.json(500, {
-          message: 'Error getting movie.'
+          message: 'Error getting movie.',
+          error: err,
         });
       }
       return res.json(movies);
