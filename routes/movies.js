@@ -22,6 +22,13 @@ router.get('/genre', function (req, res) {
 /*
  * GET
  */
+router.get('/type', function (req, res) {
+  res.json(['Film', 'Série']);
+});
+
+/*
+ * GET
+ */
 router.get('/:id', function (req, res) {
   controller.show(req, res);
 });
