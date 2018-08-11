@@ -18,25 +18,26 @@ export class MultiDownshift extends React.Component {
     }
   };
 
+  callOnChange = downshift => () => {
+    if (this.props.onSelect) {
+      this.props.onSelect(
+        this.state.selectedItems,
+        this.getStateAndHelpers(downshift)
+      );
+    }
+    if (this.props.onChange) {
+      this.props.onChange(
+        this.state.selectedItems,
+        this.getStateAndHelpers(downshift)
+      );
+    }
+  };
+
   handleSelection = (selectedItem, downshift) => {
-    const callOnChange = () => {
-      if (this.props.onSelect) {
-        this.props.onSelect(
-          this.state.selectedItems,
-          this.getStateAndHelpers(downshift)
-        );
-      }
-      if (this.props.onChange) {
-        this.props.onChange(
-          this.state.selectedItems,
-          this.getStateAndHelpers(downshift)
-        );
-      }
-    };
     if (this.state.selectedItems.includes(selectedItem)) {
-      this.removeItem(selectedItem, callOnChange);
+      this.removeItem(selectedItem, this.callOnChange(downshift));
     } else {
-      this.addSelectedItem(selectedItem, callOnChange);
+      this.addSelectedItem(selectedItem, this.callOnChange(downshift));
     }
   };
 
@@ -56,13 +57,13 @@ export class MultiDownshift extends React.Component {
     );
   }
 
-  getRemoveButtonProps = ({ onClick, item, ...props } = {}) => {
+  getRemoveButtonProps = downshift => ({ onClick, item, ...props } = {}) => {
     return {
       onClick: e => {
         // TODO: use something like downshift's composeEventHandlers utility instead
         onClick && onClick(e);
         e.stopPropagation();
-        this.removeItem(item);
+        this.removeItem(item, this.callOnChange(downshift));
       },
       ...props
     };
@@ -72,7 +73,7 @@ export class MultiDownshift extends React.Component {
     const { selectedItems } = this.state;
     const { getRemoveButtonProps, removeItem } = this;
     return {
-      getRemoveButtonProps,
+      getRemoveButtonProps: getRemoveButtonProps(downshift),
       removeItem,
       selectedItems,
       ...downshift

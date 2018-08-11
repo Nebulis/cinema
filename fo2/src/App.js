@@ -104,10 +104,7 @@ class App extends Component {
     return (
       <Fetch endpoint={endpoint}>
         {items => (
-          <MultiDownshift
-            onChange={handleChange}
-            itemToString={this.itemToString}
-          >
+          <MultiDownshift onChange={handleChange}>
             {({
               getInputProps,
               getToggleButtonProps,
