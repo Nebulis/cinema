@@ -1,0 +1,9 @@
+.movie {
+  display: flex;
+  min-width: 300px;
+  max-width: 300px;
+}
+
+.movie > * {
+  width: 100%;
+}
