@@ -11,7 +11,28 @@ module.exports = {
    * movieController.list()
    */
   list: function (req, res) {
-    model.find({}).sort('title season').exec(function (err, movies) {
+    const {title, genres, types, seen, unseen} = req.query;
+    let query;
+
+    const titleFilter = title ? {title: {'$regex': title || '', '$options': 'i'}} : {};
+    query = model.find({
+      ...titleFilter,
+    });
+    if (seen !== unseen) query = query.and({seen: !!seen});
+
+    if(genres) {
+      query = query.and([
+        { $or: genres.split(',').map(genre => ({genre})) },
+      ])
+    }
+
+    if(types) {
+      query = query.and([
+        { $or: types.split(',').map(type=> ({type})) },
+      ])
+    }
+
+    query.sort('title season').limit(50).exec(function (err, movies) {
       if (err) {
         return res.json(500, {
           message: 'Error getting movie.',
