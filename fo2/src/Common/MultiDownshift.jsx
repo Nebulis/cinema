@@ -19,12 +19,6 @@ export class MultiDownshift extends React.Component {
   };
 
   callOnChange = downshift => () => {
-    if (this.props.onSelect) {
-      this.props.onSelect(
-        this.state.selectedItems,
-        this.getStateAndHelpers(downshift)
-      );
-    }
     if (this.props.onChange) {
       this.props.onChange(
         this.state.selectedItems,
