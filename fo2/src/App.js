@@ -1,13 +1,13 @@
-import React, { Component, StrictMode } from "react";
+import React, { Component, Fragment, StrictMode } from "react";
 import "./App.css";
 import { Fetch } from "./Common/Fetch";
 import { Movie } from "./Movie/Movie";
 import isArray from "lodash/isArray";
 import { AsyncMultiDownshift } from "./Common/AsyncMultiDownshift";
+import { MovieForm } from "./Movie/MovieForm";
+import { ApplicationContext, LOADING } from "./ApplicationContext";
 
 class App extends Component {
-  inputType = React.createRef();
-  inputGenre = React.createRef();
   constructor(props) {
     super(props);
     this.state = {
@@ -17,11 +17,24 @@ class App extends Component {
         types: [],
         seen: false,
         unseen: false
-      }
+      },
+      movie: null
     };
     this.onInput = this.onInput.bind(this);
     this.onInputWithoutEvent = this.onInputWithoutEvent.bind(this);
     this.onSeen = this.onSeen.bind(this);
+    this.onCloseEditMovie = this.onCloseEditMovie.bind(this);
+    this.editMovie = this.editMovie.bind(this);
+  }
+
+  componentDidMount() {}
+
+  onCloseEditMovie() {
+    this.setState({ movie: null });
+  }
+
+  editMovie(movie) {
+    this.setState({ movie });
   }
 
   onInput(name) {
@@ -61,109 +74,92 @@ class App extends Component {
   render() {
     return (
       <StrictMode>
-        <button
-          type="button"
-          className="btn btn-primary"
-          data-toggle="modal"
-          data-target="#exampleModalCenter"
-        >
-          Launch demo modal
-        </button>
-        <div
-          className="modal fade"
-          id="exampleModalCenter"
-          tabIndex="-1"
-          role="dialog"
-          aria-labelledby="exampleModalCenterTitle"
-          aria-hidden="true"
-        >
-          <div className="modal-dialog modal-dialog-centered" role="document">
-            <div className="modal-content">
-              <div className="modal-header">
-                <h5 className="modal-title" id="exampleModalLongTitle">
-                  Modal title
-                </h5>
+        <ApplicationContext>
+          {({ status, genres, types }) =>
+            status === LOADING ? (
+              <div>Loading ....</div>
+            ) : (
+              <Fragment>
                 <button
                   type="button"
-                  className="close"
-                  data-dismiss="modal"
-                  aria-label="Close"
+                  className="btn btn-primary"
+                  data-toggle="modal"
+                  data-target="#movie-creator-updator"
                 >
-                  <span aria-hidden="true">&times;</span>
+                  Add new
                 </button>
-              </div>
-              <div className="modal-body">...</div>
-              <div className="modal-footer">
-                <button
-                  type="button"
-                  className="btn btn-secondary"
-                  data-dismiss="modal"
-                >
-                  Close
-                </button>
-                <button type="button" className="btn btn-primary">
-                  Save changes
-                </button>
-              </div>
-            </div>
-          </div>
-        </div>
-        <form className="form-inline" style={{ flex: "0 0 25em;" }}>
-          <div className="form-group mx-sm-3 mb-2">
-            <input
-              type="text"
-              value={this.state.title}
-              onInput={this.onInput("title")}
-              placeholder="Title"
-              className="form-control"
-            />
-          </div>
-          <div
-            className="form-group mx-sm-3 mb-2"
-            style={{ maxWidth: "300px" }}
-          >
-            <AsyncMultiDownshift
-              placeholder="Genre"
-              input={this.inputGenre}
-              handleChange={this.onInputWithoutEvent("genres")}
-              endpoint="/api/movies/genre"
-            />
-          </div>
-          <div
-            className="form-group mx-sm-3 mb-2"
-            style={{ maxWidth: "300px" }}
-          >
-            <AsyncMultiDownshift
-              placeholder="Type"
-              input={this.inputType}
-              handleChange={this.onInputWithoutEvent("types")}
-              endpoint="/api/movies/type"
-            />
-          </div>
-          <div className="form-group mx-sm-3 mb-2">
-            <i
-              className="fas fa-eye"
-              style={{
-                color: this.state.filters.seen ? "var(--success)" : "",
-                cursor: "pointer"
-              }}
-              onClick={this.onSeen("seen")}
-            />
-            <i
-              className="fas fa-eye-slash"
-              style={{
-                color: this.state.filters.unseen ? "var(--success)" : "",
-                cursor: "pointer"
-              }}
-              onClick={this.onSeen("unseen")}
-            />
-          </div>
-        </form>
-        <div className="movies">
-          <Fetch endpoint={`/api/movies?${this.buildQuery()}`}>
-            {data => data.map(movie => <Movie key={movie._id} movie={movie} />)}
-          </Fetch>
-        </div>
+                <MovieForm
+                  movie={this.state.movie}
+                  onClose={this.onCloseEditMovie}
+                />
+                <form className="form-inline">
+                  <div className="form-group mx-sm-3 mb-2">
+                    <input
+                      type="text"
+                      value={this.state.title}
+                      onInput={this.onInput("title")}
+                      placeholder="Title"
+                      className="form-control"
+                    />
+                  </div>
+                  <div
+                    className="form-group mx-sm-3 mb-2"
+                    style={{ maxWidth: "300px" }}
+                  >
+                    <AsyncMultiDownshift
+                      placeholder="Genre"
+                      handleChange={this.onInputWithoutEvent("genres")}
+                      items={genres}
+                    />
+                  </div>
+                  <div
+                    className="form-group mx-sm-3 mb-2"
+                    style={{ maxWidth: "300px" }}
+                  >
+                    <AsyncMultiDownshift
+                      placeholder="Type"
+                      handleChange={this.onInputWithoutEvent("types")}
+                      items={types}
+                    />
+                  </div>
+                  <div className="form-group mx-sm-3 mb-2">
+                    <i
+                      className="fas fa-eye"
+                      style={{
+                        color: this.state.filters.seen ? "var(--success)" : "",
+                        cursor: "pointer"
+                      }}
+                      onClick={this.onSeen("seen")}
+                    />
+                    <i
+                      className="fas fa-eye-slash"
+                      style={{
+                        color: this.state.filters.unseen
+                          ? "var(--success)"
+                          : "",
+                        cursor: "pointer"
+                      }}
+                      onClick={this.onSeen("unseen")}
+                    />
+                  </div>
+                </form>
+                <div className="movies">
+                  <Fetch endpoint={`/api/movies?${this.buildQuery()}`}>
+                    {data =>
+                      data.map(movie => (
+                        <Movie
+                          key={movie._id}
+                          movie={movie}
+                          onEdit={() => this.editMovie(movie)}
+                        />
+                      ))
+                    }
+                  </Fetch>
+                </div>
+              </Fragment>
+            )
+          }
+        </ApplicationContext>
       </StrictMode>
     );
   }

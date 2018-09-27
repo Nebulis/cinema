@@ -2,18 +2,9 @@ import React from "react";
 import Downshift from "downshift";
 import { ArrowIcon, ControllerButton, css, Item, Menu } from "../shared";
 
-const items = [
-  "Action",
-  "Science-fiction",
-  "Thriller",
-  "Fantastique",
-  "Aventure",
-  "Animation",
-  "Comédie"
-];
 export class SingleDownshift extends React.Component {
   render() {
-    const { placeholder } = this.props;
+    const { placeholder, items } = this.props;
     return (
       <Downshift>
         {({
