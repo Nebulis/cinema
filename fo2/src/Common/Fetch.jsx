@@ -22,7 +22,6 @@ export class Fetch extends Component {
     });
 
     this.onChange = this.onChange.bind(this);
-    this.onDelete = this.onDelete.bind(this);
   }
 
   onChange(updatedElement, index = -1) {
@@ -34,15 +33,9 @@ export class Fetch extends Component {
       const data = [...this.state.data];
       data[index] = updatedElement;
       this.setState({
-        data
+        data: data.filter(Boolean)
       });
     }
-  }
-
-  onDelete(index) {
-    this.setState({
-      data: this.state.data.filter((_, id) => index !== id)
-    });
   }
 
   fetch() {

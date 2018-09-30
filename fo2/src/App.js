@@ -153,7 +153,7 @@ class App extends Component {
                             key={movie._id}
                             movie={movie}
                             onChange={movie => onChange(movie, index)}
-                            onDelete={_ => onDelete(index)}
+                            onDelete={_ => onChange(undefined, index)}
                             onEdit={() => this.editMovie(movie)}
                           />
                         ))}
