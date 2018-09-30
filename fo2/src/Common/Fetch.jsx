@@ -20,6 +20,16 @@ export class Fetch extends Component {
       leading: false,
       trailing: true
     });
+
+    this.onChange = this.onChange.bind(this);
+  }
+
+  onChange(updatedElement, index) {
+    const data = [...this.state.data];
+    data[index] = updatedElement;
+    this.setState({
+      data
+    });
   }
 
   fetch() {
@@ -51,7 +61,11 @@ export class Fetch extends Component {
     return (
       <Fragment>
         {this.state.status === LOADING && <div>Loading ....</div>}
-        {this.state.status === LOADED && this.props.children(this.state.data)}
+        {this.state.status === LOADED &&
+          this.props.children({
+            data: this.state.data,
+            onChange: this.onChange
+          })}
       </Fragment>
     );
   }

@@ -80,18 +80,6 @@ class App extends Component {
               <div>Loading ....</div>
             ) : (
               <Fragment>
-                <button
-                  type="button"
-                  className="btn btn-primary"
-                  data-toggle="modal"
-                  data-target="#movie-creator-updator"
-                >
-                  Add new
-                </button>
-                <MovieForm
-                  movie={this.state.movie}
-                  onClose={this.onCloseEditMovie}
-                />
                 <form className="form-inline">
                   <div className="form-group mx-sm-3 mb-2">
                     <input
@@ -143,19 +131,34 @@ class App extends Component {
                     />
                   </div>
                 </form>
-                <div className="movies">
-                  <Fetch endpoint={`/api/movies?${this.buildQuery()}`}>
-                    {data =>
-                      data.map(movie => (
-                        <Movie
-                          key={movie._id}
-                          movie={movie}
-                          onEdit={() => this.editMovie(movie)}
-                        />
-                      ))
-                    }
-                  </Fetch>
-                </div>
+                <Fetch endpoint={`/api/movies?${this.buildQuery()}`}>
+                  {({ data, onChange }) => (
+                    <Fragment>
+                      <button
+                        type="button"
+                        className="btn btn-primary"
+                        data-toggle="modal"
+                        data-target="#movie-creator-updator"
+                      >
+                        Add new
+                      </button>
+                      <MovieForm
+                        movie={this.state.movie}
+                        onClose={this.onCloseEditMovie}
+                      />
+                      <div className="movies">
+                        {data.map((movie, index) => (
+                          <Movie
+                            key={movie._id}
+                            movie={movie}
+                            onChange={movie => onChange(movie, index)}
+                            onEdit={() => this.editMovie(movie)}
+                          />
+                        ))}
+                      </div>
+                    </Fragment>
+                  )}
+                </Fetch>
               </Fragment>
             )
           }
