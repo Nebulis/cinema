@@ -3,19 +3,24 @@ import { SingleDownshift } from "../Common/SingleDownshift";
 import { ApplicationContext, LOADING } from "../ApplicationContext";
 import isEmpty from "lodash/isEmpty";
 
+const defaultState = {
+  movie: {
+    title: "",
+    genre: "",
+    type: "",
+    season: ""
+  }
+};
+
 export class MovieForm extends React.Component {
   constructor(props) {
     super(props);
-    this.state = {
-      title: "",
-      genre: "",
-      type: "",
-      season: ""
-    };
+    this.state = defaultState;
     this.onInput = this.onInput.bind(this);
     this.onSelect = this.onSelect.bind(this);
     this.valid = this.valid.bind(this);
-    this.onAdd = this.onAdd.bind(this);
+    this.add = this.add.bind(this);
+    this.update = this.update.bind(this);
   }
 
   componentDidMount() {
@@ -24,26 +29,28 @@ export class MovieForm extends React.Component {
   }
 
   componentDidUpdate() {
-    if (this.props.movie) {
-      // eslint-disable-next-line no-undef
-      $("#movie-creator-updator").modal("show");
+    if (this.props.movie && this.props.movie._id !== this.state.movie._id) {
+      this.setState({ movie: this.props.movie });
+    } else if (!this.props.movie && this.state.movie._id) {
+      this.setState(defaultState);
     }
   }
 
   valid() {
     return (
-      !isEmpty(this.state.title) &&
-      !isEmpty(this.state.genre) &&
-      !isEmpty(this.state.type) &&
-      (this.state.type !== "Série" ||
-        (this.state.type === "Série" && !isEmpty(this.state.season)))
+      !isEmpty(this.state.movie.title) &&
+      !isEmpty(this.state.movie.genre) &&
+      !isEmpty(this.state.movie.type) &&
+      (this.state.movie.type !== "Série" ||
+        (this.state.movie.type === "Série" &&
+          !isEmpty(this.state.movie.season)))
     );
   }
 
-  onAdd() {
+  add() {
     fetch("/api/movies", {
       method: "POST",
-      body: JSON.stringify(this.state),
+      body: JSON.stringify(this.state.movie),
       headers: {
         Accept: "application/json",
         "Content-Type": "application/json"
@@ -51,22 +58,43 @@ export class MovieForm extends React.Component {
     })
       .then(data => data.json())
       .then(data => {
-        this.props.onAdd({ ...this.state, ...data });
+        this.props.onAdd({ ...this.state.movie, ...data });
+        // eslint-disable-next-line no-undef
+        $("#movie-creator-updator").modal("hide");
+      });
+  }
+
+  update() {
+    fetch(`/api/movies/${this.props.movie._id}`, {
+      method: "PUT",
+      body: JSON.stringify(this.state.movie),
+      headers: {
+        Accept: "application/json",
+        "Content-Type": "application/json"
+      }
+    })
+      .then(data => data.json())
+      .then(data => {
+        this.props.onUpdate({ ...this.state.movie, ...data });
         // eslint-disable-next-line no-undef
         $("#movie-creator-updator").modal("hide");
       });
   }
 
   onInput(field) {
-    return event => this.setState({ [field]: event.target.value });
+    return event =>
+      this.setState({
+        movie: { ...this.state.movie, [field]: event.target.value }
+      });
   }
 
   onSelect(field) {
-    return value => this.setState({ [field]: value });
+    return value =>
+      this.setState({ movie: { ...this.state.movie, [field]: value } });
   }
 
   render() {
-    const { movie } = this.props;
+    const { movie } = this.state;
     return (
       <ApplicationContext.Consumer>
         {({ status, types, genres }) =>
@@ -108,12 +136,13 @@ export class MovieForm extends React.Component {
                         aria-describedby="title"
                         placeholder="Enter title"
                         onChange={this.onInput("title")}
-                        value={this.state.title}
+                        value={this.state.movie.title}
                       />
                     </div>
                     <div className="form-group">
                       <label>Genre</label>
                       <SingleDownshift
+                        selectedItem={this.state.movie.genre}
                         placeholder="Genre"
                         items={genres}
                         onChange={this.onSelect("genre")}
@@ -122,17 +151,20 @@ export class MovieForm extends React.Component {
                     <div className="form-row">
                       <div
                         className={`form-group ${
-                          this.state.type === "Série" ? "col-md-8" : "col-md-12"
+                          this.state.movie.type === "Série"
+                            ? "col-md-8"
+                            : "col-md-12"
                         }`}
                       >
                         <label>Type</label>
                         <SingleDownshift
-                          placeholder="Types"
+                          selectedItem={this.state.movie.type}
+                          placeholder="Type"
                           items={types}
                           onChange={this.onSelect("type")}
                         />
                       </div>
-                      {this.state.type === "Série" ? (
+                      {this.state.movie.type === "Série" ? (
                         <div className="form-group col-md-4">
                           <label htmlFor="season">Season</label>
                           <input
@@ -142,7 +174,7 @@ export class MovieForm extends React.Component {
                             aria-describedby="season"
                             placeholder="Enter season"
                             onChange={this.onInput("season")}
-                            value={this.state.season}
+                            value={this.state.movie.season}
                           />
                         </div>
                       ) : (
@@ -162,9 +194,9 @@ export class MovieForm extends React.Component {
                       type="button"
                       disabled={!this.valid()}
                       className="btn btn-primary"
-                      onClick={this.onAdd}
+                      onClick={this.state.movie._id ? this.update : this.add}
                     >
-                      {movie ? "Update" : "Save"}
+                      {movie._id ? "Update" : "Save"}
                     </button>
                   </div>
                 </div>

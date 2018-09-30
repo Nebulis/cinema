@@ -4,9 +4,9 @@ import { ArrowIcon, ControllerButton, css, Item, Menu } from "../shared";
 
 export class SingleDownshift extends React.Component {
   render() {
-    const { onChange, placeholder, items } = this.props;
+    const { onChange, placeholder, items, selectedItem } = this.props;
     return (
-      <Downshift onChange={onChange}>
+      <Downshift onChange={onChange} selectedItem={selectedItem}>
         {({
           getInputProps,
           getItemProps,

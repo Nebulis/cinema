@@ -18,23 +18,35 @@ class App extends Component {
         seen: false,
         unseen: false
       },
-      movie: null
+      movie: null,
+      index: -1
     };
     this.onInput = this.onInput.bind(this);
     this.onInputWithoutEvent = this.onInputWithoutEvent.bind(this);
     this.onSeen = this.onSeen.bind(this);
     this.onCloseEditMovie = this.onCloseEditMovie.bind(this);
     this.editMovie = this.editMovie.bind(this);
+    this.addMovie = this.addMovie.bind(this);
   }
 
   componentDidMount() {}
 
   onCloseEditMovie() {
-    this.setState({ movie: null });
+    this.setState({ movie: null, index: -1 });
   }
 
-  editMovie(movie) {
-    this.setState({ movie });
+  editMovie(movie, index) {
+    this.setState({ movie, index }, () =>
+      // eslint-disable-next-line no-undef
+      $("#movie-creator-updator").modal("show")
+    );
+  }
+
+  addMovie() {
+    this.setState({ movie: null, index: -1 }, () =>
+      // eslint-disable-next-line no-undef
+      $("#movie-creator-updator").modal("show")
+    );
   }
 
   onInput(name) {
@@ -132,13 +144,12 @@ class App extends Component {
                   </div>
                 </form>
                 <Fetch endpoint={`/api/movies?${this.buildQuery()}`}>
-                  {({ data, onChange, onDelete }) => (
+                  {({ data, onChange }) => (
                     <Fragment>
                       <button
                         type="button"
                         className="btn btn-primary"
-                        data-toggle="modal"
-                        data-target="#movie-creator-updator"
+                        onClick={this.addMovie}
                       >
                         Add new
                       </button>
@@ -146,6 +157,7 @@ class App extends Component {
                         movie={this.state.movie}
                         onClose={this.onCloseEditMovie}
                         onAdd={movie => onChange(movie)}
+                        onUpdate={movie => onChange(movie, this.state.index)}
                       />
                       <div className="movies">
                         {data.map((movie, index) => (
@@ -154,7 +166,7 @@ class App extends Component {
                             movie={movie}
                             onChange={movie => onChange(movie, index)}
                             onDelete={_ => onChange(undefined, index)}
-                            onEdit={() => this.editMovie(movie)}
+                            onEdit={() => this.editMovie(movie, index)}
                           />
                         ))}
                       </div>
