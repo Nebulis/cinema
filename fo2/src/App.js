@@ -132,7 +132,7 @@ class App extends Component {
                   </div>
                 </form>
                 <Fetch endpoint={`/api/movies?${this.buildQuery()}`}>
-                  {({ data, onChange }) => (
+                  {({ data, onChange, onDelete }) => (
                     <Fragment>
                       <button
                         type="button"
@@ -145,6 +145,7 @@ class App extends Component {
                       <MovieForm
                         movie={this.state.movie}
                         onClose={this.onCloseEditMovie}
+                        onAdd={movie => onChange(movie)}
                       />
                       <div className="movies">
                         {data.map((movie, index) => (
@@ -152,6 +153,7 @@ class App extends Component {
                             key={movie._id}
                             movie={movie}
                             onChange={movie => onChange(movie, index)}
+                            onDelete={_ => onDelete(index)}
                             onEdit={() => this.editMovie(movie)}
                           />
                         ))}

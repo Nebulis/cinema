@@ -22,13 +22,26 @@ export class Fetch extends Component {
     });
 
     this.onChange = this.onChange.bind(this);
+    this.onDelete = this.onDelete.bind(this);
   }
 
-  onChange(updatedElement, index) {
-    const data = [...this.state.data];
-    data[index] = updatedElement;
+  onChange(updatedElement, index = -1) {
+    if (index < 0) {
+      this.setState({
+        data: [updatedElement, ...this.state.data]
+      });
+    } else {
+      const data = [...this.state.data];
+      data[index] = updatedElement;
+      this.setState({
+        data
+      });
+    }
+  }
+
+  onDelete(index) {
     this.setState({
-      data
+      data: this.state.data.filter((_, id) => index !== id)
     });
   }
 
@@ -64,7 +77,8 @@ export class Fetch extends Component {
         {this.state.status === LOADED &&
           this.props.children({
             data: this.state.data,
-            onChange: this.onChange
+            onChange: this.onChange,
+            onDelete: this.onDelete
           })}
       </Fragment>
     );
