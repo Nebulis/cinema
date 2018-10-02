@@ -13,6 +13,25 @@ export class UserProvider extends React.Component {
     login: this.login.bind(this)
   };
 
+  componentDidMount() {
+    const token = localStorage.getItem("token");
+    if (token) {
+      fetch("/account", {
+        method: "POST",
+        headers: {
+          Accept: "application/json",
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`
+        }
+      })
+        .then(data => data.json())
+        .then(({ exp }) => {
+          if (new Date() < new Date(exp * 1000))
+            this.setState({ token, status: LOGIN });
+        });
+    }
+  }
+
   login(password) {
     fetch("/login", {
       method: "POST",
@@ -25,6 +44,7 @@ export class UserProvider extends React.Component {
       .then(data => data.json())
       .then(({ token }) => {
         this.setState({ token, status: LOGIN });
+        localStorage.setItem("token", token);
       })
       .catch(() => this.setState({ status: LOGIN_FAILED }));
   }
