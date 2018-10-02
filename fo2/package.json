@@ -19,7 +19,7 @@
   },
   "scripts": {
     "start": "PORT=3001 node scripts/start.js",
-    "build": "node scripts/build.js",
+    "build": "PUBLIC_URL=/front node scripts/build.js",
     "test": "node scripts/test.js --env=jsdom"
   },
   "proxy": "http://localhost:3000",
