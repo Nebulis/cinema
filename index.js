@@ -37,13 +37,16 @@ var secret = 'shhhhhhared-secret';
 app.use('/api', expressJwt({ secret: secret }).unless({ path: [ '/login' ]}));
 app.post('/login', function (req, res) {
   if (req.body.password === process.env.PASSWORD) {
-    var token = jwt.sign({ }, secret, {expiresIn : '7 days'});
+    var token = jwt.sign({ }, secret, {expiresIn : '60 days'});
     res.send({
       token: token
     });
   } else {
     res.status(400).send('Bad password')
   }
+});
+app.post('/account', function (req, res) {
+  res.send(jwt.decode(req.get('Authorization').substring('Bearer '.length)));
 });
 
 
