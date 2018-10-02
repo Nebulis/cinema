@@ -6,7 +6,7 @@
     "start": "node ./bin/www"
   },
   "engines": {
-    "node": "5.0.x"
+    "node": "8.9.4"
   },
   "dependencies": {
     "allocine-api": "^0.1.9",
