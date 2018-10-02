@@ -2,6 +2,7 @@ import React from "react";
 import { SingleDownshift } from "../Common/SingleDownshift";
 import { ApplicationContext, LOADING } from "../ApplicationContext";
 import isEmpty from "lodash/isEmpty";
+import { UserContext } from "../Login/UserContext";
 
 const defaultState = {
   movie: {
@@ -12,7 +13,7 @@ const defaultState = {
   }
 };
 
-export class MovieForm extends React.Component {
+class MovieFormWithContext extends React.Component {
   constructor(props) {
     super(props);
     this.state = defaultState;
@@ -53,7 +54,8 @@ export class MovieForm extends React.Component {
       body: JSON.stringify(this.state.movie),
       headers: {
         Accept: "application/json",
-        "Content-Type": "application/json"
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${this.props.token}`
       }
     })
       .then(data => data.json())
@@ -70,7 +72,8 @@ export class MovieForm extends React.Component {
       body: JSON.stringify(this.state.movie),
       headers: {
         Accept: "application/json",
-        "Content-Type": "application/json"
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${this.props.token}`
       }
     })
       .then(data => data.json())
@@ -208,3 +211,9 @@ export class MovieForm extends React.Component {
     );
   }
 }
+
+export const MovieForm = props => (
+  <UserContext>
+    {({ token }) => <MovieFormWithContext token={token} {...props} />}
+  </UserContext>
+);

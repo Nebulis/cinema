@@ -1,6 +1,7 @@
 import React, { Component, Fragment } from "react";
 import PropTypes from "prop-types";
 import debounce from "lodash/debounce";
+import { UserContext } from "../Login/UserContext";
 
 const LOADING = Symbol("LOADING");
 const LOADED = Symbol("LOADED");
@@ -8,7 +9,7 @@ const LOADED = Symbol("LOADED");
  * component that fetch data from the endpoint and notify that data has been fetched through onFetchSucceeded
  * dont reuse this in production :)
  */
-export class Fetch extends Component {
+class FetchWithContext extends Component {
   constructor(props) {
     super(props);
     this.state = {
@@ -39,8 +40,13 @@ export class Fetch extends Component {
   }
 
   fetch() {
+    const options = {
+      headers: {
+        Authorization: `Bearer ${this.props.token}`
+      }
+    };
     // todo use signal to cancel
-    return fetch(this.props.endpoint)
+    return fetch(this.props.endpoint, options)
       .then(data => {
         return data.json();
       })
@@ -77,6 +83,12 @@ export class Fetch extends Component {
     );
   }
 }
+
+export const Fetch = props => (
+  <UserContext>
+    {({ token }) => <FetchWithContext token={token} {...props} />}
+  </UserContext>
+);
 
 Fetch.propTypes = {
   endpoint: PropTypes.string.isRequired

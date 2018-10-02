@@ -1,7 +1,8 @@
 import React, { Component } from "react";
 import "./Movie.css";
+import { UserContext } from "../Login/UserContext";
 
-export class Movie extends Component {
+class MovieWithContext extends Component {
   constructor(props) {
     super(props);
     this.seen = this.seen.bind(this);
@@ -16,7 +17,8 @@ export class Movie extends Component {
         body: JSON.stringify(movie),
         headers: {
           Accept: "application/json",
-          "Content-Type": "application/json"
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${this.props.token}`
         }
       }).then(() => this.props.onChange(movie));
     };
@@ -27,7 +29,8 @@ export class Movie extends Component {
       method: "DELETE",
       headers: {
         Accept: "application/json",
-        "Content-Type": "application/json"
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${this.props.token}`
       }
     }).then(() => this.props.onDelete());
   }
@@ -62,11 +65,11 @@ export class Movie extends Component {
                 onClick={onEdit}
                 style={{ cursor: "pointer" }}
               />
-              <i
-                className="fas fa-trash"
-                onClick={this.deleteMovie}
-                style={{ cursor: "pointer" }}
-              />
+              {/*<i*/}
+              {/*className="fas fa-trash"*/}
+              {/*onClick={this.deleteMovie}*/}
+              {/*style={{ cursor: "pointer" }}*/}
+              {/*/>*/}
             </div>
           </div>
         </div>
@@ -74,3 +77,9 @@ export class Movie extends Component {
     );
   }
 }
+
+export const Movie = props => (
+  <UserContext>
+    {({ token }) => <MovieWithContext token={token} {...props} />}
+  </UserContext>
+);

@@ -13,9 +13,14 @@ export class ApplicationProvider extends React.Component {
   };
 
   componentDidMount() {
+    const options = {
+      headers: {
+        Authorization: `Bearer ${this.props.token}`
+      }
+    };
     Promise.all([
-      fetch("/api/movies/genre").then(data => data.json()),
-      fetch("/api/movies/type").then(data => data.json())
+      fetch("/api/movies/genre", options).then(data => data.json()),
+      fetch("/api/movies/type", options).then(data => data.json())
     ]).then(([genres, types]) => {
       this.setState({
         genres,
