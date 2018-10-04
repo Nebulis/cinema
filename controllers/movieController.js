@@ -10,7 +10,7 @@ module.exports = {
   /**
    * movieController.list()
    */
-  list: function (req, res) {
+  list: function(req, res) {
     const {title, genres, types, seen, unseen} = req.query;
     let query;
 
@@ -20,19 +20,19 @@ module.exports = {
     });
     if (seen !== unseen) query = query.and({seen: !!seen});
 
-    if(genres) {
+    if (genres) {
       query = query.and([
-        { $or: genres.split(',').map(genre => ({genre})) },
+        {$or: genres.split(',').map(genre => ({genre}))},
       ])
     }
 
-    if(types) {
+    if (types) {
       query = query.and([
-        { $or: types.split(',').map(type=> ({type})) },
+        {$or: types.split(',').map(type => ({type}))},
       ])
     }
 
-    query.sort('title season').limit(50).exec(function (err, movies) {
+    query.sort('title season').limit(50).select({'filedata': 0}).exec(function(err, movies) {
       if (err) {
         return res.json(500, {
           message: 'Error getting movie.',
@@ -46,11 +46,11 @@ module.exports = {
   /**
    * movieController.show()
    */
-  show: function (req, res) {
+  show: function(req, res) {
     var id = req.params.id;
     model.findOne({
       _id: id
-    }, function (err, movie) {
+    }, function(err, movie) {
       if (err) {
         return res.json(500, {
           message: 'Error getting movie.'
@@ -68,7 +68,7 @@ module.exports = {
   /**
    * movieController.create()
    */
-  create: function (req, res) {
+  create: function(req, res) {
     var movie = new model({
       title: req.body.title,
       type: req.body.type,
@@ -83,7 +83,7 @@ module.exports = {
       trash: req.body.trash
     });
 
-    movie.save(function (err, movie) {
+    movie.save(function(err, movie) {
       if (err) {
         return res.json(500, {
           message: 'Error saving movie',
@@ -100,11 +100,11 @@ module.exports = {
   /**
    * movieController.update()
    */
-  update: function (req, res) {
+  update: function(req, res) {
     var id = req.params.id;
     model.findOne({
       _id: id
-    }, function (err, movie) {
+    }, function(err, movie) {
       if (err) {
         return res.json(500, {
           message: 'Error saving movie',
@@ -130,7 +130,7 @@ module.exports = {
       movie.summary = req.body.summary ? req.body.summary : null;
       movie.filedata = req.body.filedata ? req.body.filedata : null;
       if (req.file && req.file.path) {
-        fs.readFile(req.file.path, function (err, datas) {
+        fs.readFile(req.file.path, function(err, datas) {
           movie.filedata = new Buffer(datas, 'binary').toString('base64');
           fs.unlink(req.file.path);
           save();
@@ -140,7 +140,7 @@ module.exports = {
       }
 
       function save() {
-        movie.save(function (err, movie) {
+        movie.save(function(err, movie) {
           if (err) {
             return res.json(500, {
               message: 'Error getting movie.'
@@ -160,9 +160,9 @@ module.exports = {
   /**
    * movieController.remove()
    */
-  remove: function (req, res) {
+  remove: function(req, res) {
     var id = req.params.id;
-    model.findByIdAndRemove(id, function (err, movie) {
+    model.findByIdAndRemove(id, function(err, movie) {
       if (err) {
         return res.json(500, {
           message: 'Error getting movie.'
@@ -172,15 +172,15 @@ module.exports = {
     });
   },
 
-  getGenres: function (req, res) {
-    model.distinct("genre", function (err, genres) {
+  getGenres: function(req, res) {
+    model.distinct("genre", function(err, genres) {
 
       if (err) {
         return res.json(500, {
           message: 'Error getting genres.'
         });
       }
-      if(!genres.includes('Drame')) genres.push('Drame');
+      if (!genres.includes('Drame')) genres.push('Drame');
       return res.json(genres);
     });
   }
