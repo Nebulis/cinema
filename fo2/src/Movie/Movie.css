@@ -7,3 +7,7 @@
 .movie > * {
   width: 100%;
 }
+
+.poster > img {
+  width: 60%;
+}
