@@ -14,12 +14,12 @@ class MovieWithContext extends Component {
   }
 
   componentDidMount() {
-    if (this.props.movie.id_allocine) {
+    if (this.props.movie.idAllocine) {
       const baseUrl =
         this.props.movie.type === "Film"
           ? "/api/allocine/movie/"
           : "/api/allocine/serie/";
-      fetch(`${baseUrl}${this.props.movie.id_allocine}`, {
+      fetch(`${baseUrl}${this.props.movie.idAllocine}`, {
         headers: {
           Accept: "application/json",
           "Content-Type": "application/json",

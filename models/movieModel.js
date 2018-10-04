@@ -6,7 +6,7 @@ var movieSchema = new Schema({
   "genre": String,
   "type": String,
   "season": Number,
-  "id_allocine": Number,
+  "idAllocine": Number,
   "state": Number,
   "stateSummary": String,
   "seen": Boolean,

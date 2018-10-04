@@ -77,7 +77,7 @@ module.exports = {
       stateSummary: req.body.stateSummary,
       season: req.body.season,
       seen: false,
-      id_allocine: req.body.id_allocine,
+      idAllocine: req.body.idAllocine,
       file: req.body.file,
       summary: req.body.summary,
       trash: req.body.trash
@@ -120,7 +120,7 @@ module.exports = {
       movie.title = req.body.title ? req.body.title : movie.title;
       movie.type = req.body.type ? req.body.type : movie.type;
       movie.genre = req.body.genre ? req.body.genre : movie.genre;
-      movie.id_allocine = req.body.id_allocine;
+      movie.idAllocine = req.body.idAllocine;
       movie.state = req.body.state && req.body.state > 0 && req.body.state < 6 ? req.body.state : movie.state;
       movie.stateSummary = req.body.stateSummary != null ? req.body.stateSummary : movie.stateSummary; // != null to handle empty string
       movie.season = req.body.season ? req.body.season : movie.season;
