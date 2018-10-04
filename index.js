@@ -14,7 +14,7 @@ var allocine = require('./routes/allocine');
 var jwt = require('jsonwebtoken');
 var expressJwt = require('express-jwt');
 
-mongoose.connect('mongodb://'+process.env.MONGO_USER+':'+process.env.MONGO_PASSWD+'@'+process.env.MONGO_HOSTNAME+':'+process.env.MONGO_PORT+'/cinema');
+mongoose.connect('mongodb://heroku_cinema_user:heroku_cinema_user@ds059365.mongolab.com:59365/cinema');
 
 var app = express();
 var context = '/api';

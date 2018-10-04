@@ -1,7 +1,7 @@
 var gulp = require('gulp'),
   nodemon = require('gulp-nodemon'),
-  plumber = require('gulp-plumber'),
-  livereload = require('gulp-livereload');
+  livereload = require('gulp-livereload'),
+  wrench = require('wrench');
 
 
 gulp.task('develop', function () {
@@ -25,9 +25,6 @@ gulp.task('default', [
   'develop',
   'inject'
 ]);
-
-var gulp = require('gulp');
-var wrench = require('wrench');
 
 /**
  *  This will load all js or coffee files in the gulp directory

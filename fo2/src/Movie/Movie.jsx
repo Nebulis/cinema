@@ -56,14 +56,16 @@ class MovieWithContext extends Component {
   }
 
   deleteMovie() {
-    fetch(`/api/movies/${this.props.movie._id}`, {
-      method: "DELETE",
-      headers: {
-        Accept: "application/json",
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${this.props.token}`
-      }
-    }).then(() => this.props.onDelete());
+    if (window.confirm()) {
+      fetch(`/api/movies/${this.props.movie._id}`, {
+        method: "DELETE",
+        headers: {
+          Accept: "application/json",
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${this.props.token}`
+        }
+      }).then(() => this.props.onDelete());
+    }
   }
 
   render() {
@@ -96,11 +98,11 @@ class MovieWithContext extends Component {
                 onClick={onEdit}
                 style={{ cursor: "pointer" }}
               />
-              {/*<i*/}
-              {/*className="fas fa-trash"*/}
-              {/*onClick={this.deleteMovie}*/}
-              {/*style={{ cursor: "pointer" }}*/}
-              {/*/>*/}
+              <i
+                className="fas fa-trash"
+                onClick={this.deleteMovie}
+                style={{ cursor: "pointer" }}
+              />
             </div>
             <div className="poster">
               <img src={this.state.image} />
