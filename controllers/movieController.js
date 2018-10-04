@@ -180,6 +180,7 @@ module.exports = {
           message: 'Error getting genres.'
         });
       }
+      if(!genres.includes('Drame')) genres.push('Drame');
       return res.json(genres);
     });
   }
