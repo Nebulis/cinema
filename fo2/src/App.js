@@ -156,7 +156,7 @@ class App extends Component {
                         className="far fa-circle fa-stack-2x"
                         style={{
                           color: this.state.filters.netflix
-                            ? "var(--success)"
+                            ? "var(--danger)"
                             : "black"
                         }}
                       />
@@ -173,7 +173,7 @@ class App extends Component {
                         className="fas fa-ban fa-stack-2x"
                         style={{
                           color: this.state.filters.unnetflix
-                            ? "var(--success)"
+                            ? "var(--danger)"
                             : "black"
                         }}
                       />

@@ -84,7 +84,7 @@ class MovieWithContext extends Component {
                 className="fab fa-neos"
                 style={{
                   cursor: "pointer",
-                  color: this.props.movie.netflix ? "var(--success)" : "black"
+                  color: this.props.movie.netflix ? "var(--danger)" : "black"
                 }}
                 onClick={this.update("netflix", !this.props.movie.netflix)}
               />

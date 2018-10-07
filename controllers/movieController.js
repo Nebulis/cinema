@@ -11,7 +11,13 @@ module.exports = {
    * movieController.list()
    */
   list: function(req, res) {
-    const {title, genres, types, seen, unseen} = req.query;
+    // EXAMPLE OF BULK UPDATE
+    // model.update({}, {netflix: false}, {multi: true}, (err) => {
+    //   console.log(err);
+    //   console.log('DONE')
+    // });
+
+    const {title, genres, types, seen, unseen, netflix, unnetflix} = req.query;
     let query;
 
     const titleFilter = title ? {title: {'$regex': title || '', '$options': 'i'}} : {};
@@ -19,6 +25,7 @@ module.exports = {
       ...titleFilter,
     });
     if (seen !== unseen) query = query.and({seen: !!seen});
+    if (netflix !== unnetflix) query = query.and({netflix: !!netflix});
 
     if (genres) {
       query = query.and([
