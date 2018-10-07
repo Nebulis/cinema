@@ -32,7 +32,7 @@ module.exports = {
       ])
     }
 
-    query.sort('title season').limit(50).select({'filedata': 0}).exec(function(err, movies) {
+    query.sort('title season').limit(30).select({'filedata': 0}).exec(function(err, movies) {
       if (err) {
         return res.json(500, {
           message: 'Error getting movie.',
@@ -78,6 +78,7 @@ module.exports = {
       season: req.body.season,
       seen: false,
       idAllocine: req.body.idAllocine,
+      netflix: false,
       file: req.body.file,
       summary: req.body.summary,
       trash: req.body.trash
@@ -129,6 +130,7 @@ module.exports = {
       movie.trash = req.body.trash ? req.body.trash : false;
       movie.summary = req.body.summary ? req.body.summary : null;
       movie.filedata = req.body.filedata ? req.body.filedata : null;
+      movie.netflix = !!req.body.netflix;
       if (req.file && req.file.path) {
         fs.readFile(req.file.path, function(err, datas) {
           movie.filedata = new Buffer(datas, 'binary').toString('base64');

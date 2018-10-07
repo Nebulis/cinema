@@ -12,7 +12,8 @@ var movieSchema = new Schema({
   "seen": Boolean,
   "filedata": String,
   "summary": String,
-  "trash": Boolean
+  "trash": Boolean,
+  "netflix": Boolean
 });
 
 module.exports = mongoose.model('movie', movieSchema);

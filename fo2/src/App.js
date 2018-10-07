@@ -16,7 +16,9 @@ class App extends Component {
         genres: [],
         types: [],
         seen: false,
-        unseen: false
+        unseen: false,
+        netflix: false,
+        unnetflix: false
       },
       movie: null,
       index: -1
@@ -141,6 +143,42 @@ class App extends Component {
                       }}
                       onClick={this.onSeen("unseen")}
                     />
+                  </div>
+                  <div className="form-group mx-sm-3 mb-2">
+                    <span
+                      className="fa-stack fa-1g"
+                      onClick={this.onSeen("netflix")}
+                      style={{
+                        cursor: "pointer"
+                      }}
+                    >
+                      <i
+                        className="far fa-circle fa-stack-2x"
+                        style={{
+                          color: this.state.filters.netflix
+                            ? "var(--success)"
+                            : "black"
+                        }}
+                      />
+                      <i className="fab fa-neos fa-stack-1x" />
+                    </span>
+                    <span
+                      className="fa-stack fa-1g"
+                      onClick={this.onSeen("unnetflix")}
+                      style={{
+                        cursor: "pointer"
+                      }}
+                    >
+                      <i
+                        className="fas fa-ban fa-stack-2x"
+                        style={{
+                          color: this.state.filters.unnetflix
+                            ? "var(--success)"
+                            : "black"
+                        }}
+                      />
+                      <i className="fab fa-neos fa-stack-1x" />
+                    </span>
                   </div>
                 </form>
                 <Fetch endpoint={`/api/movies?${this.buildQuery()}`}>

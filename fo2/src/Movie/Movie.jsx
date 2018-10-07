@@ -9,7 +9,7 @@ class MovieWithContext extends Component {
 
   constructor(props) {
     super(props);
-    this.seen = this.seen.bind(this);
+    this.update = this.update.bind(this);
     this.deleteMovie = this.deleteMovie.bind(this);
   }
 
@@ -40,9 +40,9 @@ class MovieWithContext extends Component {
     }
   }
 
-  seen(value) {
+  update(field, value) {
     return () => {
-      const movie = { ...this.props.movie, seen: value };
+      const movie = { ...this.props.movie, [field]: value };
       fetch(`/api/movies/${this.props.movie._id}`, {
         method: "PUT",
         body: JSON.stringify(movie),
@@ -80,17 +80,25 @@ class MovieWithContext extends Component {
             </h6>
             <h6 className="card-subtitle mb-2 text-muted">{movie.genre}</h6>
             <div>
+              <i
+                className="fab fa-neos"
+                style={{
+                  cursor: "pointer",
+                  color: this.props.movie.netflix ? "var(--success)" : "black"
+                }}
+                onClick={this.update("netflix", !this.props.movie.netflix)}
+              />
               {movie.seen ? (
                 <i
                   className="fas fa-eye"
                   style={{ color: "var(--success)", cursor: "pointer" }}
-                  onClick={this.seen(false)}
+                  onClick={this.update("seen", false)}
                 />
               ) : (
                 <i
                   className="fas fa-eye-slash"
                   style={{ cursor: "pointer" }}
-                  onClick={this.seen(true)}
+                  onClick={this.update("seen", true)}
                 />
               )}
               <i
