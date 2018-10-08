@@ -17,6 +17,19 @@ module.exports = {
     //   console.log('DONE')
     // });
 
+    // EXAMPLE OF UPDATE BY STREAMING DATA
+    // var cursor = model.find({}).select({'filedata': 0}).cursor();
+    // cursor.on('data', function(movie) {
+    //   console.log(movie.genre);
+    //   movie.genre = [movie.genre];
+    //   movie.save(function (err, doc) {
+    //     console.log(doc._id);
+    //   });
+    // });
+    // cursor.on('close', function() {
+    //   console.log('clooooooooooose')
+    // });
+
     const {title, genres, types, seen, unseen, netflix, unnetflix} = req.query;
     let query;
 

@@ -3,11 +3,12 @@ import { SingleDownshift } from "../Common/SingleDownshift";
 import { ApplicationContext, LOADING } from "../ApplicationContext";
 import isEmpty from "lodash/isEmpty";
 import { UserContext } from "../Login/UserContext";
+import { AsyncMultiDownshift } from "../Common/AsyncMultiDownshift";
 
 const defaultState = {
   movie: {
     title: "",
-    genre: "",
+    genre: [],
     type: "",
     season: ""
   }
@@ -40,7 +41,7 @@ class MovieFormWithContext extends React.Component {
   valid() {
     return (
       !isEmpty(this.state.movie.title) &&
-      !isEmpty(this.state.movie.genre) &&
+      this.state.movie.genre.length > 0 &&
       !isEmpty(this.state.movie.type) &&
       (this.state.movie.type !== "Série" ||
         (this.state.movie.type === "Série" &&
@@ -144,11 +145,11 @@ class MovieFormWithContext extends React.Component {
                     </div>
                     <div className="form-group">
                       <label>Genre</label>
-                      <SingleDownshift
+                      <AsyncMultiDownshift
                         selectedItem={this.state.movie.genre}
                         placeholder="Genre"
                         items={genres}
-                        onChange={this.onSelect("genre")}
+                        handleChange={this.onSelect("genre")}
                       />
                     </div>
                     <div className="form-row">

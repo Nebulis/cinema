@@ -78,7 +78,9 @@ class MovieWithContext extends Component {
             <h6 className="card-subtitle mb-2 text-muted">
               {movie.type} {movie.season && <span>Saison {movie.season}</span>}
             </h6>
-            <h6 className="card-subtitle mb-2 text-muted">{movie.genre}</h6>
+            <h6 className="card-subtitle mb-2 text-muted">
+              {movie.genre.join(",")}
+            </h6>
             <div>
               <i
                 className="fab fa-neos"
