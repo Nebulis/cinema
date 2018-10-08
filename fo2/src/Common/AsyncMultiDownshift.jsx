@@ -9,9 +9,9 @@ export class AsyncMultiDownshift extends Component {
   }
 
   render() {
-    const { handleChange, placeholder, items } = this.props;
+    const { handleChange, placeholder, items, selectedItems } = this.props;
     return (
-      <MultiDownshift onChange={handleChange}>
+      <MultiDownshift onChange={handleChange} selectedItems={selectedItems}>
         {({
           getInputProps,
           getToggleButtonProps,

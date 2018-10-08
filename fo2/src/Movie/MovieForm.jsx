@@ -146,7 +146,7 @@ class MovieFormWithContext extends React.Component {
                     <div className="form-group">
                       <label>Genre</label>
                       <AsyncMultiDownshift
-                        selectedItem={this.state.movie.genre}
+                        selectedItems={this.state.movie.genre}
                         placeholder="Genre"
                         items={genres}
                         handleChange={this.onSelect("genre")}
