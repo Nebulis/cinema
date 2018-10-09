@@ -14,30 +14,30 @@ class MovieWithContext extends Component {
   }
 
   componentDidMount() {
-    if (this.props.movie.idAllocine) {
-      const baseUrl =
-        this.props.movie.type === "Film"
-          ? "/api/allocine/movie/"
-          : "/api/allocine/serie/";
-      fetch(`${baseUrl}${this.props.movie.idAllocine}`, {
-        headers: {
-          Accept: "application/json",
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${this.props.token}`
-        }
-      })
-        .then(data => data.json())
-        .then(allocine => {
-          const baseObject =
-            this.props.movie.type === "Film"
-              ? allocine.movie
-              : allocine.tvseries;
-          this.setState({
-            image:
-              (baseObject && baseObject.poster && baseObject.poster.href) || ""
-          });
-        });
-    }
+    // if (this.props.movie.idAllocine) {
+    //   const baseUrl =
+    //     this.props.movie.type === "Film"
+    //       ? "/api/allocine/movie/"
+    //       : "/api/allocine/serie/";
+    //   fetch(`${baseUrl}${this.props.movie.idAllocine}`, {
+    //     headers: {
+    //       Accept: "application/json",
+    //       "Content-Type": "application/json",
+    //       Authorization: `Bearer ${this.props.token}`
+    //     }
+    //   })
+    //     .then(data => data.json())
+    //     .then(allocine => {
+    //       const baseObject =
+    //         this.props.movie.type === "Film"
+    //           ? allocine.movie
+    //           : allocine.tvseries;
+    //       this.setState({
+    //         image:
+    //           (baseObject && baseObject.poster && baseObject.poster.href) || ""
+    //       });
+    //     });
+    // }
   }
 
   update(field, value) {

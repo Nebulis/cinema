@@ -52,7 +52,7 @@ module.exports = {
       ])
     }
 
-    query.sort('title season').limit(30).select({'filedata': 0}).exec(function(err, movies) {
+    query.sort('title season').select({'filedata': 0}).exec(function(err, movies) {
       if (err) {
         return res.json(500, {
           message: 'Error getting movie.',
