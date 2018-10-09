@@ -101,7 +101,8 @@ module.exports = {
       netflix: false,
       file: req.body.file,
       summary: req.body.summary,
-      trash: req.body.trash
+      trash: req.body.trash,
+      productionYear: req.body.productionYear
     });
 
     movie.save(function(err, movie) {
@@ -138,9 +139,10 @@ module.exports = {
         });
       }
 
-      movie.title = req.body.title ? req.body.title : movie.title;
-      movie.type = req.body.type ? req.body.type : movie.type;
-      movie.genre = req.body.genre ? req.body.genre : movie.genre;
+      movie.title = req.body.title || movie.title;
+      movie.type = req.body.type || movie.type;
+      movie.genre = req.body.genre || movie.genre;
+      movie.productionYear = req.body.productionYear || movie.productionYear;
       movie.idAllocine = req.body.idAllocine;
       movie.state = req.body.state && req.body.state > 0 && req.body.state < 6 ? req.body.state : movie.state;
       movie.stateSummary = req.body.stateSummary != null ? req.body.stateSummary : movie.stateSummary; // != null to handle empty string
@@ -202,7 +204,6 @@ module.exports = {
           message: 'Error getting genres.'
         });
       }
-      if (!genres.includes('Drame')) genres.push('Drame');
       return res.json(genres);
     });
   }

@@ -10,7 +10,8 @@ const defaultState = {
     title: "",
     genre: [],
     type: "",
-    season: ""
+    season: "",
+    productionYear: null
   }
 };
 
@@ -43,6 +44,7 @@ class MovieFormWithContext extends React.Component {
       !isEmpty(this.state.movie.title) &&
       this.state.movie.genre.length > 0 &&
       !isEmpty(this.state.movie.type) &&
+      this.state.movie.productionYear &&
       (this.state.movie.type !== "Série" ||
         (this.state.movie.type === "Série" &&
           !isEmpty(this.state.movie.season)))
@@ -85,10 +87,10 @@ class MovieFormWithContext extends React.Component {
       });
   }
 
-  onInput(field) {
+  onInput(field, transform = data => data) {
     return event =>
       this.setState({
-        movie: { ...this.state.movie, [field]: event.target.value }
+        movie: { ...this.state.movie, [field]: transform(event.target.value) }
       });
   }
 
@@ -184,6 +186,20 @@ class MovieFormWithContext extends React.Component {
                       ) : (
                         undefined
                       )}
+                    </div>
+                    <div className="form-group">
+                      <label htmlFor="production-year">Production Year</label>
+                      <input
+                        type="number"
+                        className="form-control"
+                        id="production-year"
+                        aria-describedby="production year"
+                        placeholder="Enter production year"
+                        onChange={this.onInput("productionYear", data =>
+                          parseInt(data, 10)
+                        )}
+                        value={this.state.movie.productionYear}
+                      />
                     </div>
                   </div>
                   <div className="modal-footer">
