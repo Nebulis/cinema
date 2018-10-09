@@ -44,7 +44,6 @@ class MovieFormWithContext extends React.Component {
       !isEmpty(this.state.movie.title) &&
       this.state.movie.genre.length > 0 &&
       !isEmpty(this.state.movie.type) &&
-      this.state.movie.productionYear &&
       (this.state.movie.type !== "Série" ||
         (this.state.movie.type === "Série" &&
           !isEmpty(this.state.movie.season)))
