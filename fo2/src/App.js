@@ -13,6 +13,7 @@ class App extends Component {
     this.state = {
       filters: {
         title: "",
+        productionYear: "",
         genres: [],
         types: [],
         seen: false,
@@ -51,10 +52,13 @@ class App extends Component {
     );
   }
 
-  onInput(name) {
+  onInput(name, transform = data => data) {
     return event =>
       this.setState({
-        filters: { ...this.state.filters, [name]: event.target.value }
+        filters: {
+          ...this.state.filters,
+          [name]: transform(event.target.value)
+        }
       });
   }
 
@@ -95,6 +99,19 @@ class App extends Component {
             ) : (
               <Fragment>
                 <form className="form-inline">
+                  <div className="form-group mx-sm-3 mb-2">
+                    <input
+                      type="number"
+                      value={this.state.productionYear}
+                      onInput={this.onInput("productionYear", data =>
+                        parseInt(data, 10)
+                      )}
+                      max={2200}
+                      placeholder="YYYY"
+                      className="form-control"
+                      style={{ width: "90px" }}
+                    />
+                  </div>
                   <div className="form-group mx-sm-3 mb-2">
                     <input
                       type="text"

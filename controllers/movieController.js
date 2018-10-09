@@ -30,7 +30,7 @@ module.exports = {
     //   console.log('clooooooooooose')
     // });
 
-    const {title, genres, types, seen, unseen, netflix, unnetflix} = req.query;
+    const {title, genres, types, seen, unseen, netflix, unnetflix, productionYear} = req.query;
     let query;
 
     const titleFilter = title ? {title: {'$regex': title || '', '$options': 'i'}} : {};
@@ -39,6 +39,7 @@ module.exports = {
     });
     if (seen !== unseen) query = query.and({seen: !!seen});
     if (netflix !== unnetflix) query = query.and({netflix: !!netflix});
+    if (productionYear) query = query.and({productionYear});
 
     if (genres) {
       query = query.and([
