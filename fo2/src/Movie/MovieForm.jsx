@@ -11,7 +11,7 @@ const defaultState = {
     genre: [],
     type: "",
     season: "",
-    productionYear: null
+    productionYear: ""
   }
 };
 
