@@ -74,7 +74,9 @@ class MovieWithContext extends Component {
       <div className="movie">
         <div className="card">
           <div className="card-body">
-            <h5 className="card-title">{movie.title}</h5>
+            <h5 className="card-title">
+              {movie.title} - {movie.productionYear}
+            </h5>
             <h6 className="card-subtitle mb-2 text-muted">
               {movie.type} {movie.season && <span>Saison {movie.season}</span>}
             </h6>
