@@ -205,7 +205,7 @@ module.exports = {
           message: 'Error getting genres.'
         });
       }
-      return res.json(genres);
+      return res.json(genres.sort());
     });
   }
 };
