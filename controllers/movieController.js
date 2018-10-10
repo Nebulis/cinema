@@ -205,6 +205,7 @@ module.exports = {
           message: 'Error getting genres.'
         });
       }
+      if (!genres.includes('Documentaire')) genres.push('Documentaire');
       return res.json(genres.sort());
     });
   }
