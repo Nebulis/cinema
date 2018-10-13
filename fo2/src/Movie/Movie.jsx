@@ -68,6 +68,39 @@ class MovieWithContext extends Component {
     }
   }
 
+  renderSeen() {
+    const { movie } = this.props;
+    if (movie.type === "Film") {
+      return (
+        <i
+          className="fas fa-eye"
+          style={{
+            color: movie.seen ? "var(--success)" : "black",
+            cursor: "pointer"
+          }}
+          onClick={this.update("seen", !movie.seen)}
+        />
+      );
+    } else {
+      return movie.seen.map((season, index) => (
+        <span
+          key={index}
+          style={{
+            color: season ? "var(--success)" : "black",
+            cursor: "pointer"
+          }}
+          onClick={this.update("seen", [
+            ...movie.seen.slice(0, index),
+            !movie.seen[index],
+            ...movie.seen.slice(index + 1)
+          ])}
+        >
+          {index + 1}
+        </span>
+      ));
+    }
+  }
+
   render() {
     const { movie, onEdit } = this.props;
     return (
@@ -92,19 +125,7 @@ class MovieWithContext extends Component {
                 }}
                 onClick={this.update("netflix", !this.props.movie.netflix)}
               />
-              {movie.seen ? (
-                <i
-                  className="fas fa-eye"
-                  style={{ color: "var(--success)", cursor: "pointer" }}
-                  onClick={this.update("seen", false)}
-                />
-              ) : (
-                <i
-                  className="fas fa-eye-slash"
-                  style={{ cursor: "pointer" }}
-                  onClick={this.update("seen", true)}
-                />
-              )}
+              {this.renderSeen()}
               <i
                 className="fas fa-pencil-alt"
                 onClick={onEdit}

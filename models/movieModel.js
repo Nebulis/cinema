@@ -9,7 +9,8 @@ var movieSchema = new Schema({
   "idAllocine": Number,
   "state": Number,
   "stateSummary": String,
-  "seen": Boolean,
+  // seen is either a boolean in case of movies, either an array on boolean in case of season
+  "seen": Schema.Types.Mixed,
   "filedata": String,
   "summary": String,
   "trash": Boolean,

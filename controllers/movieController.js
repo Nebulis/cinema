@@ -37,9 +37,18 @@ module.exports = {
     query = model.find({
       ...titleFilter,
     });
-    if (seen !== unseen) query = query.and({seen: !!seen});
     if (netflix !== unnetflix) query = query.and({netflix: !!netflix});
     if (productionYear) query = query.and({productionYear});
+
+
+    if (seen !== unseen) {
+      query = query.and([
+        // must match
+        // - film where field.seen = seen
+        // - tvshows where seen in field.seen
+        {$or: [{seen: !!seen}, {seen: {$in: [!!seen]}}]}
+      ]);
+    }
 
     if (genres) {
       query = query.and([
