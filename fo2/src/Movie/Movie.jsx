@@ -3,41 +3,10 @@ import "./Movie.css";
 import { UserContext } from "../Login/UserContext";
 
 class MovieWithContext extends Component {
-  state = {
-    image: ""
-  };
-
   constructor(props) {
     super(props);
     this.update = this.update.bind(this);
     this.deleteMovie = this.deleteMovie.bind(this);
-  }
-
-  componentDidMount() {
-    // if (this.props.movie.idAllocine) {
-    //   const baseUrl =
-    //     this.props.movie.type === "Film"
-    //       ? "/api/allocine/movie/"
-    //       : "/api/allocine/serie/";
-    //   fetch(`${baseUrl}${this.props.movie.idAllocine}`, {
-    //     headers: {
-    //       Accept: "application/json",
-    //       "Content-Type": "application/json",
-    //       Authorization: `Bearer ${this.props.token}`
-    //     }
-    //   })
-    //     .then(data => data.json())
-    //     .then(allocine => {
-    //       const baseObject =
-    //         this.props.movie.type === "Film"
-    //           ? allocine.movie
-    //           : allocine.tvseries;
-    //       this.setState({
-    //         image:
-    //           (baseObject && baseObject.poster && baseObject.poster.href) || ""
-    //       });
-    //     });
-    // }
   }
 
   update(field, value) {
@@ -138,7 +107,7 @@ class MovieWithContext extends Component {
               />
             </div>
             <div className="poster">
-              <img src={this.state.image} />
+              <img src={this.props.movie.fileUrl} />
             </div>
           </div>
         </div>

@@ -11,6 +11,7 @@ var movieSchema = new Schema({
   stateSummary: String,
   // seen is either a boolean in case of movies, either an array on boolean in case of season
   seen: Schema.Types.Mixed,
+  fileUrl: String,
   filedata: String,
   summary: String,
   trash: Boolean,
