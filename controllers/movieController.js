@@ -1,4 +1,4 @@
-var model = require('../models/movieModel.js');
+var model = require("../models/movieModel.js");
 var fs = require("fs");
 /**
  * movieController.js
@@ -6,7 +6,6 @@ var fs = require("fs");
  * @description :: Server-side logic for managing movies.
  */
 module.exports = {
-
   /**
    * movieController.list()
    */
@@ -30,47 +29,57 @@ module.exports = {
     //   console.log('clooooooooooose')
     // });
 
-    const {title, genres, types, seen, unseen, netflix, unnetflix, productionYear} = req.query;
+    const {
+      title,
+      genres,
+      types,
+      seen,
+      unseen,
+      netflix,
+      unnetflix,
+      productionYear
+    } = req.query;
     let query;
 
-    const titleFilter = title ? {title: {'$regex': title || '', '$options': 'i'}} : {};
+    const titleFilter = title
+      ? { title: { $regex: title || "", $options: "i" } }
+      : {};
     query = model.find({
-      ...titleFilter,
+      ...titleFilter
     });
-    if (netflix !== unnetflix) query = query.and({netflix: !!netflix});
-    if (productionYear) query = query.and({productionYear});
-
+    if (netflix !== unnetflix) query = query.and({ netflix: !!netflix });
+    if (productionYear) query = query.and({ productionYear });
 
     if (seen !== unseen) {
       query = query.and([
         // must match
         // - film where field.seen = seen
         // - tvshows where seen in field.seen
-        {$or: [{seen: !!seen}, {seen: {$in: [!!seen]}}]}
+        { $or: [{ seen: !!seen }, { seen: { $in: [!!seen] } }] }
       ]);
     }
 
     if (genres) {
-      query = query.and([
-        {$or: genres.split(',').map(genre => ({genre}))},
-      ])
+      query = query.and([{ $or: genres.split(",").map(genre => ({ genre })) }]);
     }
 
     if (types) {
-      query = query.and([
-        {$or: types.split(',').map(type => ({type}))},
-      ])
+      query = query.and([{ $or: types.split(",").map(type => ({ type })) }]);
     }
 
-    query.sort('title season').select({'filedata': 0}).exec(function(err, movies) {
-      if (err) {
-        return res.json(500, {
-          message: 'Error getting movie.',
-          error: err,
-        });
-      }
-      return res.json(movies);
-    });
+    query
+      .sort("title season")
+      // .limit(30)
+      .select({ filedata: 0 })
+      .exec(function(err, movies) {
+        if (err) {
+          return res.json(500, {
+            message: "Error getting movie.",
+            error: err
+          });
+        }
+        return res.json(movies);
+      });
   },
 
   /**
@@ -78,21 +87,24 @@ module.exports = {
    */
   show: function(req, res) {
     var id = req.params.id;
-    model.findOne({
-      _id: id
-    }, function(err, movie) {
-      if (err) {
-        return res.json(500, {
-          message: 'Error getting movie.'
-        });
+    model.findOne(
+      {
+        _id: id
+      },
+      function(err, movie) {
+        if (err) {
+          return res.json(500, {
+            message: "Error getting movie."
+          });
+        }
+        if (!movie) {
+          return res.json(404, {
+            message: "No such movie"
+          });
+        }
+        return res.json(movie);
       }
-      if (!movie) {
-        return res.json(404, {
-          message: 'No such movie'
-        });
-      }
-      return res.json(movie);
-    });
+    );
   },
 
   /**
@@ -118,12 +130,12 @@ module.exports = {
     movie.save(function(err, movie) {
       if (err) {
         return res.json(500, {
-          message: 'Error saving movie',
+          message: "Error saving movie",
           error: err
         });
       }
       return res.json({
-        message: 'saved',
+        message: "saved",
         _id: movie._id
       });
     });
@@ -134,61 +146,70 @@ module.exports = {
    */
   update: function(req, res) {
     var id = req.params.id;
-    model.findOne({
-      _id: id
-    }, function(err, movie) {
-      if (err) {
-        return res.json(500, {
-          message: 'Error saving movie',
-          error: err
-        });
-      }
-      if (!movie) {
-        return res.json(404, {
-          message: 'No such movie'
-        });
-      }
+    model.findOne(
+      {
+        _id: id
+      },
+      function(err, movie) {
+        if (err) {
+          return res.json(500, {
+            message: "Error saving movie",
+            error: err
+          });
+        }
+        if (!movie) {
+          return res.json(404, {
+            message: "No such movie"
+          });
+        }
 
-      movie.title = req.body.title || movie.title;
-      movie.type = req.body.type || movie.type;
-      movie.genre = req.body.genre || movie.genre;
-      movie.productionYear = req.body.productionYear || movie.productionYear;
-      movie.idAllocine = req.body.idAllocine;
-      movie.state = req.body.state && req.body.state > 0 && req.body.state < 6 ? req.body.state : movie.state;
-      movie.stateSummary = req.body.stateSummary != null ? req.body.stateSummary : movie.stateSummary; // != null to handle empty string
-      movie.season = req.body.season ? req.body.season : movie.season;
-      movie.season = req.body.type === 'Film' ? null : movie.season;
-      movie.seen = req.body.seen ? req.body.seen : false;
-      movie.trash = req.body.trash ? req.body.trash : false;
-      movie.summary = req.body.summary ? req.body.summary : null;
-      movie.filedata = req.body.filedata ? req.body.filedata : null;
-      movie.netflix = !!req.body.netflix;
-      if (req.file && req.file.path) {
-        fs.readFile(req.file.path, function(err, datas) {
-          movie.filedata = new Buffer(datas, 'binary').toString('base64');
-          fs.unlink(req.file.path);
+        movie.title = req.body.title || movie.title;
+        movie.type = req.body.type || movie.type;
+        movie.genre = req.body.genre || movie.genre;
+        movie.productionYear = req.body.productionYear || movie.productionYear;
+        movie.idAllocine = req.body.idAllocine;
+        movie.state =
+          req.body.state && req.body.state > 0 && req.body.state < 6
+            ? req.body.state
+            : movie.state;
+        movie.stateSummary =
+          req.body.stateSummary != null
+            ? req.body.stateSummary
+            : movie.stateSummary; // != null to handle empty string
+        movie.season = req.body.season ? req.body.season : movie.season;
+        movie.season = req.body.type === "Film" ? null : movie.season;
+        movie.seen = req.body.seen ? req.body.seen : false;
+        movie.trash = req.body.trash ? req.body.trash : false;
+        movie.summary = req.body.summary ? req.body.summary : null;
+        movie.filedata = req.body.filedata ? req.body.filedata : null;
+        movie.netflix = !!req.body.netflix;
+        if (req.file && req.file.path) {
+          fs.readFile(req.file.path, function(err, datas) {
+            movie.filedata = new Buffer(datas, "binary").toString("base64");
+            fs.unlink(req.file.path);
+            save();
+          });
+        } else {
           save();
-        })
-      } else {
-        save();
-      }
+        }
 
-      function save() {
-        movie.save(function(err, movie) {
-          if (err) {
-            return res.json(500, {
-              message: 'Error getting movie.'
-            });
-          }
-          if (!movie) {
-            return res.json(404, {
-              message: 'No such movie'
-            });
-          }
-          return res.json(movie);
-        });
+        function save() {
+          movie.save(function(err, movie) {
+            if (err) {
+              return res.json(500, {
+                message: "Error getting movie."
+              });
+            }
+            if (!movie) {
+              return res.json(404, {
+                message: "No such movie"
+              });
+            }
+            return res.json(movie);
+          });
+        }
       }
-    });
+    );
   },
 
   /**
@@ -199,7 +220,7 @@ module.exports = {
     model.findByIdAndRemove(id, function(err, movie) {
       if (err) {
         return res.json(500, {
-          message: 'Error getting movie.'
+          message: "Error getting movie."
         });
       }
       return res.json(movie);
@@ -208,13 +229,11 @@ module.exports = {
 
   getGenres: function(req, res) {
     model.distinct("genre", function(err, genres) {
-
       if (err) {
         return res.json(500, {
-          message: 'Error getting genres.'
+          message: "Error getting genres."
         });
       }
-      if (!genres.includes('Documentaire')) genres.push('Documentaire');
       return res.json(genres.sort());
     });
   }
