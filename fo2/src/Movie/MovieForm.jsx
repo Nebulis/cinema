@@ -15,6 +15,11 @@ const defaultState = {
   }
 };
 
+const handleResponse = response => {
+  if (response.ok) return response.json();
+  throw new Error("Fetch fail");
+};
+
 class MovieFormWithContext extends React.Component {
   constructor(props) {
     super(props);
@@ -59,7 +64,7 @@ class MovieFormWithContext extends React.Component {
         Authorization: `Bearer ${this.props.token}`
       }
     })
-      .then(data => data.json())
+      .then(handleResponse)
       .then(data => {
         this.props.onAdd({ ...this.state.movie, ...data });
         // eslint-disable-next-line no-undef
@@ -77,7 +82,7 @@ class MovieFormWithContext extends React.Component {
         Authorization: `Bearer ${this.props.token}`
       }
     })
-      .then(data => data.json())
+      .then(handleResponse)
       .then(data => {
         this.props.onUpdate({ ...this.state.movie, ...data });
         // eslint-disable-next-line no-undef

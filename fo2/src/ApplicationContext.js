@@ -18,9 +18,14 @@ export class ApplicationProvider extends React.Component {
         Authorization: `Bearer ${this.props.token}`
       }
     };
+
+    const handleResponse = response => {
+      if (response.ok) return response.json();
+      throw new Error("Fetch fail");
+    };
     Promise.all([
-      fetch("/api/movies/genre", options).then(data => data.json()),
-      fetch("/api/movies/type", options).then(data => data.json())
+      fetch("/api/movies/genre", options).then(handleResponse),
+      fetch("/api/movies/type", options).then(handleResponse)
     ]).then(([genres, types]) => {
       this.setState({
         genres,

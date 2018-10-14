@@ -45,11 +45,14 @@ class FetchWithContext extends Component {
         Authorization: `Bearer ${this.props.token}`
       }
     };
+
+    const handleResponse = response => {
+      if (response.ok) return response.json();
+      throw new Error("Fetch fail");
+    };
     // todo use signal to cancel
     return fetch(this.props.endpoint, options)
-      .then(data => {
-        return data.json();
-      })
+      .then(handleResponse)
       .then(data => {
         this.setState({
           data,

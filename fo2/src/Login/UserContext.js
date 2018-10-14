@@ -6,6 +6,11 @@ export const LOGOUT = Symbol();
 export const LOGIN = Symbol();
 export const LOGIN_FAILED = Symbol();
 
+const handleResponse = response => {
+  if (response.ok) return response.json();
+  throw new Error("Fetch fail");
+};
+
 export class UserProvider extends React.Component {
   state = {
     token: null,
@@ -24,7 +29,7 @@ export class UserProvider extends React.Component {
           Authorization: `Bearer ${token}`
         }
       })
-        .then(data => data.json())
+        .then(handleResponse)
         .then(({ exp }) => {
           if (new Date() < new Date(exp * 1000))
             this.setState({ token, status: LOGIN });
@@ -41,7 +46,7 @@ export class UserProvider extends React.Component {
         "Content-Type": "application/json"
       }
     })
-      .then(data => data.json())
+      .then(handleResponse)
       .then(({ token }) => {
         this.setState({ token, status: LOGIN });
         localStorage.setItem("token", token);
