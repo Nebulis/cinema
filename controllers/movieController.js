@@ -111,14 +111,15 @@ module.exports = {
    * movieController.create()
    */
   create: function(req, res) {
+    const season = parseInt(req.body.season, 10);
     var movie = new model({
       title: req.body.title,
       type: req.body.type,
       genre: req.body.genre,
       state: req.body.state,
       stateSummary: req.body.stateSummary,
-      season: req.body.season,
-      seen: false,
+      season,
+      seen: req.body.type === "Film" ? false : Array(season).fill(false),
       idAllocine: req.body.idAllocine,
       netflix: false,
       file: req.body.file,
@@ -134,10 +135,7 @@ module.exports = {
           error: err
         });
       }
-      return res.json({
-        message: "saved",
-        _id: movie._id
-      });
+      return res.json(movie);
     });
   },
 
@@ -163,25 +161,37 @@ module.exports = {
           });
         }
 
+        const season = parseInt(req.body.season, 10);
+
+        const seenForTvShows = (newSeason, oldSeason, seen) => {
+          if(newSeason < oldSeason) {
+            return seen.slice(0, newSeason) //less season than before, remove extra seen
+          }
+          return seen.concat(Array(newSeason - oldSeason).fill(false));
+        }
+
         movie.title = req.body.title || movie.title;
         movie.type = req.body.type || movie.type;
         movie.genre = req.body.genre || movie.genre;
         movie.productionYear = req.body.productionYear || movie.productionYear;
         movie.idAllocine = req.body.idAllocine;
         movie.state =
-          req.body.state && req.body.state > 0 && req.body.state < 6
+          req.body.state && req.body.state > 0 && req.body.state < 64
             ? req.body.state
             : movie.state;
         movie.stateSummary =
           req.body.stateSummary != null
             ? req.body.stateSummary
             : movie.stateSummary; // != null to handle empty string
-        movie.season = req.body.season ? req.body.season : movie.season;
-        movie.season = req.body.type === "Film" ? null : movie.season;
-        movie.seen = req.body.seen ? req.body.seen : false;
-        movie.trash = req.body.trash ? req.body.trash : false;
-        movie.summary = req.body.summary ? req.body.summary : null;
-        movie.filedata = req.body.filedata ? req.body.filedata : null;
+        movie.seen =
+          req.body.type === "Film" ?
+            (req.body.seen || false) // TODO may reset seen if seen is not passed down
+            :
+            seenForTvShows(season, movie.season, req.body.seen);
+        movie.season = season || movie.season;
+        movie.trash = req.body.trash || false;
+        movie.summary = req.body.summary || null;
+        movie.filedata = req.body.filedata || null;
         movie.netflix = !!req.body.netflix;
         if (req.file && req.file.path) {
           fs.readFile(req.file.path, function(err, datas) {
