@@ -118,7 +118,7 @@ module.exports = {
       genre: req.body.genre,
       state: req.body.state,
       stateSummary: req.body.stateSummary,
-      season: season,
+      season: req.body.type === "Film" ? null : season,
       seen: req.body.type === "Film" ? false : Array(season).fill(false),
       idAllocine: req.body.idAllocine,
       netflix: false,
