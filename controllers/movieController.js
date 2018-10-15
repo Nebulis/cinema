@@ -42,7 +42,8 @@ module.exports = {
     let query;
 
     const titleFilter = title
-      ? { title: { $regex: title || "", $options: "i" } }
+      // escape regex special chars to be able to search them
+      ? { title: { $regex: (title || "").replace(/[()]/g, '\\$&'), $options: "i" } }
       : {};
     query = model.find({
       ...titleFilter
