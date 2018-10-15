@@ -247,6 +247,7 @@ module.exports = {
           message: "Error getting genres."
         });
       }
+      if (!genres.includes('Médical')) genres.push('Médical');
       return res.json(genres.sort());
     });
   }
