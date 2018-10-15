@@ -16,6 +16,7 @@ var movieSchema = new Schema({
   summary: String,
   trash: Boolean,
   netflix: Boolean,
+  finished: Boolean,
   productionYear: Number
 });
 

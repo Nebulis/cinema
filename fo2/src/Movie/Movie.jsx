@@ -105,6 +105,14 @@ class MovieWithContext extends Component {
                 onClick={this.deleteMovie}
                 style={{ cursor: "pointer" }}
               />
+              <i
+                className="fas fa-ban"
+                style={{
+                  cursor: "pointer",
+                  color: this.props.movie.finished ? "var(--danger)" : "black"
+                }}
+                onClick={this.update("finished", !this.props.movie.finished)}
+              />
             </div>
             <div className="poster">
               <img src={this.props.movie.fileUrl} />

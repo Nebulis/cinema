@@ -123,6 +123,7 @@ module.exports = {
       seen: req.body.type === "Film" ? false : Array(season).fill(false),
       idAllocine: req.body.idAllocine,
       netflix: false,
+      finished: false,
       file: req.body.file,
       summary: req.body.summary,
       trash: req.body.trash,
@@ -191,6 +192,7 @@ module.exports = {
             seenForTvShows(season, movie.season, req.body.seen);
         movie.season = season || movie.season;
         movie.trash = req.body.trash || false;
+        movie.finished = req.body.finished || false;
         movie.summary = req.body.summary || null;
         movie.filedata = req.body.filedata || null;
         movie.netflix = !!req.body.netflix;
