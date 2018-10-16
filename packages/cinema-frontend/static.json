@@ -1,0 +1,14 @@
+{
+  "root": "/app/packages/cinema-frontend/build/",
+  "proxies": {
+    "/login": {
+      "origin": "https://cinema-backend.herokuapp.com/login"
+    },
+    "/account": {
+      "origin": "https://cinema-backend.herokuapp.com/account"
+    },
+    "/api/": {
+      "origin": "https://cinema-backend.herokuapp.com/api/"
+    }
+  }
+}
