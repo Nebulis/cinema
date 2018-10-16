@@ -1,1 +1,1 @@
-[![Build Status](https://travis-ci.org/Nebulis/cinema.svg?branch=master)](https://travis-ci.org/Nebulis/cinema)
+[![Build Status](https://travis-ci.org/Nebulis/cinema.svg?branch=master)](https://travis-ci.org/Nebulis/cinema) [![Greenkeeper badge](https://badges.greenkeeper.io/Nebulis/cinema.svg)](https://greenkeeper.io/)
