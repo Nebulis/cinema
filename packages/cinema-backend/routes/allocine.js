@@ -1,7 +1,7 @@
 var express = require("express");
 var router = express.Router();
 var allocine = require("allocine-api");
-const logger = require("./logger");
+const logger = require("../logger");
 
 /*
  * GET
