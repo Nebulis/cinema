@@ -124,7 +124,7 @@ class MovieFormWithContext extends React.Component {
               genre: movie.genre.map(m => m.$),
               type: "Film",
               productionYear: movie.productionYear,
-              summary: movie.summary,
+              summary: movie.synopsis,
               fileUrl: movie.poster ? movie.poster.href : ""
             }
           })
