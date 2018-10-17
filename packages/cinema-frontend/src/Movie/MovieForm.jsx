@@ -11,7 +11,8 @@ const defaultState = {
     genre: [],
     type: "",
     season: "",
-    productionYear: ""
+    productionYear: "",
+    summary: ""
   }
 };
 
@@ -202,6 +203,17 @@ class MovieFormWithContext extends React.Component {
                           parseInt(data, 10)
                         )}
                         value={this.state.movie.productionYear}
+                      />
+                    </div>
+                    <div className="form-group">
+                      <label htmlFor="summary">Summary</label>
+                      <textarea
+                        className="form-control"
+                        id="summary"
+                        aria-describedby="summary"
+                        placeholder="Enter summary"
+                        onChange={this.onInput("summary")}
+                        value={this.state.movie.summary}
                       />
                     </div>
                   </div>
