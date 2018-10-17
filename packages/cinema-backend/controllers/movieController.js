@@ -75,7 +75,7 @@ module.exports = {
 
     query
       .sort("title season")
-      // .limit(30)
+      .limit(30)
       .select({ filedata: 0 })
       .exec(function(err, movies) {
         if (err) {
