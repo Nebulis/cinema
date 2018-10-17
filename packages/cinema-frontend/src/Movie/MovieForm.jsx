@@ -121,7 +121,7 @@ class MovieFormWithContext extends React.Component {
               ...this.state.movie,
               idAllocine,
               title: movie.title,
-              genre: movie.genre.map(m => m.$),
+              genre: movie.genre.map(m => m.$).sort(),
               type: "Film",
               productionYear: movie.productionYear,
               summary: movie.synopsis,
