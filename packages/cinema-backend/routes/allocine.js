@@ -21,7 +21,8 @@ router.get("/", function(req, res) {
         return;
       }
       logger.info(results);
-      var datas = results.feed.movie || results.feed.tvseries;
+      const feeds = results.feed || [];
+      var datas = feeds.movie || feeds.tvseries || [];
       res.json(datas);
     }
   );

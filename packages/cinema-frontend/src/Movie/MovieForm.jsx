@@ -50,6 +50,7 @@ class MovieFormWithContext extends React.Component {
         allocine: defaultState.allocine
       });
     } else if (!this.props.movie && this.state.movie._id) {
+      // reset state when adding a movie after editing an existing one
       this.setState(defaultState);
     }
   }
@@ -117,12 +118,14 @@ class MovieFormWithContext extends React.Component {
         .then(({ movie }) =>
           this.setState({
             movie: {
+              ...this.state.movie,
               idAllocine,
-              title: movie.originalTitle,
+              title: movie.title,
               genre: movie.genre.map(m => m.$),
               type: "Film",
               productionYear: movie.productionYear,
-              summary: movie.summary
+              summary: movie.summary,
+              fileUrl: movie.poster ? movie.poster.href : ""
             }
           })
         );
@@ -242,7 +245,7 @@ class MovieFormWithContext extends React.Component {
                             <i className="fas fa-check-circle selected-movie-icon fa-2x" />
                           ) : null}
                           <div>
-                            {movie.originalTitle} - {movie.productionYear}
+                            {movie.title} - {movie.productionYear}
                           </div>
                           <div>
                             {movie.poster ? (

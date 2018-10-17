@@ -75,7 +75,7 @@ module.exports = {
 
     query
       .sort("title season")
-      .limit(30)
+      // .limit(30)
       .select({ filedata: 0 })
       .exec(function(err, movies) {
         if (err) {
@@ -199,6 +199,7 @@ module.exports = {
         movie.finished = req.body.finished || false;
         movie.summary = req.body.summary || null;
         movie.filedata = req.body.filedata || null;
+        movie.fileUrl = req.body.fileUrl || null;
         movie.netflix = !!req.body.netflix;
         if (req.file && req.file.path) {
           fs.readFile(req.file.path, function(err, datas) {
