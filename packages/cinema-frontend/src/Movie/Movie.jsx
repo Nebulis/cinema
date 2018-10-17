@@ -109,7 +109,7 @@ class MovieWithContext extends Component {
                 className="fas fa-ban"
                 style={{
                   cursor: "pointer",
-                  color: this.props.movie.finished ? "var(--danger)" : "black"
+                  color: this.props.movie.finished ? "#fecc00" : "black"
                 }}
                 onClick={this.update("finished", !this.props.movie.finished)}
               />

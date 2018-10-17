@@ -13,6 +13,10 @@ const defaultState = {
     season: "",
     productionYear: "",
     summary: ""
+  },
+  allocine: {
+    movies: [],
+    tvshows: []
   }
 };
 
@@ -30,6 +34,8 @@ class MovieFormWithContext extends React.Component {
     this.valid = this.valid.bind(this);
     this.add = this.add.bind(this);
     this.update = this.update.bind(this);
+    this.search = this.search.bind(this);
+    this.synchronizeAllocine = this.synchronizeAllocine.bind(this);
   }
 
   componentDidMount() {
@@ -39,7 +45,10 @@ class MovieFormWithContext extends React.Component {
 
   componentDidUpdate() {
     if (this.props.movie && this.props.movie._id !== this.state.movie._id) {
-      this.setState({ movie: this.props.movie });
+      this.setState({
+        movie: this.props.movie,
+        allocine: defaultState.allocine
+      });
     } else if (!this.props.movie && this.state.movie._id) {
       this.setState(defaultState);
     }
@@ -71,6 +80,53 @@ class MovieFormWithContext extends React.Component {
         // eslint-disable-next-line no-undef
         $("#movie-creator-updator").modal("hide");
       });
+  }
+
+  search() {
+    fetch(`/api/allocine?type=Film&title=${this.state.movie.title}`, {
+      headers: {
+        Accept: "application/json",
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${this.props.token}`
+      }
+    })
+      .then(handleResponse)
+      .then(data =>
+        this.setState({ allocine: { ...this.state.allocine, movies: data } })
+      );
+  }
+
+  synchronizeAllocine(idAllocine) {
+    // if click on the currently selected movie, unselect it
+    if (idAllocine === this.state.movie.idAllocine) {
+      this.setState({
+        movie: {
+          ...this.state.movie,
+          idAllocine: null
+        }
+      });
+    } else {
+      fetch(`/api/allocine/movie/${idAllocine}`, {
+        headers: {
+          Accept: "application/json",
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${this.props.token}`
+        }
+      })
+        .then(handleResponse)
+        .then(({ movie }) =>
+          this.setState({
+            movie: {
+              idAllocine,
+              title: movie.originalTitle,
+              genre: movie.genre.map(m => m.$),
+              type: "Film",
+              productionYear: movie.productionYear,
+              summary: movie.summary
+            }
+          })
+        );
+    }
   }
 
   update() {
@@ -112,7 +168,7 @@ class MovieFormWithContext extends React.Component {
             <div>Loading...</div>
           ) : (
             <div
-              className="modal fade"
+              className="movie-modal modal fade"
               id="movie-creator-updator"
               tabIndex="-1"
               role="dialog"
@@ -137,17 +193,68 @@ class MovieFormWithContext extends React.Component {
                     </button>
                   </div>
                   <div className="modal-body">
-                    <div className="form-group">
-                      <label htmlFor="title">Title</label>
-                      <input
-                        type="text"
-                        className="form-control"
-                        id="title"
-                        aria-describedby="title"
-                        placeholder="Enter title"
-                        onChange={this.onInput("title")}
-                        value={this.state.movie.title}
-                      />
+                    <div className="form-row">
+                      <div className="form-group col-md-11">
+                        <label htmlFor="title">Title</label>
+                        <input
+                          type="text"
+                          className="form-control"
+                          id="title"
+                          aria-describedby="title"
+                          placeholder="Enter title"
+                          onChange={this.onInput("title")}
+                          value={this.state.movie.title}
+                        />
+                      </div>
+                      <div className="form-group col-md-1 text-center">
+                        <i
+                          className="fab fa-angular fa-2x"
+                          style={{
+                            cursor: "pointer",
+                            color: "#fecc00",
+                            paddingTop: "35px"
+                          }}
+                          onClick={this.search}
+                        />
+                      </div>
+                    </div>
+                    <div
+                      className="row"
+                      style={{
+                        overflowX:
+                          this.state.allocine.movies.length > 0
+                            ? "scroll"
+                            : "hidden",
+                        flexWrap: "nowrap"
+                      }}
+                    >
+                      {this.state.allocine.movies.map(movie => (
+                        <div
+                          key={movie.code}
+                          className={`col-2 allocine-movie ${
+                            movie.code === this.state.movie.idAllocine
+                              ? "selected"
+                              : ""
+                          }`}
+                          onClick={() => this.synchronizeAllocine(movie.code)}
+                        >
+                          {movie.code === this.state.movie.idAllocine ? (
+                            <i className="fas fa-check-circle selected-movie-icon fa-2x" />
+                          ) : null}
+                          <div>
+                            {movie.originalTitle} - {movie.productionYear}
+                          </div>
+                          <div>
+                            {movie.poster ? (
+                              <img
+                                src={movie.poster.href}
+                                alt="movie poster"
+                                style={{ width: "100%" }}
+                              />
+                            ) : null}
+                          </div>
+                        </div>
+                      ))}
                     </div>
                     <div className="form-group">
                       <label>Genre</label>
