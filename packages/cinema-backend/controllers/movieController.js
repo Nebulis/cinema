@@ -129,7 +129,7 @@ module.exports = {
       idAllocine: req.body.idAllocine,
       netflix: false,
       finished: false,
-      file: req.body.file,
+      fileUrl: req.body.fileUrl,
       summary: req.body.summary,
       trash: req.body.trash,
       productionYear: req.body.productionYear

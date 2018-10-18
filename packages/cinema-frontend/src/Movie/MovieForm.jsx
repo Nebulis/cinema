@@ -1,13 +1,14 @@
-import React from "react";
+import React, { Fragment } from "react";
 import { SingleDownshift } from "../Common/SingleDownshift";
 import { ApplicationContext, LOADING } from "../ApplicationContext";
 import isEmpty from "lodash/isEmpty";
 import { UserContext } from "../Login/UserContext";
 import { AsyncMultiDownshift } from "../Common/AsyncMultiDownshift";
+import { Accordion } from "../Common/Accordion";
 
 const defaultState = {
   movie: {
-    title: "",
+    title: "24",
     genre: [],
     type: "",
     season: "",
@@ -35,7 +36,8 @@ class MovieFormWithContext extends React.Component {
     this.add = this.add.bind(this);
     this.update = this.update.bind(this);
     this.search = this.search.bind(this);
-    this.synchronizeAllocine = this.synchronizeAllocine.bind(this);
+    this.synchronizeMovieAllocine = this.synchronizeMovieAllocine.bind(this);
+    this.synchronizeTvShowAllocine = this.synchronizeTvShowAllocine.bind(this);
   }
 
   componentDidMount() {
@@ -80,11 +82,14 @@ class MovieFormWithContext extends React.Component {
         this.props.onAdd({ ...this.state.movie, ...data });
         // eslint-disable-next-line no-undef
         $("#movie-creator-updator").modal("hide");
+        this.setState(defaultState);
       });
   }
 
-  search() {
-    fetch(`/api/allocine?type=Film&title=${this.state.movie.title}`, {
+  update() {
+    fetch(`/api/movies/${this.props.movie._id}`, {
+      method: "PUT",
+      body: JSON.stringify(this.state.movie),
       headers: {
         Accept: "application/json",
         "Content-Type": "application/json",
@@ -92,12 +97,36 @@ class MovieFormWithContext extends React.Component {
       }
     })
       .then(handleResponse)
-      .then(data =>
-        this.setState({ allocine: { ...this.state.allocine, movies: data } })
-      );
+      .then(data => {
+        this.props.onUpdate({ ...this.state.movie, ...data });
+        // eslint-disable-next-line no-undef
+        $("#movie-creator-updator").modal("hide");
+        this.setState(defaultState);
+      });
   }
 
-  synchronizeAllocine(idAllocine) {
+  search() {
+    Promise.all([
+      fetch(`/api/allocine?type=Film&title=${this.state.movie.title}`, {
+        headers: {
+          Accept: "application/json",
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${this.props.token}`
+        }
+      }).then(handleResponse),
+      fetch(`/api/allocine?type=Série&title=${this.state.movie.title}`, {
+        headers: {
+          Accept: "application/json",
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${this.props.token}`
+        }
+      }).then(handleResponse)
+    ]).then(([movies, tvshows]) =>
+      this.setState({ allocine: { movies, tvshows } })
+    );
+  }
+
+  synchronizeMovieAllocine(idAllocine) {
     // if click on the currently selected movie, unselect it
     if (idAllocine === this.state.movie.idAllocine) {
       this.setState({
@@ -125,29 +154,48 @@ class MovieFormWithContext extends React.Component {
               type: "Film",
               productionYear: movie.productionYear,
               summary: movie.synopsis,
-              fileUrl: movie.poster ? movie.poster.href : ""
+              fileUrl: movie.poster ? movie.poster.href : "",
+              season: null
             }
           })
         );
     }
   }
 
-  update() {
-    fetch(`/api/movies/${this.props.movie._id}`, {
-      method: "PUT",
-      body: JSON.stringify(this.state.movie),
-      headers: {
-        Accept: "application/json",
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${this.props.token}`
-      }
-    })
-      .then(handleResponse)
-      .then(data => {
-        this.props.onUpdate({ ...this.state.movie, ...data });
-        // eslint-disable-next-line no-undef
-        $("#movie-creator-updator").modal("hide");
+  synchronizeTvShowAllocine(idAllocine) {
+    // if click on the currently selected movie, unselect it
+    if (idAllocine === this.state.movie.idAllocine) {
+      this.setState({
+        movie: {
+          ...this.state.movie,
+          idAllocine: null
+        }
       });
+    } else {
+      fetch(`/api/allocine/serie/${idAllocine}`, {
+        headers: {
+          Accept: "application/json",
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${this.props.token}`
+        }
+      })
+        .then(handleResponse)
+        .then(({ tvseries }) =>
+          this.setState({
+            movie: {
+              ...this.state.movie,
+              idAllocine,
+              title: tvseries.title,
+              genre: tvseries.genre.map(m => m.$).sort(),
+              type: "Série",
+              productionYear: tvseries.yearStart,
+              season: tvseries.seasonCount,
+              summary: tvseries.synopsis,
+              fileUrl: tvseries.poster ? tvseries.poster.href : ""
+            }
+          })
+        );
+    }
   }
 
   onInput(field, transform = data => data) {
@@ -197,7 +245,7 @@ class MovieFormWithContext extends React.Component {
                   </div>
                   <div className="modal-body">
                     <div className="form-row">
-                      <div className="form-group col-md-11">
+                      <div className="form-group col-11">
                         <label htmlFor="title">Title</label>
                         <input
                           type="text"
@@ -209,7 +257,7 @@ class MovieFormWithContext extends React.Component {
                           value={this.state.movie.title}
                         />
                       </div>
-                      <div className="form-group col-md-1 text-center">
+                      <div className="form-group col-1 text-center">
                         <i
                           className="fab fa-angular fa-2x"
                           style={{
@@ -221,44 +269,129 @@ class MovieFormWithContext extends React.Component {
                         />
                       </div>
                     </div>
-                    <div
-                      className="row"
-                      style={{
-                        overflowX:
-                          this.state.allocine.movies.length > 0
-                            ? "scroll"
-                            : "hidden",
-                        flexWrap: "nowrap"
-                      }}
-                    >
-                      {this.state.allocine.movies.map(movie => (
-                        <div
-                          key={movie.code}
-                          className={`col-2 allocine-movie ${
-                            movie.code === this.state.movie.idAllocine
-                              ? "selected"
-                              : ""
-                          }`}
-                          onClick={() => this.synchronizeAllocine(movie.code)}
-                        >
-                          {movie.code === this.state.movie.idAllocine ? (
-                            <i className="fas fa-check-circle selected-movie-icon fa-2x" />
-                          ) : null}
-                          <div>
-                            {movie.title} - {movie.productionYear}
-                          </div>
-                          <div>
-                            {movie.poster ? (
-                              <img
-                                src={movie.poster.href}
-                                alt="movie poster"
-                                style={{ width: "100%" }}
-                              />
-                            ) : null}
-                          </div>
-                        </div>
-                      ))}
-                    </div>
+                    {this.state.allocine.movies.length > 0 ? (
+                      <Accordion>
+                        {({ open, toggle }) => {
+                          return (
+                            <Fragment>
+                              <div
+                                onClick={toggle}
+                                style={{ cursor: "pointer" }}
+                              >
+                                {this.state.allocine.movies.length} movies
+                                {open ? (
+                                  <i className="fas fa-chevron-up" />
+                                ) : (
+                                  <i className="fas fa-chevron-down" />
+                                )}
+                              </div>
+                              <div
+                                className="row"
+                                style={{
+                                  overflowX: "scroll",
+                                  display: open ? "flex" : "none",
+                                  flexWrap: "nowrap"
+                                }}
+                              >
+                                {this.state.allocine.movies.map(movie => (
+                                  <div
+                                    key={movie.code}
+                                    className={`col-2 allocine-movie ${
+                                      movie.code === this.state.movie.idAllocine
+                                        ? "selected"
+                                        : ""
+                                    }`}
+                                    onClick={() =>
+                                      this.synchronizeMovieAllocine(movie.code)
+                                    }
+                                  >
+                                    {movie.code ===
+                                    this.state.movie.idAllocine ? (
+                                      <i className="fas fa-check-circle selected-movie-icon fa-2x" />
+                                    ) : null}
+                                    <div>
+                                      {movie.title} - {movie.productionYear}
+                                    </div>
+                                    <div>
+                                      {movie.poster ? (
+                                        <img
+                                          src={movie.poster.href}
+                                          alt="movie poster"
+                                          style={{ width: "100%" }}
+                                        />
+                                      ) : null}
+                                    </div>
+                                  </div>
+                                ))}
+                              </div>
+                            </Fragment>
+                          );
+                        }}
+                      </Accordion>
+                    ) : null}
+                    {this.state.allocine.tvshows.length > 0 ? (
+                      <Accordion>
+                        {({ open, toggle }) => {
+                          return (
+                            <Fragment>
+                              <div
+                                onClick={toggle}
+                                style={{ cursor: "pointer" }}
+                              >
+                                {this.state.allocine.tvshows.length} tv shows
+                                {open ? (
+                                  <i className="fas fa-chevron-up" />
+                                ) : (
+                                  <i className="fas fa-chevron-down" />
+                                )}
+                              </div>
+                              <div
+                                className="row"
+                                style={{
+                                  overflowX: "scroll",
+                                  display: open ? "flex" : "none",
+                                  flexWrap: "nowrap"
+                                }}
+                              >
+                                {this.state.allocine.tvshows.map(tvshow => (
+                                  <div
+                                    key={tvshow.code}
+                                    className={`col-2 allocine-movie ${
+                                      tvshow.code ===
+                                      this.state.movie.idAllocine
+                                        ? "selected"
+                                        : ""
+                                    }`}
+                                    onClick={() =>
+                                      this.synchronizeTvShowAllocine(
+                                        tvshow.code
+                                      )
+                                    }
+                                  >
+                                    {tvshow.code ===
+                                    this.state.movie.idAllocine ? (
+                                      <i className="fas fa-check-circle selected-movie-icon fa-2x" />
+                                    ) : null}
+                                    <div>
+                                      {tvshow.title} - {tvshow.yearStart}
+                                    </div>
+                                    <div>
+                                      {tvshow.poster ? (
+                                        <img
+                                          src={tvshow.poster.href}
+                                          alt="tvshow poster"
+                                          style={{ width: "100%" }}
+                                        />
+                                      ) : null}
+                                    </div>
+                                  </div>
+                                ))}
+                              </div>
+                            </Fragment>
+                          );
+                        }}
+                      </Accordion>
+                    ) : null}
                     <div className="form-group">
                       <label>Genre</label>
                       <AsyncMultiDownshift
