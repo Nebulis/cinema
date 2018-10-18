@@ -152,7 +152,10 @@ class MovieFormWithContext extends React.Component {
               title: movie.title,
               genre: movie.genre.map(m => m.$).sort(),
               type: "Film",
-              productionYear: movie.productionYear,
+              productionYear:
+                movie.release && movie.release.releaseDate
+                  ? new Date(movie.release.releaseDate).getFullYear()
+                  : movie.productionYear,
               summary: movie.synopsis,
               fileUrl: movie.poster ? movie.poster.href : "",
               season: null
@@ -310,7 +313,13 @@ class MovieFormWithContext extends React.Component {
                                       <i className="fas fa-check-circle selected-movie-icon fa-2x" />
                                     ) : null}
                                     <div>
-                                      {movie.title} - {movie.productionYear}
+                                      {movie.title} -{" "}
+                                      {movie.release &&
+                                      movie.release.releaseDate
+                                        ? new Date(
+                                            movie.release.releaseDate
+                                          ).getFullYear()
+                                        : movie.productionYear}
                                     </div>
                                     <div>
                                       {movie.poster ? (
