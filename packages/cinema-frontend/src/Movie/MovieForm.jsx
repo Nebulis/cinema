@@ -29,15 +29,10 @@ const handleResponse = response => {
 class MovieFormWithContext extends React.Component {
   constructor(props) {
     super(props);
-    this.state = defaultState;
-    this.onInput = this.onInput.bind(this);
-    this.onSelect = this.onSelect.bind(this);
-    this.valid = this.valid.bind(this);
-    this.add = this.add.bind(this);
-    this.update = this.update.bind(this);
-    this.search = this.search.bind(this);
-    this.synchronizeMovieAllocine = this.synchronizeMovieAllocine.bind(this);
-    this.synchronizeTvShowAllocine = this.synchronizeTvShowAllocine.bind(this);
+    this.state = {
+      movie: props.movie ? props.movie : defaultState.movie,
+      allocine: defaultState.allocine
+    };
   }
 
   componentDidMount() {
@@ -45,20 +40,7 @@ class MovieFormWithContext extends React.Component {
     $("#movie-creator-updator").on("hide.bs.modal", this.props.onClose);
   }
 
-  componentDidUpdate() {
-    // TODO use key as defined in https://reactjs.org/blog/2018/06/07/you-probably-dont-need-derived-state.html#recommendation-fully-uncontrolled-component-with-a-key
-    if (this.props.movie && this.props.movie._id !== this.state.movie._id) {
-      this.setState({
-        movie: this.props.movie,
-        allocine: defaultState.allocine
-      });
-    } else if (!this.props.movie && this.state.movie._id) {
-      // reset state when adding a movie after editing an existing one
-      this.setState(defaultState);
-    }
-  }
-
-  valid() {
+  valid = () => {
     return (
       !isEmpty(this.state.movie.title) &&
       this.state.movie.genre.length > 0 &&
@@ -66,9 +48,9 @@ class MovieFormWithContext extends React.Component {
       (this.state.movie.type !== "Série" ||
         (this.state.movie.type === "Série" && this.state.movie.season > 0))
     );
-  }
+  };
 
-  add() {
+  add = () => {
     fetch("/api/movies", {
       method: "POST",
       body: JSON.stringify(this.state.movie),
@@ -83,11 +65,10 @@ class MovieFormWithContext extends React.Component {
         this.props.onAdd({ ...this.state.movie, ...data });
         // eslint-disable-next-line no-undef
         $("#movie-creator-updator").modal("hide");
-        this.setState(defaultState);
       });
-  }
+  };
 
-  update() {
+  update = () => {
     fetch(`/api/movies/${this.props.movie._id}`, {
       method: "PUT",
       body: JSON.stringify(this.state.movie),
@@ -102,11 +83,10 @@ class MovieFormWithContext extends React.Component {
         this.props.onUpdate({ ...this.state.movie, ...data });
         // eslint-disable-next-line no-undef
         $("#movie-creator-updator").modal("hide");
-        this.setState(defaultState);
       });
-  }
+  };
 
-  search() {
+  search = () => {
     Promise.all([
       fetch(`/api/allocine?type=Film&title=${this.state.movie.title}`, {
         headers: {
@@ -125,9 +105,9 @@ class MovieFormWithContext extends React.Component {
     ]).then(([movies, tvshows]) =>
       this.setState({ allocine: { movies, tvshows } })
     );
-  }
+  };
 
-  synchronizeMovieAllocine(idAllocine) {
+  synchronizeMovieAllocine = idAllocine => {
     // if click on the currently selected movie, unselect it
     if (idAllocine === this.state.movie.idAllocine) {
       this.setState({
@@ -164,9 +144,9 @@ class MovieFormWithContext extends React.Component {
           })
         );
     }
-  }
+  };
 
-  synchronizeTvShowAllocine(idAllocine) {
+  synchronizeTvShowAllocine = idAllocine => {
     // if click on the currently selected movie, unselect it
     if (idAllocine === this.state.movie.idAllocine) {
       this.setState({
@@ -200,19 +180,19 @@ class MovieFormWithContext extends React.Component {
           })
         );
     }
-  }
+  };
 
-  onInput(field, transform = data => data) {
+  onInput = (field, transform = data => data) => {
     return event =>
       this.setState({
         movie: { ...this.state.movie, [field]: transform(event.target.value) }
       });
-  }
+  };
 
-  onSelect(field) {
+  onSelect = field => {
     return value =>
       this.setState({ movie: { ...this.state.movie, [field]: value } });
-  }
+  };
 
   render() {
     const { movie } = this.state;

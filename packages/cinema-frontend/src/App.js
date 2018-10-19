@@ -22,37 +22,34 @@ class App extends Component {
         unnetflix: false
       },
       movie: null,
-      index: -1
+      index: -1, // keep only for updating the movie in the index position for the fetch component
+      movieFormKey: 0
     };
-    this.onInput = this.onInput.bind(this);
-    this.onInputWithoutEvent = this.onInputWithoutEvent.bind(this);
-    this.onSeen = this.onSeen.bind(this);
-    this.onCloseEditMovie = this.onCloseEditMovie.bind(this);
-    this.editMovie = this.editMovie.bind(this);
-    this.addMovie = this.addMovie.bind(this);
   }
 
   componentDidMount() {}
 
-  onCloseEditMovie() {
+  onCloseEditMovie = () => {
     this.setState({ movie: null, index: -1 });
-  }
+  };
 
-  editMovie(movie, index) {
+  editMovie = (movie, index) => {
     this.setState({ movie, index }, () =>
       // eslint-disable-next-line no-undef
       $("#movie-creator-updator").modal("show")
     );
-  }
+  };
 
-  addMovie() {
-    this.setState({ movie: null, index: -1 }, () =>
-      // eslint-disable-next-line no-undef
-      $("#movie-creator-updator").modal("show")
+  addMovie = () => {
+    this.setState(
+      { movie: null, index: -1, movieFormKey: this.state.movieFormKey + 1 },
+      () =>
+        // eslint-disable-next-line no-undef
+        $("#movie-creator-updator").modal("show")
     );
-  }
+  };
 
-  onInput(name, transform = data => data) {
+  onInput = (name, transform = data => data) => {
     return event =>
       this.setState({
         filters: {
@@ -60,23 +57,23 @@ class App extends Component {
           [name]: transform(event.target.value)
         }
       });
-  }
+  };
 
-  onInputWithoutEvent(name) {
+  onInputWithoutEvent = name => {
     return value =>
       this.setState({
         filters: { ...this.state.filters, [name]: value }
       });
-  }
+  };
 
-  onSeen(name) {
+  onSeen = name => {
     return () =>
       this.setState({
         filters: { ...this.state.filters, [name]: !this.state.filters[name] }
       });
-  }
+  };
 
-  buildQuery() {
+  buildQuery = () => {
     const filters = Object.keys(this.state.filters)
       .filter(
         key =>
@@ -87,7 +84,7 @@ class App extends Component {
       .map(key => `${key}=${this.state.filters[key]}`);
 
     return filters.join("&");
-  }
+  };
 
   render() {
     return (
@@ -209,6 +206,11 @@ class App extends Component {
                         Add new
                       </button>
                       <MovieForm
+                        key={
+                          this.state.movie
+                            ? this.state.movie._id
+                            : this.state.movieFormKey
+                        }
                         movie={this.state.movie}
                         onClose={this.onCloseEditMovie}
                         onAdd={movie => onChange(movie)}
