@@ -100,7 +100,7 @@ class App extends Component {
                     <input
                       type="number"
                       value={this.state.productionYear}
-                      onInput={this.onInput("productionYear", data =>
+                      onChange={this.onInput("productionYear", data =>
                         parseInt(data, 10)
                       )}
                       max={2200}

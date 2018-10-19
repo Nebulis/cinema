@@ -27,7 +27,7 @@ export class Login extends Component {
                 aria-describedby="password"
                 placeholder="Enter password"
                 value={this.state.password}
-                onInput={event =>
+                onChange={event =>
                   this.setState({ password: event.target.value })
                 }
                 onKeyDown={event => {
