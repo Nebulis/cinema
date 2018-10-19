@@ -14,7 +14,9 @@ class FetchWithContext extends Component {
     super(props);
     this.state = {
       status: LOADING,
-      data: null
+      data: null,
+      limit: 30,
+      offset: 0
     };
 
     this.debounceFetch = debounce(this.fetch, 400, {
@@ -23,6 +25,7 @@ class FetchWithContext extends Component {
     });
 
     this.onChange = this.onChange.bind(this);
+    this.next = this.next.bind(this);
   }
 
   onChange(updatedElement, index = -1) {
@@ -39,7 +42,7 @@ class FetchWithContext extends Component {
     }
   }
 
-  fetch() {
+  fetch(append = false) {
     const options = {
       headers: {
         Authorization: `Bearer ${this.props.token}`
@@ -51,14 +54,22 @@ class FetchWithContext extends Component {
       throw new Error("Fetch fail");
     };
     // todo use signal to cancel
-    return fetch(this.props.endpoint, options)
+    return fetch(
+      `${this.props.endpoint}&limit=${this.state.limit}&offset=${
+        this.state.offset
+      }`,
+      options
+    )
       .then(handleResponse)
       .then(data => {
         this.setState({
-          data,
+          data: append ? [...this.state.data, ...data] : data,
           status: LOADED
         });
       });
+  }
+  next() {
+    this.setState({ offset: this.state.offset + 1 }, () => this.fetch(true));
   }
 
   componentDidMount() {
@@ -67,7 +78,7 @@ class FetchWithContext extends Component {
 
   componentDidUpdate(prevProps) {
     if (prevProps.endpoint !== this.props.endpoint) {
-      this.setState({ status: LOADING });
+      this.setState({ status: LOADING, offset: 0 });
       this.debounceFetch();
     }
   }
@@ -80,7 +91,8 @@ class FetchWithContext extends Component {
           this.props.children({
             data: this.state.data,
             onChange: this.onChange,
-            onDelete: this.onDelete
+            onDelete: this.onDelete,
+            next: this.next
           })}
       </Fragment>
     );

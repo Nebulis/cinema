@@ -8,7 +8,7 @@ import { Accordion } from "../Common/Accordion";
 
 const defaultState = {
   movie: {
-    title: "24",
+    title: "",
     genre: [],
     type: "",
     season: "",
@@ -46,6 +46,7 @@ class MovieFormWithContext extends React.Component {
   }
 
   componentDidUpdate() {
+    // TODO use key as defined in https://reactjs.org/blog/2018/06/07/you-probably-dont-need-derived-state.html#recommendation-fully-uncontrolled-component-with-a-key
     if (this.props.movie && this.props.movie._id !== this.state.movie._id) {
       this.setState({
         movie: this.props.movie,

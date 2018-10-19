@@ -37,7 +37,9 @@ module.exports = {
       unseen,
       netflix,
       unnetflix,
-      productionYear
+      productionYear,
+      limit = 20,
+      offset = 0
     } = req.query;
     let query;
 
@@ -75,7 +77,8 @@ module.exports = {
 
     query
       .sort("title season")
-      // .limit(30)
+      .skip(parseInt(limit, 10) * parseInt(offset, 10))
+      .limit(parseInt(limit, 10))
       .select({ filedata: 0 })
       .exec(function(err, movies) {
         if (err) {

@@ -199,7 +199,7 @@ class App extends Component {
                   </div>
                 </form>
                 <Fetch endpoint={`/api/movies?${this.buildQuery()}`}>
-                  {({ data, onChange }) => (
+                  {({ data, onChange, next }) => (
                     <Fragment>
                       <button
                         type="button"
@@ -224,6 +224,14 @@ class App extends Component {
                             onEdit={() => this.editMovie(movie, index)}
                           />
                         ))}
+                      </div>
+                      <div className="text-center m-3">
+                        <button
+                          onClick={next}
+                          className="btn btn-primary btn-lg"
+                        >
+                          Load more
+                        </button>
                       </div>
                     </Fragment>
                   )}
