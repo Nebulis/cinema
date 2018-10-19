@@ -15,7 +15,8 @@ var expressJwt = require("express-jwt");
 const logger = require("./logger");
 
 mongoose.connect(
-  "mongodb://heroku_cinema_user:heroku_cinema_user@ds059365.mongolab.com:59365/cinema"
+  "mongodb://heroku_cinema_user:heroku_cinema_user@ds059365.mongolab.com:59365/cinema",
+  { useNewUrlParser: true }
 );
 
 var app = express();

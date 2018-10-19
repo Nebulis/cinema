@@ -20,4 +20,4 @@ var movieSchema = new Schema({
   productionYear: Number
 });
 
-module.exports = mongoose.model("movie", movieSchema);
+module.exports = mongoose.model("Movie", movieSchema);
