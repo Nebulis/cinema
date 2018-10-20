@@ -1,10 +1,8 @@
-var express = require("express");
-var router = express.Router();
+import express from "express";
 
-/*
- * GET
- */
-router.get("/", function(req, res) {
+export const router = express.Router();
+
+router.get("/", (_, res) => {
   res.json([
     {
       id: 1,
@@ -28,5 +26,3 @@ router.get("/", function(req, res) {
     }
   ]);
 });
-
-module.exports = router;
