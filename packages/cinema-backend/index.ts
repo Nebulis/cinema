@@ -12,9 +12,14 @@ import { router as movies } from "./routes/movies";
 import { router as states } from "./routes/states";
 
 connect(
-  "mongodb://heroku_cinema_user:heroku_cinema_user@ds059365.mongolab.com:59365/cinema",
+  `mongodb://${process.env.MONGO_USER}:${process.env.MONGO_PASSWD}@${
+    process.env.MONGO_HOSTNAME
+  }:${process.env.MONGO_PORT}/cinema`,
   { useNewUrlParser: true }
-);
+).catch(error => {
+  logger.error(error);
+  process.exit(1);
+});
 
 const app = express();
 const context = "/api";
@@ -38,7 +43,7 @@ app.use(
 app.use(cookieParser());
 
 app.get("/", (_, res) => {
-  res.send("Hello World");
+  res.send({ welcome: "Hello World" });
 });
 
 const secret = "shhhhhhared-secret";
@@ -56,9 +61,9 @@ app.post("/login", (req, res) => {
 app.post("/account", (req, res) => {
   const authorization = req.get("Authorization");
   if (authorization) {
-    res.send(jwt.decode(authorization.substring("Bearer ".length)));
+    return res.send(jwt.decode(authorization.substring("Bearer ".length)));
   }
-  res.send(400);
+  return res.sendStatus(400);
 });
 
 app.use(context + "/", router);
@@ -71,7 +76,7 @@ app.use("/front", express.static("./fo2/build"));
 
 /// catch 404 and forward to error handler
 app.use((_req, res) => {
-  res.send(404);
+  res.sendStatus(404);
 });
 
 app.set("port", process.env.PORT || 3000);

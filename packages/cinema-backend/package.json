@@ -5,7 +5,7 @@
   "main": "index.ts",
   "scripts": {
     "lint": "eslint . ",
-    "start": "ts-node-dev index",
+    "start": "ts-node-dev -r dotenv/config index",
     "test": "echo TODO"
   },
   "engines": {
@@ -32,6 +32,7 @@
     "@types/mongoose": "5.2.19",
     "@types/morgan": "1.7.35",
     "@types/winston": "2.4.4",
+    "dotenv": "6.1.0",
     "prettier": "1.14.3",
     "ts-node-dev": "1.0.0-pre.30",
     "tslint": "5.11.0",
