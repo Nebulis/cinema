@@ -91,6 +91,7 @@ export class AsyncMultiDownshift extends Component {
                               padding: "0",
                               fontSize: "16px"
                             })}
+                            type="button"
                           >
                             𝘅
                           </button>
