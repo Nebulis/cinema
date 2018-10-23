@@ -1,6 +1,9 @@
 import React from "react";
 
 export const UserContext = React.createContext();
+export const withUser = Component => props => <UserContext.Consumer>
+  {user => <Component {...props} user={user}/>}
+</UserContext.Consumer>;
 
 export const LOGOUT = Symbol();
 export const LOGIN = Symbol();
@@ -30,9 +33,9 @@ export class UserProvider extends React.Component {
         }
       })
         .then(handleResponse)
-        .then(({ exp }) => {
+        .then(({exp}) => {
           if (new Date() < new Date(exp * 1000))
-            this.setState({ token, status: LOGIN });
+            this.setState({token, status: LOGIN});
         });
     }
   }
@@ -40,18 +43,18 @@ export class UserProvider extends React.Component {
   login(password) {
     fetch("/login", {
       method: "POST",
-      body: JSON.stringify({ password }),
+      body: JSON.stringify({password}),
       headers: {
         Accept: "application/json",
         "Content-Type": "application/json"
       }
     })
       .then(handleResponse)
-      .then(({ token }) => {
-        this.setState({ token, status: LOGIN });
+      .then(({token}) => {
+        this.setState({token, status: LOGIN});
         localStorage.setItem("token", token);
       })
-      .catch(() => this.setState({ status: LOGIN_FAILED }));
+      .catch(() => this.setState({status: LOGIN_FAILED}));
   }
 
   render() {
