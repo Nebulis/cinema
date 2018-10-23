@@ -1,5 +1,6 @@
 import express from "express";
 import { Movie } from "../models/movieModel";
+import { logger } from "../logger";
 
 export const router = express.Router();
 
@@ -185,7 +186,10 @@ router.put("/:id", (req, res, next) => {
  * DELETE
  */
 router.delete("/:id", (req, res, next) => {
-  Movie.findOneAndDelete(req.params.id)
-    .then(_ => res.json(204))
+  Movie.findByIdAndDelete(req.params.id)
+    .then(movie => {
+      logger.info(movie || {});
+      res.json(204);
+    })
     .catch(next);
 });
