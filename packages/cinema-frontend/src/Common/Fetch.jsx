@@ -20,6 +20,7 @@ class FetchWithContext extends Component {
     super(props);
     this.state = {
       status: this.props.load ? LOADING : LOADED,
+      data: null,
     };
 
     // TODO probably not the best place to debounce
@@ -42,9 +43,10 @@ class FetchWithContext extends Component {
       .then(handleResponse)
       .then(data => {
         this.setState({
-          status: LOADED
+          status: LOADED,
+          data,
         });
-        this.props.onSuccess(data);
+        this.props.onSuccess && this.props.onSuccess(data);
       });
   }
 
@@ -59,7 +61,8 @@ class FetchWithContext extends Component {
       <Fragment>
         {
           this.props.children({
-            status: this.state.status
+            status: this.state.status,
+            data: this.state.data,
           })}
       </Fragment>
     );

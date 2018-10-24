@@ -107,6 +107,12 @@ export class ListWithContext extends Component {
             :
             <Fragment>
               <div>
+                <Fetch
+                  endpoint="/api/movies?limit=0"
+                  load
+                >
+                  {({data}) => data ? <div>There are {data.count} movies/tvshows</div> : <div>nope</div> }
+                </Fetch>
                 Display {this.props.movies.movies.length} of {this.props.movies.count} found movies/tvshows
               </div>
               <form className="form-inline">

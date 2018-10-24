@@ -80,18 +80,22 @@ const buildQuery = ({
 
 router.get("/", (req, res, next) => {
   const { limit = "20", offset = "0" }: IListQueryParams = req.query;
+  // mongo treat limit = 0 as no limit
+  const returnNoResult = limit === "0";
   Promise.all([
     buildQuery(req.query)
       .sort("title season")
       .skip(parseInt(limit, 10) * parseInt(offset, 10))
-      .limit(parseInt(limit, 10))
+      .limit(returnNoResult ? -1 : parseInt(limit, 10)) // return -1 if we dont want values, otherwise use the limit
       .select({ filedata: 0 })
       .then(identity),
     buildQuery(req.query)
       .countDocuments()
       .then(identity)
   ])
-    .then(([movies, count]) => res.json({ data: movies, count }))
+    .then(([movies, count]) =>
+      res.json({ data: returnNoResult ? [] : movies, count })
+    )
     .catch(next);
 });
 
