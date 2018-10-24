@@ -99,7 +99,6 @@ export class ListWithContext extends Component {
   };
 
   render() {
-    console.log(this.state.more, this.props.movies.movies.length, this.state.filters.offset);
     return (
       <StrictMode>
         {
@@ -107,6 +106,9 @@ export class ListWithContext extends Component {
             <div>Loading ....</div>
             :
             <Fragment>
+              <div>
+                Display {this.props.movies.movies.length} of {this.props.movies.count} found movies/tvshows
+              </div>
               <form className="form-inline">
                 <div className="form-group mx-sm-3 mb-2">
                   <input

@@ -23,8 +23,8 @@ export class MoviesProvider extends React.Component {
     });
   };
 
-  concat = (movies) => {
-    this.setState({movies: [...this.state.movies, ...movies]});
+  concat = ({data, count}) => {
+    this.setState({movies: [...this.state.movies, ...data], count});
   };
 
   invalidate = () => {
@@ -33,6 +33,7 @@ export class MoviesProvider extends React.Component {
 
   state = {
     movies: [],
+    count: 0,
     concat: this.concat,
     update: this.update,
     add: this.add,

@@ -1,6 +1,7 @@
 import express from "express";
-import { Movie } from "../models/movieModel";
+import identity from "lodash/identity";
 import { logger } from "../logger";
+import { Movie } from "../models/movieModel";
 
 export const router = express.Router();
 
@@ -17,19 +18,26 @@ interface IListQueryParams {
   offset?: string;
 }
 
-router.get("/", (req, res, next) => {
-  const {
-    title,
-    genres,
-    types,
-    seen,
-    unseen,
-    netflix,
-    unnetflix,
-    productionYear,
-    limit = "20",
-    offset = "0"
-  }: IListQueryParams = req.query;
+interface IGetMoviesParameters {
+  title: string;
+  netflix: string;
+  unnetflix: string;
+  productionYear: string;
+  seen: string;
+  unseen: string;
+  genres: string;
+  types: string;
+}
+const buildQuery = ({
+  title,
+  netflix,
+  unnetflix,
+  productionYear,
+  seen,
+  unseen,
+  genres,
+  types
+}: IGetMoviesParameters) => {
   let query;
 
   const titleFilter = title
@@ -67,13 +75,23 @@ router.get("/", (req, res, next) => {
   if (types) {
     query = query.and([{ $or: types.split(",").map(type => ({ type })) }]);
   }
+  return query;
+};
 
-  query
-    .sort("title season")
-    .skip(parseInt(limit, 10) * parseInt(offset, 10))
-    .limit(parseInt(limit, 10))
-    .select({ filedata: 0 })
-    .then(movies => res.json(movies))
+router.get("/", (req, res, next) => {
+  const { limit = "20", offset = "0" }: IListQueryParams = req.query;
+  Promise.all([
+    buildQuery(req.query)
+      .sort("title season")
+      .skip(parseInt(limit, 10) * parseInt(offset, 10))
+      .limit(parseInt(limit, 10))
+      .select({ filedata: 0 })
+      .then(identity),
+    buildQuery(req.query)
+      .countDocuments()
+      .then(identity)
+  ])
+    .then(([movies, count]) => res.json({ data: movies, count }))
     .catch(next);
 });
 
