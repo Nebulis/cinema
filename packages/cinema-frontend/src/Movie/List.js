@@ -1,7 +1,7 @@
 import React, {Component, Fragment, StrictMode} from "react";
 import {MovieCard} from "./MovieCard";
 import isArray from "lodash/isArray";
-import {AsyncMultiDownshift} from "../Common/AsyncMultiDownshift";
+import {AsyncMultiDownshift, AsyncMultiDownshiftwithReverse} from "../Common/AsyncMultiDownshift";
 import {MovieForm} from "./MovieForm";
 import {LOADING, withApplication} from "../ApplicationContext";
 import {Fetch} from '../Common/Fetch';
@@ -86,16 +86,21 @@ export class ListWithContext extends Component {
   };
 
   buildQuery = () => {
-    const filters = Object.keys(this.state.filters)
+    // can use lodash/partition to one line
+    const genres = this.state.filters.genres.filter(genre => genre[1]).map(genre => genre[0]);
+    const notGenres = this.state.filters.genres.filter(genre => !genre[1]).map(genre => genre[0]);
+    return Object.keys(this.state.filters)
+      .filter(key => key !== 'genres')// handle genres manually)
       .filter(
         key =>
           (!isArray(this.state.filters[key]) && this.state.filters[key]) ||
           (isArray(this.state.filters[key]) &&
             this.state.filters[key].length > 0)
       )
-      .map(key => `${key}=${this.state.filters[key]}`);
-
-    return filters.join("&");
+      .map(key => `${key}=${this.state.filters[key]}`)
+      .concat(genres.length > 0 ? `genres=${genres.join(',')}`: '', notGenres.length > 0 ? `notGenres=${notGenres.join(',')}`: '')
+      .filter(Boolean) // remove empty strings
+      .join("&");
   };
 
   render() {
@@ -142,7 +147,7 @@ export class ListWithContext extends Component {
                   className="form-group mx-sm-3 mb-2"
                   style={{maxWidth: "300px"}}
                 >
-                  <AsyncMultiDownshift
+                  <AsyncMultiDownshiftwithReverse
                     placeholder="Genre"
                     handleChange={this.onInputWithoutEvent("genres")}
                     items={this.props.application.genres}

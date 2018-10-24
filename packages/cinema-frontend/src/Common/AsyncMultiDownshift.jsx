@@ -1,8 +1,10 @@
 import { MultiDownshift } from "./MultiDownshift";
 import { ArrowIcon, ControllerButton, css, Item, Menu } from "../shared";
 import React, { Component } from "react";
+import identity from 'lodash/identity';
+import {MultiDownshiftWithReverse} from './MultiDownshiftWithReverse';
 
-export class AsyncMultiDownshift extends Component {
+const BaseMultiDownshift = (BaseComponent) => class extends Component {
   constructor(props) {
     super(props);
     this.input = React.createRef();
@@ -11,7 +13,7 @@ export class AsyncMultiDownshift extends Component {
   render() {
     const { handleChange, placeholder, items, selectedItems } = this.props;
     return (
-      <MultiDownshift onChange={handleChange} selectedItems={selectedItems}>
+      <BaseComponent onChange={handleChange} selectedItems={selectedItems}>
         {({
           getInputProps,
           getToggleButtonProps,
@@ -23,7 +25,10 @@ export class AsyncMultiDownshift extends Component {
           selectedItems,
           getItemProps,
           highlightedIndex,
-          toggleMenu
+          toggleMenu,
+          clickOnItem = () => void 0,
+          displayItem = identity,
+          displayBackground = () => "#ccc",
         }) => (
           <div style={{ margin: "auto", position: "relative" }}>
             <div
@@ -68,9 +73,14 @@ export class AsyncMultiDownshift extends Component {
                           paddingRight: 8,
                           display: "inline-block",
                           wordWrap: "none",
-                          backgroundColor: "#ccc",
+                          backgroundColor: displayBackground(item),
                           borderRadius: 2
                         })}
+                        onClick={(event) => {
+                          event.preventDefault();
+                          event.stopPropagation();
+                          clickOnItem(item, index);
+                        }}
                       >
                         <div
                           {...css({
@@ -80,7 +90,7 @@ export class AsyncMultiDownshift extends Component {
                             alignItems: "center"
                           })}
                         >
-                          <span>{item}</span>
+                          <span>{displayItem(item)}</span>
                           <button
                             {...getRemoveButtonProps({ item })}
                             {...css({
@@ -148,7 +158,10 @@ export class AsyncMultiDownshift extends Component {
             </Menu>
           </div>
         )}
-      </MultiDownshift>
+      </BaseComponent>
     );
   }
 }
+
+export const AsyncMultiDownshift = BaseMultiDownshift(MultiDownshift);
+export const AsyncMultiDownshiftwithReverse = BaseMultiDownshift(MultiDownshiftWithReverse);

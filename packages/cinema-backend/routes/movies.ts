@@ -1,5 +1,6 @@
 import express from "express";
 import identity from "lodash/identity";
+import { DocumentQuery } from "mongoose";
 import { logger } from "../logger";
 import { Movie } from "../models/movieModel";
 
@@ -8,25 +9,15 @@ export const router = express.Router();
 interface IListQueryParams {
   title: string;
   genres: string; // ; separated genres
+  notGenres: string; // ; separated genres
   types: string; // ; separated types
-  seen: string;
+  seen: string; // merge with seen and transform to boolean
   unseen: string;
-  netflix: string;
+  netflix: string; // merge with netflix and transform to boolean
   unnetflix: string;
   productionYear: string;
   limit?: string;
   offset?: string;
-}
-
-interface IGetMoviesParameters {
-  title: string;
-  netflix: string;
-  unnetflix: string;
-  productionYear: string;
-  seen: string;
-  unseen: string;
-  genres: string;
-  types: string;
 }
 const buildQuery = ({
   title,
@@ -35,10 +26,11 @@ const buildQuery = ({
   productionYear,
   seen,
   unseen,
+  notGenres,
   genres,
   types
-}: IGetMoviesParameters) => {
-  let query;
+}: IListQueryParams) => {
+  let query: DocumentQuery<any[], any>; // fixme
 
   const titleFilter = title
     ? // escape regex special chars to be able to search them
@@ -70,6 +62,13 @@ const buildQuery = ({
 
   if (genres) {
     query = query.and([{ $or: genres.split(",").map(genre => ({ genre })) }]);
+  }
+
+  if (notGenres) {
+    // make sure that none of the unwanted genres is matched
+    notGenres
+      .split(",")
+      .map(genre => (query = query.and([{ genre: { $ne: genre } }])));
   }
 
   if (types) {
