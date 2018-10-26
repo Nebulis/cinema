@@ -1,9 +1,11 @@
 import React from "react";
 
 export const ApplicationContext = React.createContext();
-export const withApplication = Component => props => <ApplicationContext.Consumer>
-  {application => <Component {...props} application={application}/>}
-</ApplicationContext.Consumer>;
+export const withApplication = Component => props => (
+  <ApplicationContext.Consumer>
+    {application => <Component {...props} application={application} />}
+  </ApplicationContext.Consumer>
+);
 
 export const LOADING = Symbol();
 export const LOADED = Symbol();

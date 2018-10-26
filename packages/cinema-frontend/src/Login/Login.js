@@ -1,5 +1,5 @@
-import React, {Component} from "react";
-import {LOGIN_FAILED, withUser} from "./UserContext";
+import React, { Component } from "react";
+import { LOGIN_FAILED, withUser } from "./UserContext";
 
 class LoginWithContext extends Component {
   state = {
@@ -25,11 +25,10 @@ class LoginWithContext extends Component {
             aria-describedby="password"
             placeholder="Enter password"
             value={this.state.password}
-            onChange={event =>
-              this.setState({password: event.target.value})
-            }
+            onChange={event => this.setState({ password: event.target.value })}
             onKeyDown={event => {
-              if (event.key === "Enter") this.props.user.login(this.state.password);
+              if (event.key === "Enter")
+                this.props.user.login(this.state.password);
             }}
           />
         </div>
