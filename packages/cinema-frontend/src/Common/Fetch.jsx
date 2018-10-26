@@ -2,8 +2,8 @@ import React, {Component, Fragment} from "react";
 import debounce from "lodash/debounce";
 import {withUser} from "../Login/UserContext";
 
-const LOADING = Symbol("LOADING");
-const LOADED = Symbol("LOADED");
+export const LOADING = Symbol("LOADING");
+export const LOADED = Symbol("LOADED");
 
 const headers = (user) => ({
   Accept: "application/json",
@@ -20,7 +20,7 @@ class FetchWithContext extends Component {
     super(props);
     this.state = {
       status: this.props.load ? LOADING : LOADED,
-      data: null,
+      data: undefined,
     };
 
     // TODO probably not the best place to debounce
