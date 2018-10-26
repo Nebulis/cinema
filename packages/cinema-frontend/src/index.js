@@ -10,7 +10,7 @@ import { MoviesProvider } from "./Movie/MoviesContext";
 
 ReactDOM.render(
   <UserProvider>
-    <UserContext>
+    <UserContext.Consumer>
       {({ token }) =>
         token ? (
           <ApplicationProvider token={token}>
@@ -22,7 +22,7 @@ ReactDOM.render(
           <Login />
         )
       }
-    </UserContext>
+    </UserContext.Consumer>
   </UserProvider>,
   document.getElementById("root")
 );

@@ -1,30 +1,26 @@
-import React, { Component } from "react";
-import { withMovies } from "./MoviesContext";
+import React, { useContext, useEffect, useState } from "react";
 import { withRouter } from "react-router-dom";
-import find from "lodash/find";
-import { Fetch, LOADING } from "../Common/Fetch";
+import { getMovie } from "./MovieAPI";
+import { UserContext } from "../Login/UserContext";
 
-class MovieWithContext extends Component {
-  render() {
-    const { match, movies, history } = this.props;
-    const movie = find(movies.movies, { _id: match.params.id });
-    return (
-      <Fetch endpoint={`/api/movies/${match.params.id}`} load={!movie}>
-        {({ data = movie, status }) => {
-          return status === LOADING ? (
-            <div>Loading ....</div>
-          ) : (
-            <div>
-              <h1>Great choice {data.title}</h1>
-              <button type="button" onClick={() => history.goBack()}>
-                Back
-              </button>
-            </div>
-          );
-        }}
-      </Fetch>
-    );
-  }
-}
-
-export const Movie = withRouter(withMovies(MovieWithContext));
+export const Movie = withRouter(({ match, history }) => {
+  const [movie, setMovie] = useState();
+  const user = useContext(UserContext);
+  useEffect(() => getMovie(match.params.id, user).then(setMovie), [
+    match.params.id
+  ]);
+  return (
+    <div>
+      {!movie ? (
+        <span>Loading ....</span>
+      ) : (
+        <div>
+          <h1>Great choice {movie.title}</h1>
+          <button type="button" onClick={() => history.goBack()}>
+            Back
+          </button>
+        </div>
+      )}
+    </div>
+  );
+});
