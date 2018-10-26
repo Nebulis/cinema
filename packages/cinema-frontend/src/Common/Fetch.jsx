@@ -19,12 +19,12 @@ class FetchWithContext extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      status: this.props.load ? LOADING : LOADED,
+      status: LOADING,
       data: undefined
     };
 
     // TODO probably not the best place to debounce
-    this.debounceFetch = debounce(this.fetch, 400, {
+    this.debounceFetch = debounce(this.fetch, this.props.debounce || 0, {
       leading: false,
       trailing: true
     });
@@ -49,9 +49,7 @@ class FetchWithContext extends Component {
   }
 
   componentDidMount() {
-    if (this.props.load) {
-      this.debounceFetch();
-    }
+    this.debounceFetch();
   }
 
   render() {
