@@ -27,7 +27,10 @@ export class MultiDownshiftWithReverse extends React.Component {
   };
 
   handleSelection = (selectedItem, downshift) => {
-    if (this.state.selectedItems.filter(item => selectedItem === item[0]).length > 0) {
+    if (
+      this.state.selectedItems.filter(item => selectedItem === item[0]).length >
+      0
+    ) {
       this.removeItem([selectedItem], this.callOnChange(downshift));
     } else {
       this.addSelectedItem(selectedItem, this.callOnChange(downshift));
@@ -62,7 +65,7 @@ export class MultiDownshiftWithReverse extends React.Component {
     };
   };
 
-  clickOnItem = (downshift) => (item, index) => {
+  clickOnItem = downshift => (item, index) => {
     this.setState(({ selectedItems }) => {
       const newSelectedItems = selectedItems;
       newSelectedItems[index] = [item[0], !item[1]];
@@ -71,16 +74,22 @@ export class MultiDownshiftWithReverse extends React.Component {
       };
     }, this.callOnChange(downshift));
   };
-  displayItem = (item) => {
-    return item[0]
+  displayItem = item => {
+    return item[0];
   };
-  displayBackground = (item) => {
-    return item[1] ? "#ccc" : "tomato"
+  displayBackground = item => {
+    return item[1] ? "#ccc" : "tomato";
   };
 
   getStateAndHelpers(downshift) {
     const { selectedItems } = this.state;
-    const { getRemoveButtonProps, removeItem, clickOnItem, displayItem, displayBackground } = this;
+    const {
+      getRemoveButtonProps,
+      removeItem,
+      clickOnItem,
+      displayItem,
+      displayBackground
+    } = this;
     return {
       getRemoveButtonProps: getRemoveButtonProps(downshift),
       removeItem,

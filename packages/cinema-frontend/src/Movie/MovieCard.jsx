@@ -1,9 +1,9 @@
-import React, {Component} from "react";
+import React, { Component } from "react";
 import "./Movie.css";
-import {withUser} from "../Login/UserContext";
-import {Link} from 'react-router-dom';
+import { withUser } from "../Login/UserContext";
+import { Link } from "react-router-dom";
 
-const headers = (user) => ({
+const headers = user => ({
   Accept: "application/json",
   "Content-Type": "application/json",
   Authorization: `Bearer ${user.token}`
@@ -18,7 +18,7 @@ class MovieWithContext extends Component {
 
   update(field, value) {
     return () => {
-      const movie = {...this.props.movie, [field]: value};
+      const movie = { ...this.props.movie, [field]: value };
       fetch(`/api/movies/${this.props.movie._id}`, {
         method: "PUT",
         body: JSON.stringify(movie),
@@ -37,7 +37,7 @@ class MovieWithContext extends Component {
   }
 
   renderSeen() {
-    const {movie} = this.props;
+    const { movie } = this.props;
     if (movie.type === "Film") {
       return (
         <i
@@ -70,13 +70,15 @@ class MovieWithContext extends Component {
   }
 
   render() {
-    const {movie, onEdit} = this.props;
+    const { movie, onEdit } = this.props;
     return (
       <div className="movie">
         <div className="card">
           <div className="card-body">
             <h5 className="card-title">
-              <Link to={`movie/${movie._id}`}>{movie.title} - {movie.productionYear}</Link>
+              <Link to={`movie/${movie._id}`}>
+                {movie.title} - {movie.productionYear}
+              </Link>
             </h5>
             <h6 className="card-subtitle mb-2 text-muted">
               {movie.type} {movie.season && <span>Saison {movie.season}</span>}
@@ -97,12 +99,12 @@ class MovieWithContext extends Component {
               <i
                 className="fas fa-pencil-alt"
                 onClick={onEdit}
-                style={{cursor: "pointer"}}
+                style={{ cursor: "pointer" }}
               />
               <i
                 className="fas fa-trash"
                 onClick={this.deleteMovie}
-                style={{cursor: "pointer"}}
+                style={{ cursor: "pointer" }}
               />
               <i
                 className="fas fa-ban"
@@ -114,7 +116,7 @@ class MovieWithContext extends Component {
               />
             </div>
             <div className="poster">
-              <img src={this.props.movie.fileUrl} alt="movie poster"/>
+              <img src={this.props.movie.fileUrl} alt="movie poster" />
             </div>
           </div>
         </div>

@@ -1,11 +1,11 @@
-import React, {Component, Fragment} from "react";
+import React, { Component, Fragment } from "react";
 import debounce from "lodash/debounce";
-import {withUser} from "../Login/UserContext";
+import { withUser } from "../Login/UserContext";
 
 export const LOADING = Symbol("LOADING");
 export const LOADED = Symbol("LOADED");
 
-const headers = (user) => ({
+const headers = user => ({
   Accept: "application/json",
   "Content-Type": "application/json",
   Authorization: `Bearer ${user.token}`
@@ -20,7 +20,7 @@ class FetchWithContext extends Component {
     super(props);
     this.state = {
       status: this.props.load ? LOADING : LOADED,
-      data: undefined,
+      data: undefined
     };
 
     // TODO probably not the best place to debounce
@@ -35,16 +35,14 @@ class FetchWithContext extends Component {
   }
 
   fetch() {
-    return fetch(
-      `${this.props.endpoint}`, {
-        headers: headers(this.props.user),
-      },
-    )
+    return fetch(`${this.props.endpoint}`, {
+      headers: headers(this.props.user)
+    })
       .then(handleResponse)
       .then(data => {
         this.setState({
           status: LOADED,
-          data,
+          data
         });
         this.props.onSuccess && this.props.onSuccess(data);
       });
@@ -59,11 +57,10 @@ class FetchWithContext extends Component {
   render() {
     return (
       <Fragment>
-        {
-          this.props.children({
-            status: this.state.status,
-            data: this.state.data,
-          })}
+        {this.props.children({
+          status: this.state.status,
+          data: this.state.data
+        })}
       </Fragment>
     );
   }
