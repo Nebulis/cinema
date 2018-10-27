@@ -2,11 +2,6 @@ import React from "react";
 import findIndex from "lodash/findIndex";
 
 export const MoviesContext = React.createContext();
-export const withMovies = Component => props => (
-  <MoviesContext.Consumer>
-    {movies => <Component {...props} movies={movies} />}
-  </MoviesContext.Consumer>
-);
 
 export class MoviesProvider extends React.Component {
   add = movie => {
@@ -24,7 +19,7 @@ export class MoviesProvider extends React.Component {
     });
   };
 
-  concat = ({ data, count }) => {
+  addAll = ({ data, count }) => {
     this.setState({ movies: [...this.state.movies, ...data], count });
   };
 
@@ -32,10 +27,27 @@ export class MoviesProvider extends React.Component {
     this.setState({ movies: [] });
   };
 
+  onChange = name => value => {
+    this.invalidate(); // hmmm :)
+    this.setState(({ filters }) => ({
+      filters: { ...filters, [name]: value || "" }
+    }));
+  };
+
   state = {
     movies: [],
     count: 0,
-    concat: this.concat,
+    filters: {
+      productionYear: "",
+      title: "",
+      genres: [],
+      types: [],
+      seen: false,
+      unseen: false,
+      limit: 5
+    },
+    onChange: this.onChange,
+    addAll: this.addAll,
     update: this.update,
     add: this.add,
     invalidate: this.invalidate

@@ -1,6 +1,5 @@
-import React, { useContext, useEffect } from "react";
+import React, { useContext } from "react";
 import identity from "lodash/identity";
-import { MoviesFilterContext } from "./MoviesFilterContext";
 import { MoviesContext } from "./MoviesContext";
 import {
   AsyncMultiDownshift,
@@ -23,17 +22,17 @@ const forInput = (
 };
 
 export const MoviesFilter = () => {
-  const filters = useContext(MoviesFilterContext);
-  const movies = useContext(MoviesContext);
+  const { filters, onChange } = useContext(MoviesContext);
   const { genres, types } = useContext(ApplicationContext);
-  useEffect(() => movies.invalidate(), [filters.filters]);
-  const { seen, unseen, netflix, unnetflix } = filters.filters;
+  const { seen, unseen, netflix, unnetflix } = filters;
 
   return (
     <form className="form-inline">
       <div className="form-group mx-sm-3 mb-2">
         <input
-          {...forInput(filters, "productionYear", value => parseInt(value, 10))}
+          {...forInput({ filters, onChange }, "productionYear", value =>
+            parseInt(value, 10)
+          )}
           type="number"
           max={2200}
           placeholder="YYYY"
@@ -44,7 +43,7 @@ export const MoviesFilter = () => {
       <div className="form-group mx-sm-3 mb-2">
         <input
           type="text"
-          {...forInput(filters, "title")}
+          {...forInput({ filters, onChange }, "title")}
           placeholder="Title"
           className="form-control"
         />
@@ -53,7 +52,8 @@ export const MoviesFilter = () => {
         <AsyncMultiDownshiftwithReverse
           placeholder="Genre"
           handleChange={
-            forInput(filters, "genres", identity, identity).onChange
+            forInput({ filters, onChange }, "genres", identity, identity)
+              .onChange
           }
           items={genres}
         />
@@ -61,7 +61,10 @@ export const MoviesFilter = () => {
       <div className="form-group mx-sm-3 mb-2" style={{ maxWidth: "300px" }}>
         <AsyncMultiDownshift
           placeholder="Type"
-          handleChange={forInput(filters, "types", identity, identity).onChange}
+          handleChange={
+            forInput({ filters, onChange }, "types", identity, identity)
+              .onChange
+          }
           items={types}
         />
       </div>
@@ -72,7 +75,7 @@ export const MoviesFilter = () => {
             color: seen ? "var(--success)" : "",
             cursor: "pointer"
           }}
-          onClick={() => filters.onChange("seen")(!seen)}
+          onClick={() => onChange("seen")(!seen)}
         />
         <i
           className="fas fa-eye-slash"
@@ -80,13 +83,13 @@ export const MoviesFilter = () => {
             color: unseen ? "var(--success)" : "",
             cursor: "pointer"
           }}
-          onClick={() => filters.onChange("unseen")(!unseen)}
+          onClick={() => onChange("unseen")(!unseen)}
         />
       </div>
       <div className="form-group mx-sm-3 mb-2">
         <span
           className="fa-stack fa-1g"
-          onClick={() => filters.onChange("netflix")(!netflix)}
+          onClick={() => onChange("netflix")(!netflix)}
           style={{
             cursor: "pointer"
           }}
@@ -101,7 +104,7 @@ export const MoviesFilter = () => {
         </span>
         <span
           className="fa-stack fa-1g"
-          onClick={() => filters.onChange("unnetflix")(!unnetflix)}
+          onClick={() => onChange("unnetflix")(!unnetflix)}
           style={{
             cursor: "pointer"
           }}

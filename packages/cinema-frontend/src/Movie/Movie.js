@@ -10,12 +10,33 @@ export const Movie = withRouter(({ match, history }) => {
     match.params.id
   ]);
   return (
-    <div>
+    <div className="p-2">
       {!movie ? (
         <span>Loading ....</span>
       ) : (
         <div>
-          <h1>Great choice {movie.title}</h1>
+          <h1>
+            {movie.title} - {movie.productionYear}
+          </h1>
+          <div className="d-flex">
+            <div className="pr-2">
+              <img
+                src={movie.fileUrl}
+                style={{ maxHeight: "300px" }}
+                alt="movie poster"
+              />
+            </div>
+            <div className="pl-2">{movie.summary}</div>
+          </div>
+          <div>
+            {movie.seen.length
+              ? movie.seen.map((value, index) => (
+                  <div>
+                    Season {index + 1} {value}
+                  </div>
+                ))
+              : undefined}
+          </div>
           <button type="button" onClick={() => history.goBack()}>
             Back
           </button>

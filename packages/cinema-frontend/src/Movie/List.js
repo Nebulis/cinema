@@ -1,157 +1,141 @@
-import React, { Component, Fragment } from "react";
+import React, { Fragment, useContext, useEffect, useState } from "react";
 import { MovieCard } from "./MovieCard";
 import isArray from "lodash/isArray";
-import { MovieForm } from "./MovieForm";
-import { LOADING, withApplication } from "../ApplicationContext";
+import { ApplicationContext, LOADING } from "../ApplicationContext";
 import { Fetch } from "../Common/Fetch";
-import { withMovies } from "./MoviesContext";
+import { MoviesContext } from "./MoviesContext";
 import { MoviesFilter } from "./MoviesFilter";
-import { withMoviesFilter } from "./MoviesFilterContext";
+import { getMovies } from "./MovieAPI";
+import { UserContext } from "../Login/UserContext";
+import debounce from "lodash/debounce";
+import { MovieForm } from "./MovieForm";
 
-export class ListWithContext extends Component {
-  constructor(props) {
-    super(props);
-    const offset = this.props.movies.movies.length / 30; // quickfix ... otherwise reset to 0 when navigate back
-    this.state = {
-      more: false, // hmmmm for offset ....
-      movie: null,
-      movieFormKey: 0,
-      limit: 30,
-      offset: offset ? offset - 1 : offset // first page must be 0 not -1
-    };
-  }
+const showMovie = () => {
+  // eslint-disable-next-line no-undef
+  $("#movie-creator-updator").modal("show");
+};
 
-  next = () => {
-    this.setState(({ offset }) => ({
-      more: true,
-      offset: offset + 1
-    }));
+const newMovie = () => ({});
+
+const buildQuery = (filters, offset) => {
+  // can use lodash/partition to one line
+  const genres = filters.genres
+    .filter(genre => genre[1])
+    .map(genre => genre[0]);
+  const notGenres = filters.genres
+    .filter(genre => !genre[1])
+    .map(genre => genre[0]);
+  return Object.keys(filters)
+    .filter(key => key !== "genres") // handle genres manually)
+    .filter(
+      key =>
+        (!isArray(filters[key]) && filters[key]) ||
+        (isArray(filters[key]) && filters[key].length > 0)
+    )
+    .map(key => `${key}=${filters[key]}`)
+    .concat(
+      genres.length > 0 ? `genres=${genres.join(",")}` : "",
+      notGenres.length > 0 ? `notGenres=${notGenres.join(",")}` : "",
+      `offset=${offset}`
+    )
+    .filter(Boolean) // remove empty strings
+    .join("&");
+};
+
+export const List = () => {
+  // load contexts
+  const { status } = useContext(ApplicationContext);
+  const { movies, count, addAll, filters, add, update } = useContext(
+    MoviesContext
+  );
+  const user = useContext(UserContext);
+
+  // create state
+  const [offset, setOffset] = useState(movies.length / filters.limit);
+  const [movie, setMovie] = useState(newMovie());
+
+  //create actions
+  const loadMore = offset => {
+    getMovies(buildQuery(filters, offset), user)
+      .then(addAll)
+      .then(() => setOffset(offset + 1)); // useInc
   };
 
-  onCloseEditMovie = () => {
-    this.setState({ movie: null });
-  };
+  // create effects
+  useEffect(
+    () => {
+      // useDebounce :)
+      const debouncedLoadMore = debounce(loadMore, 400, {
+        leading: false,
+        trailing: true
+      });
+      // no movies ? then automatically fetch some (note: every time a filter is updated, movies are cleaned up)
+      if (movies.length === 0) {
+        debouncedLoadMore(0);
+      }
+      return () => debouncedLoadMore.cancel();
+    },
+    [filters]
+  );
+  useEffect(showMovie, [movie]);
 
-  editMovie = movie => {
-    this.setState({ movie }, () =>
-      // eslint-disable-next-line no-undef
-      $("#movie-creator-updator").modal("show")
-    );
-  };
-
-  addMovie = () => {
-    this.setState(
-      { movie: null, movieFormKey: this.state.movieFormKey + 1 },
-      () =>
-        // eslint-disable-next-line no-undef
-        $("#movie-creator-updator").modal("show")
-    );
-  };
-
-  buildQuery = () => {
-    // can use lodash/partition to one line
-    const { filters } = this.props.filters;
-    const genres = filters.genres
-      .filter(genre => genre[1])
-      .map(genre => genre[0]);
-    const notGenres = filters.genres
-      .filter(genre => !genre[1])
-      .map(genre => genre[0]);
-    return Object.keys(filters)
-      .filter(key => key !== "genres") // handle genres manually)
-      .filter(
-        key =>
-          (!isArray(filters[key]) && filters[key]) ||
-          (isArray(filters[key]) && filters[key].length > 0)
-      )
-      .map(key => `${key}=${filters[key]}`)
-      .concat(
-        genres.length > 0 ? `genres=${genres.join(",")}` : "",
-        notGenres.length > 0 ? `notGenres=${notGenres.join(",")}` : "",
-        `limit=${this.state.limit}`,
-        `offset=${this.state.offset}`
-      )
-      .filter(Boolean) // remove empty strings
-      .join("&");
-  };
-
-  render() {
-    return (
-      <Fragment>
-        {this.props.application.status === LOADING ? (
-          <div>Loading ....</div>
-        ) : (
-          <Fetch
-            key={`/api/movies?${this.buildQuery()}`}
-            endpoint={`/api/movies?${this.buildQuery()}`}
-            onSuccess={this.props.movies.concat}
-            debounce={400}
-          >
-            {() => (
-              <Fragment>
-                <Fetch endpoint="/api/movies?limit=0" load>
-                  {({ data }) =>
-                    data ? (
-                      <div>There are {data.count} movies/tvshows</div>
-                    ) : (
-                      <div>nope</div>
-                    )
-                  }
-                </Fetch>
-                Display {this.props.movies.movies.length} of{" "}
-                {this.props.movies.count} found movies/tvshows
-                <button
-                  type="button"
-                  className="btn btn-primary"
-                  onClick={this.addMovie}
-                >
-                  Add new
-                </button>
-                <MoviesFilter />
-                <MovieForm
-                  key={
-                    this.state.movie
-                      ? this.state.movie._id
-                      : this.state.movieFormKey
-                  }
-                  movie={this.state.movie}
-                  onClose={this.onCloseEditMovie}
-                  onAdd={movie => this.props.movies.add(movie)}
-                  onUpdate={movie => this.props.movies.update(movie._id, movie)}
-                />
-                <div className="movies">
-                  {this.props.movies.movies.map(movie => (
-                    <MovieCard
-                      key={movie._id}
-                      movie={movie}
-                      onChange={movie =>
-                        this.props.movies.update(movie._id, movie)
-                      }
-                      onDelete={_ =>
-                        this.props.movies.update(movie._id, undefined)
-                      }
-                      onEdit={() => this.editMovie(movie)}
-                    />
-                  ))}
-                </div>
-                <div className="text-center m-3">
-                  <button
-                    onClick={this.next}
-                    className="btn btn-primary btn-lg"
-                  >
-                    Load more
-                  </button>
-                </div>
-                )}
-              </Fragment>
-            )}
+  // render
+  return (
+    <Fragment>
+      {status === LOADING ? (
+        <div>Loading ....</div>
+      ) : (
+        <Fragment>
+          <MovieForm
+            // force reinitialisation of movie form
+            key={movie._id || new Date().getTime()}
+            movie={movie._id ? movie : null}
+            onAdd={movie => add(movie)}
+            onUpdate={movie => update(movie._id, movie)}
+          />
+          <Fetch endpoint="/api/movies?limit=0">
+            {({ data }) =>
+              data ? (
+                <div>There are {data.count} movies/tvshows</div>
+              ) : (
+                undefined
+              )
+            }
           </Fetch>
-        )}
-      </Fragment>
-    );
-  }
-}
-
-export const List = withMoviesFilter(
-  withApplication(withMovies(ListWithContext))
-);
+          Display {movies.length} of {count} found movies/tvshows
+          <button
+            type="button"
+            className="btn btn-primary"
+            onClick={() => setMovie(newMovie())}
+          >
+            Add new
+          </button>
+          <MoviesFilter />
+          <div className="movies">
+            {movies.map(movie => (
+              <MovieCard
+                key={movie._id}
+                movie={movie}
+                onChange={movie => update(movie._id, movie)}
+                onDelete={_ => update(movie._id, undefined)}
+                onEdit={() => {
+                  setMovie({
+                    ...movie // create a new movie to force the show effect to be displayed
+                  });
+                }}
+              />
+            ))}
+          </div>
+          <div className="text-center m-3">
+            <button
+              onClick={() => loadMore(offset)}
+              className="btn btn-primary btn-lg"
+            >
+              Load more
+            </button>
+          </div>
+        </Fragment>
+      )}
+    </Fragment>
+  );
+};

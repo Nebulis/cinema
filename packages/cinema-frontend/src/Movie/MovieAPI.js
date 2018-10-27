@@ -14,3 +14,9 @@ export const getMovie = (id, user) => {
     headers: headers(user)
   }).then(handleResponse);
 };
+
+export const getMovies = (search, user) => {
+  return fetch(`/api/movies?${search}`, {
+    headers: headers(user)
+  }).then(handleResponse);
+};
