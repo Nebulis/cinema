@@ -1,14 +1,51 @@
 import React, { useContext, useEffect, useState } from "react";
 import { withRouter } from "react-router-dom";
-import { getMovie } from "./MovieAPI";
+import { getMovie, updateMovie } from "./MovieAPI";
 import { UserContext } from "../Login/UserContext";
+import { MovieSeen } from "./MovieSeen";
+import { MoviesContext } from "./MoviesContext";
 
 export const Movie = withRouter(({ match, history }) => {
-  const [movie, setMovie] = useState();
+  // get contexts
   const user = useContext(UserContext);
+  const movies = useContext(MoviesContext);
+
+  // create state
+  const [movie, setMovie] = useState();
+
+  // crate effects
   useEffect(() => getMovie(match.params.id, user).then(setMovie), [
     match.params.id
   ]);
+
+  // create actions
+  const update = (field, value) => () => {
+    updateMovie({ ...movie, [field]: value }, user).then(updatedMovie => {
+      setMovie(updatedMovie);
+      movies.update(updatedMovie._id, updatedMovie);
+    });
+  };
+
+  const renderSeen = ({ type, seen }) => {
+    if (type === "Film") {
+      return <MovieSeen seen={seen} onClick={update("seen", !seen)} />;
+    } else {
+      return seen.map((season, index) => (
+        <div key={index}>
+          <span> Season {index + 1} &nbsp;</span>
+          <MovieSeen
+            seen={season}
+            onClick={update("seen", [
+              ...seen.slice(0, index),
+              !seen[index],
+              ...seen.slice(index + 1)
+            ])}
+          />
+        </div>
+      ));
+    }
+  };
+
   return (
     <div className="p-2">
       {!movie ? (
@@ -28,15 +65,7 @@ export const Movie = withRouter(({ match, history }) => {
             </div>
             <div className="pl-2">{movie.summary}</div>
           </div>
-          <div>
-            {movie.seen.length
-              ? movie.seen.map((value, index) => (
-                  <div>
-                    Season {index + 1} {value}
-                  </div>
-                ))
-              : undefined}
-          </div>
+          <div>{renderSeen(movie)}</div>
           <button type="button" onClick={() => history.goBack()}>
             Back
           </button>

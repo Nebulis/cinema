@@ -10,11 +10,6 @@ import { UserContext } from "../Login/UserContext";
 import debounce from "lodash/debounce";
 import { MovieForm } from "./MovieForm";
 
-const showMovie = () => {
-  // eslint-disable-next-line no-undef
-  $("#movie-creator-updator").modal("show");
-};
-
 const newMovie = () => ({});
 
 const buildQuery = (filters, offset) => {
@@ -53,12 +48,20 @@ export const List = () => {
   // create state
   const [offset, setOffset] = useState(movies.length / filters.limit);
   const [movie, setMovie] = useState(newMovie());
+  const [key, setKey] = useState(0);
 
   //create actions
   const loadMore = offset => {
     getMovies(buildQuery(filters, offset), user)
       .then(addAll)
       .then(() => setOffset(offset + 1)); // useInc
+  };
+  const showMovie = () => {
+    // ignore first trigger
+    if (key > 0) {
+      // eslint-disable-next-line no-undef
+      $("#movie-creator-updator").modal("show");
+    }
   };
 
   // create effects
@@ -88,7 +91,7 @@ export const List = () => {
         <Fragment>
           <MovieForm
             // force reinitialisation of movie form
-            key={movie._id || new Date().getTime()}
+            key={movie._id || key}
             movie={movie._id ? movie : null}
             onAdd={movie => add(movie)}
             onUpdate={movie => update(movie._id, movie)}
@@ -106,7 +109,10 @@ export const List = () => {
           <button
             type="button"
             className="btn btn-primary"
-            onClick={() => setMovie(newMovie())}
+            onClick={() => {
+              setMovie(newMovie());
+              setKey(key + 1);
+            }}
           >
             Add new
           </button>
