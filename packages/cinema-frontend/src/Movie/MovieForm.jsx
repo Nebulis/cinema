@@ -184,7 +184,7 @@ class MovieFormWithContext extends React.Component {
           <div>Loading...</div>
         ) : (
           <div
-            className="movie-modal modal fade"
+            className="movie-modal modal fade movie-form"
             id="movie-creator-updator"
             tabIndex="-1"
             role="dialog"

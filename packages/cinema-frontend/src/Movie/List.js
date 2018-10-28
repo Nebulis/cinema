@@ -2,7 +2,6 @@ import React, { Fragment, useContext, useEffect, useState } from "react";
 import { MovieCard } from "./MovieCard";
 import isArray from "lodash/isArray";
 import { ApplicationContext, LOADING } from "../ApplicationContext";
-import { Fetch } from "../Common/Fetch";
 import { MoviesContext } from "./MoviesContext";
 import { MoviesFilter } from "./MoviesFilter";
 import { getMovies } from "./MovieAPI";
@@ -57,7 +56,7 @@ export const List = () => {
       .then(() => setOffset(offset + 1)); // useInc
   };
   const showMovie = () => {
-    // ignore first trigger
+    // ignore first trigger, needed for backward navigation
     if (key > 0) {
       // eslint-disable-next-line no-undef
       $("#movie-creator-updator").modal("show");
@@ -84,7 +83,7 @@ export const List = () => {
 
   // render
   return (
-    <Fragment>
+    <div>
       {status === LOADING ? (
         <div>Loading ....</div>
       ) : (
@@ -96,26 +95,24 @@ export const List = () => {
             onAdd={movie => add(movie)}
             onUpdate={movie => update(movie._id, movie)}
           />
-          <Fetch endpoint="/api/movies?limit=0">
-            {({ data }) =>
-              data ? (
-                <div>There are {data.count} movies/tvshows</div>
-              ) : (
-                undefined
-              )
-            }
-          </Fetch>
-          Display {movies.length} of {count} found movies/tvshows
-          <button
-            type="button"
-            className="btn btn-primary"
+          <div>
+            Display {movies.length} of {count} found movies/tvshows
+          </div>
+          <i
             onClick={() => {
               setMovie(newMovie());
               setKey(key + 1);
             }}
-          >
-            Add new
-          </button>
+            className="fas fa-plus-circle fa-3x"
+            style={{
+              top: "22px",
+              left: "22px",
+              position: "absolute",
+              color: "#F1F7EE",
+              cursor: "pointer"
+            }}
+            title="Add a movie or a tv show"
+          />
           <MoviesFilter />
           <div className="movies">
             {movies.map(movie => (
@@ -128,6 +125,7 @@ export const List = () => {
                   setMovie({
                     ...movie // create a new movie to force the show effect to be displayed
                   });
+                  setKey(key + 1); // mandatory otherwise first edit fail
                 }}
               />
             ))}
@@ -142,6 +140,6 @@ export const List = () => {
           </div>
         </Fragment>
       )}
-    </Fragment>
+    </div>
   );
 };

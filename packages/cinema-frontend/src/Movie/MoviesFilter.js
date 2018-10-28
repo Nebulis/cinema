@@ -27,8 +27,8 @@ export const MoviesFilter = () => {
   const { seen, unseen, netflix, unnetflix } = filters;
 
   return (
-    <form className="form-inline">
-      <div className="form-group mx-sm-3 mb-2">
+    <form className="form-inline movies-filter">
+      <div className="form-group mx-sm-3">
         <input
           {...forInput({ filters, onChange }, "productionYear", value =>
             parseInt(value, 10)
@@ -40,7 +40,7 @@ export const MoviesFilter = () => {
           style={{ width: "90px" }}
         />
       </div>
-      <div className="form-group mx-sm-3 mb-2">
+      <div className="form-group mx-sm-3">
         <input
           type="text"
           {...forInput({ filters, onChange }, "title")}
@@ -48,7 +48,7 @@ export const MoviesFilter = () => {
           className="form-control"
         />
       </div>
-      <div className="form-group mx-sm-3 mb-2" style={{ maxWidth: "300px" }}>
+      <div className="form-group mx-sm-3" style={{ maxWidth: "300px" }}>
         <AsyncMultiDownshiftwithReverse
           placeholder="Genre"
           handleChange={
@@ -58,7 +58,7 @@ export const MoviesFilter = () => {
           items={genres}
         />
       </div>
-      <div className="form-group mx-sm-3 mb-2" style={{ maxWidth: "300px" }}>
+      <div className="form-group mx-sm-3" style={{ maxWidth: "300px" }}>
         <AsyncMultiDownshift
           placeholder="Type"
           handleChange={
@@ -68,7 +68,7 @@ export const MoviesFilter = () => {
           items={types}
         />
       </div>
-      <div className="form-group mx-sm-3 mb-2">
+      <div className="form-group mx-sm-3">
         <i
           className="fas fa-eye"
           style={{
@@ -86,7 +86,7 @@ export const MoviesFilter = () => {
           onClick={() => onChange("unseen")(!unseen)}
         />
       </div>
-      <div className="form-group mx-sm-3 mb-2">
+      <div className="form-group mx-sm-3">
         <span
           className="fa-stack fa-1g"
           onClick={() => onChange("netflix")(!netflix)}
