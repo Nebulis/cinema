@@ -1,1 +1,1 @@
-web: packages/cinema-backend/node_modules/.bin/ts-node packages/cinema-backend/index
+web: cd packages/cinema-backend/ && npx ts-node index
