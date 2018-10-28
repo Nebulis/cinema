@@ -74,11 +74,6 @@ app.use(context + "/allocine", allocine);
 // front
 app.use("/front", express.static("./fo2/build"));
 
-/// catch 404 and forward to error handler
-app.use((_req, res) => {
-  res.sendStatus(404);
-});
-
 app.set("port", process.env.PORT || 3000);
 
 const server = app.listen(app.get("port"), () => {

@@ -44,7 +44,7 @@ export class MoviesProvider extends React.Component {
       types: [],
       seen: false,
       unseen: false,
-      limit: 5
+      limit: 30
     },
     onChange: this.onChange,
     addAll: this.addAll,

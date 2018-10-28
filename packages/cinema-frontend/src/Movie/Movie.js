@@ -4,6 +4,7 @@ import { getMovie, updateMovie } from "./MovieAPI";
 import { UserContext } from "../Login/UserContext";
 import { MovieSeen } from "./MovieSeen";
 import { MoviesContext } from "./MoviesContext";
+import { MovieSeasonYear } from "./MovieSeasonYear";
 
 export const Movie = withRouter(({ match, history }) => {
   // get contexts
@@ -12,6 +13,7 @@ export const Movie = withRouter(({ match, history }) => {
 
   // create state
   const [movie, setMovie] = useState();
+  const [editSeasonIndex, setEditSeasonIndex] = useState(); // index to save the current editable season
 
   // crate effects
   useEffect(() => getMovie(match.params.id, user).then(setMovie), [
@@ -26,24 +28,40 @@ export const Movie = withRouter(({ match, history }) => {
     });
   };
 
-  const renderSeen = ({ type, seen }) => {
-    if (type === "Film") {
-      return <MovieSeen seen={seen} onClick={update("seen", !seen)} />;
-    } else {
-      return seen.map((season, index) => (
-        <div key={index}>
-          <span> Season {index + 1} &nbsp;</span>
+  const renderSeasons = ({ type, seen, season, productionYear }) => {
+    // tmp while some season may not have years;
+    return Array(season)
+      .fill(0)
+      .map((_, season) => (
+        <div key={season}>
+          {productionYear[season] && season !== editSeasonIndex ? (
+            <span onClick={() => setEditSeasonIndex(season)}>
+              {productionYear[season]} -{" "}
+            </span>
+          ) : (
+            <MovieSeasonYear
+              year={productionYear[season]}
+              onChange={value => {
+                update("productionYear", [
+                  ...productionYear.slice(0, season),
+                  parseInt(value, 10),
+                  ...productionYear.slice(season + 1)
+                ])();
+                setEditSeasonIndex(null);
+              }}
+            />
+          )}
+          <span>Season {season + 1} &nbsp;</span>
           <MovieSeen
-            seen={season}
+            seen={seen[season]}
             onClick={update("seen", [
-              ...seen.slice(0, index),
-              !seen[index],
-              ...seen.slice(index + 1)
+              ...seen.slice(0, season),
+              !seen[season],
+              ...seen.slice(season + 1)
             ])}
           />
         </div>
       ));
-    }
   };
 
   return (
@@ -52,6 +70,18 @@ export const Movie = withRouter(({ match, history }) => {
         <span>Loading ....</span>
       ) : (
         <div>
+          <i
+            onClick={() => history.goBack()}
+            className="fas fa-arrow-circle-left fa-3x"
+            style={{
+              top: "22px",
+              left: "22px",
+              position: "absolute",
+              color: "#F1F7EE",
+              cursor: "pointer"
+            }}
+            title="Return to the list of movies"
+          />
           <h1>
             {movie.title} - {movie.productionYear}
           </h1>
@@ -65,10 +95,16 @@ export const Movie = withRouter(({ match, history }) => {
             </div>
             <div className="pl-2">{movie.summary}</div>
           </div>
-          <div>{renderSeen(movie)}</div>
-          <button type="button" onClick={() => history.goBack()}>
-            Back
-          </button>
+          <div>
+            {movie.type === "Film" ? (
+              <MovieSeen
+                seen={movie.seen}
+                onClick={update("seen", !movie.seen)}
+              />
+            ) : (
+              renderSeasons(movie)
+            )}
+          </div>
         </div>
       )}
     </div>

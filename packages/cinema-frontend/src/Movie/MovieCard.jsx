@@ -13,7 +13,11 @@ export const MovieCard = withUser(
     const title = `${movie.title} ${
       movie.season ? `- ${movie.season} saisons` : ""
     }`;
-    const subtitle = `${movie.productionYear} - ${movie.genre.join(",")}`;
+    const subtitle = `${
+      movie.productionYear.length
+        ? movie.productionYear[0]
+        : movie.productionYear
+    } - ${movie.genre.join(",")}`;
 
     return (
       <div className="card movie-card">

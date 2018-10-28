@@ -8,7 +8,7 @@ interface IMovie extends Document {
   genre: string[];
   idAllocine: number;
   netflix: boolean;
-  productionYear: number;
+  productionYear: number | number[];
   season: number;
   // seen is either a boolean in case of movies, either an array on boolean in case of season
   seen: boolean | boolean[];
@@ -27,9 +27,10 @@ const movieSchema = new Schema({
   genre: [String],
   idAllocine: Number,
   netflix: Boolean,
-  productionYear: Number,
+  // productionYear is either a number in case of movies, either an array of number in case of season
+  productionYear: Schema.Types.Mixed,
   season: Number,
-  // seen is either a boolean in case of movies, either an array on boolean in case of season
+  // seen is either a boolean in case of movies, either an array of boolean in case of season
   seen: Schema.Types.Mixed,
   state: Number,
   stateSummary: String,

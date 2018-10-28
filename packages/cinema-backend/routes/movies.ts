@@ -127,13 +127,19 @@ router.get("/:id", (req, res, next) => {
 // create movie
 router.post("/", (req, res, next) => {
   const season = parseInt(req.body.season, 10);
+  const productionYear =
+    req.body.type === "Film"
+      ? req.body.productionYear
+      : Array(season)
+          .fill(req.body.productionYear, 0, 1)
+          .fill(null, 1);
   const movie = new Movie({
     fileUrl: req.body.fileUrl,
     finished: false,
     genre: req.body.genre,
     idAllocine: req.body.idAllocine,
     netflix: false,
-    productionYear: req.body.productionYear,
+    productionYear,
     season: req.body.type === "Film" ? null : season,
     seen: req.body.type === "Film" ? false : Array(season).fill(false),
     state: req.body.state,
@@ -159,21 +165,30 @@ router.put("/:id", (req, res, next) => {
     .then(movie => {
       const season = parseInt(req.body.season, 10);
 
-      const seenForTvShows = (
+      const updateForTvShows = <T>(
         newSeason: number,
         oldSeason: number,
-        seen: number[]
+        arr: T[] = [],
+        fillValue?: T
       ) => {
         if (newSeason < oldSeason) {
-          return seen.slice(0, newSeason); // less season than before, remove extra seen
+          return arr.slice(0, newSeason); // less season than before, remove extra arr
         }
-        return seen.concat(Array(newSeason - oldSeason).fill(false));
+        return arr.concat(Array(newSeason - oldSeason).fill(fillValue));
       };
 
       movie.title = req.body.title || movie.title;
       movie.type = req.body.type || movie.type;
       movie.genre = req.body.genre || movie.genre;
-      movie.productionYear = req.body.productionYear || movie.productionYear;
+      movie.productionYear =
+        req.body.type === "Film"
+          ? req.body.productionYear || movie.productionYear
+          : updateForTvShows(
+              season,
+              movie.season,
+              req.body.productionYear as number[],
+              undefined
+            );
       movie.idAllocine = req.body.idAllocine;
       movie.state =
         req.body.state && req.body.state > 0 && req.body.state < 64
@@ -186,7 +201,12 @@ router.put("/:id", (req, res, next) => {
       movie.seen =
         req.body.type === "Film"
           ? req.body.seen || false // TODO may reset seen if seen is not passed down
-          : seenForTvShows(season, movie.season, req.body.seen);
+          : updateForTvShows(
+              season,
+              movie.season,
+              req.body.seen as boolean[],
+              false
+            );
       movie.season = season || movie.season;
       movie.trash = req.body.trash || false;
       movie.finished = req.body.finished || false;
