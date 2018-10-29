@@ -27,7 +27,7 @@
 
 
 /* movie cards */
-.movie-form .movie-modal .modal-dialog {
+.movie-form.movie-modal .modal-dialog {
   max-width: 1200px;
 }
 

@@ -3,6 +3,15 @@ import Downshift from "downshift";
 
 export class MultiDownshift extends React.Component {
   state = { selectedItems: this.props.selectedItems || [] };
+
+  componentDidUpdate(prevProps) {
+    if (
+      prevProps.selectedItems !== this.props.selectedItems &&
+      this.props.selectedItems !== this.state.selectedItems
+    ) {
+      this.setState({ selectedItems: this.props.selectedItems || [] });
+    }
+  }
   stateReducer = (state, changes) => {
     switch (changes.type) {
       case Downshift.stateChangeTypes.keyDownEnter:
