@@ -4,7 +4,6 @@ import { getMovie, updateMovie } from "./MovieAPI";
 import { UserContext } from "../Login/UserContext";
 import { MovieSeen } from "./MovieSeen";
 import { MoviesContext } from "./MoviesContext";
-import { MovieSeasonYear } from "./MovieSeasonYear";
 
 export const Movie = withRouter(({ match, history }) => {
   // get contexts
@@ -13,7 +12,6 @@ export const Movie = withRouter(({ match, history }) => {
 
   // create state
   const [movie, setMovie] = useState();
-  const [editSeasonIndex, setEditSeasonIndex] = useState(); // index to save the current editable season
 
   // crate effects
   useEffect(() => getMovie(match.params.id, user).then(setMovie), [
@@ -26,42 +24,6 @@ export const Movie = withRouter(({ match, history }) => {
       setMovie(updatedMovie);
       movies.update(updatedMovie._id, updatedMovie);
     });
-  };
-
-  const renderSeasons = ({ type, seen, season, productionYear }) => {
-    // tmp while some season may not have years;
-    return Array(season)
-      .fill(0)
-      .map((_, season) => (
-        <div key={season}>
-          {productionYear[season] && season !== editSeasonIndex ? (
-            <span onClick={() => setEditSeasonIndex(season)}>
-              {productionYear[season]} -{" "}
-            </span>
-          ) : (
-            <MovieSeasonYear
-              year={productionYear[season]}
-              onChange={value => {
-                update("productionYear", [
-                  ...productionYear.slice(0, season),
-                  parseInt(value, 10),
-                  ...productionYear.slice(season + 1)
-                ])();
-                setEditSeasonIndex(null);
-              }}
-            />
-          )}
-          <span>Season {season + 1} &nbsp;</span>
-          <MovieSeen
-            seen={seen[season]}
-            onClick={update("seen", [
-              ...seen.slice(0, season),
-              !seen[season],
-              ...seen.slice(season + 1)
-            ])}
-          />
-        </div>
-      ));
   };
 
   return (
@@ -102,7 +64,7 @@ export const Movie = withRouter(({ match, history }) => {
                 onClick={update("seen", !movie.seen)}
               />
             ) : (
-              renderSeasons(movie)
+              undefined
             )}
           </div>
         </div>

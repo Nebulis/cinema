@@ -10,14 +10,8 @@ export const MovieCard = withUser(
     const update = (field, value) => () =>
       updateMovie({ ...movie, [field]: value }, user).then(onChange);
 
-    const title = `${movie.title} ${
-      movie.season ? `- ${movie.season} saisons` : ""
-    }`;
-    const subtitle = `${
-      movie.productionYear.length
-        ? movie.productionYear[0]
-        : movie.productionYear
-    } - ${movie.genre.join(",")}`;
+    const title = `${movie.title}`;
+    const subtitle = `${movie.productionYear} - ${movie.genre.join(",")}`;
 
     return (
       <div className="card movie-card">

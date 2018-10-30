@@ -11,7 +11,6 @@ const defaultState = {
     title: "",
     genre: [],
     type: "",
-    season: "",
     productionYear: "",
     summary: ""
   },
@@ -50,9 +49,7 @@ class MovieFormWithContext extends React.Component {
     return (
       !isEmpty(this.state.movie.title) &&
       this.state.movie.genre.length > 0 &&
-      !isEmpty(this.state.movie.type) &&
-      (this.state.movie.type !== "Série" ||
-        (this.state.movie.type === "Série" && this.state.movie.season > 0))
+      !isEmpty(this.state.movie.type)
     );
   };
 
@@ -124,8 +121,7 @@ class MovieFormWithContext extends React.Component {
                   ? new Date(movie.release.releaseDate).getFullYear()
                   : movie.productionYear,
               summary: movie.synopsis,
-              fileUrl: movie.poster ? movie.poster.href : "",
-              season: null
+              fileUrl: movie.poster ? movie.poster.href : ""
             }
           })
         );
@@ -155,7 +151,6 @@ class MovieFormWithContext extends React.Component {
               genre: tvseries.genre.map(m => m.$).sort(),
               type: "Série",
               productionYear: tvseries.yearStart,
-              season: tvseries.seasonCount,
               summary: tvseries.synopsis,
               fileUrl: tvseries.poster ? tvseries.poster.href : ""
             }
@@ -375,22 +370,6 @@ class MovieFormWithContext extends React.Component {
                         onChange={this.onSelect("type")}
                       />
                     </div>
-                    {this.state.movie.type === "Série" ? (
-                      <div className="form-group col-md-4">
-                        <label htmlFor="season">Season</label>
-                        <input
-                          type="number"
-                          className="form-control"
-                          id="season"
-                          aria-describedby="season"
-                          placeholder="Enter season"
-                          onChange={this.onInput("season")}
-                          value={this.state.movie.season}
-                        />
-                      </div>
-                    ) : (
-                      undefined
-                    )}
                   </div>
                   <div className="form-group">
                     <label htmlFor="production-year">Production Year</label>

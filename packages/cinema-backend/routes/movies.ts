@@ -126,27 +126,18 @@ router.get("/:id", (req, res, next) => {
 
 // create movie
 router.post("/", (req, res, next) => {
-  const season = parseInt(req.body.season, 10);
-  const productionYear =
-    req.body.type === "Film"
-      ? req.body.productionYear
-      : Array(season)
-          .fill(req.body.productionYear, 0, 1)
-          .fill(null, 1);
   const movie = new Movie({
     fileUrl: req.body.fileUrl,
     finished: false,
     genre: req.body.genre,
     idAllocine: req.body.idAllocine,
     netflix: false,
-    productionYear,
-    season: req.body.type === "Film" ? null : season,
-    seen: req.body.type === "Film" ? false : Array(season).fill(false),
+    productionYear: req.body.type === "Film" ? req.body.productionYear : null,
+    seen: req.body.type === "Film" ? false : null,
     state: req.body.state,
     stateSummary: req.body.stateSummary,
     summary: req.body.summary,
     title: req.body.title,
-    trash: req.body.trash,
     type: req.body.type
   });
 
@@ -163,57 +154,18 @@ router.put("/:id", (req, res, next) => {
       movie => movie || throwMe(new Error(`Movie ${req.params.id} not found`))
     )
     .then(movie => {
-      const season = parseInt(req.body.season, 10);
-
-      const updateForTvShows = <T>(
-        newSeason: number,
-        oldSeason: number,
-        arr: T[] = [],
-        fillValue?: T
-      ) => {
-        if (newSeason < oldSeason) {
-          return arr.slice(0, newSeason); // less season than before, remove extra arr
-        }
-        return arr.concat(Array(newSeason - oldSeason).fill(fillValue));
-      };
-
-      movie.title = req.body.title || movie.title;
-      movie.type = req.body.type || movie.type;
-      movie.genre = req.body.genre || movie.genre;
-      movie.productionYear =
-        req.body.type === "Film"
-          ? req.body.productionYear || movie.productionYear
-          : updateForTvShows(
-              season,
-              movie.season,
-              req.body.productionYear as number[],
-              undefined
-            );
+      movie.title = req.body.title;
+      movie.type = req.body.type;
+      movie.genre = req.body.genre;
+      movie.productionYear = req.body.productionYear;
       movie.idAllocine = req.body.idAllocine;
-      movie.state =
-        req.body.state && req.body.state > 0 && req.body.state < 64
-          ? req.body.state
-          : movie.state;
-      movie.stateSummary =
-        req.body.stateSummary != null
-          ? req.body.stateSummary
-          : movie.stateSummary; // != null to handle empty string
-      movie.seen =
-        req.body.type === "Film"
-          ? req.body.seen || false // TODO may reset seen if seen is not passed down
-          : updateForTvShows(
-              season,
-              movie.season,
-              req.body.seen as boolean[],
-              false
-            );
-      movie.season = season || movie.season;
-      movie.trash = req.body.trash || false;
-      movie.finished = req.body.finished || false;
-      movie.summary = req.body.summary || null;
-      movie.filedata = req.body.filedata || null;
-      movie.fileUrl = req.body.fileUrl || null;
-      movie.netflix = !!req.body.netflix;
+      movie.state = req.body.state;
+      movie.stateSummary = req.body.stateSummary;
+      movie.seen = req.body.seen;
+      movie.finished = req.body.finished;
+      movie.summary = req.body.summary;
+      movie.fileUrl = req.body.fileUrl;
+      movie.netflix = req.body.netflix;
 
       return movie.save();
     })
