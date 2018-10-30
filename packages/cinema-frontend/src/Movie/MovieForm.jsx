@@ -355,13 +355,7 @@ class MovieFormWithContext extends React.Component {
                     />
                   </div>
                   <div className="form-row">
-                    <div
-                      className={`form-group ${
-                        this.state.movie.type === "Série"
-                          ? "col-md-8"
-                          : "col-md-12"
-                      }`}
-                    >
+                    <div className="form-group">
                       <label>Type</label>
                       <SingleDownshift
                         selectedItem={this.state.movie.type}
