@@ -4,7 +4,7 @@
   "private": true,
   "main": "index.ts",
   "scripts": {
-    "lint": "eslint . ",
+    "lint": "tslint -p .",
     "start": "ts-node-dev -r dotenv/config index",
     "test": "echo TODO"
   },
