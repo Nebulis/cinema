@@ -9,6 +9,7 @@ import { logger } from "./logger";
 import { router } from "./routes";
 import { router as allocine } from "./routes/allocine";
 import { router as movies } from "./routes/movies";
+import { router as seasons } from "./routes/seasons";
 import { router as states } from "./routes/states";
 
 connect(
@@ -68,6 +69,7 @@ app.post("/account", (req, res) => {
 
 app.use(context + "/", router);
 app.use(context + "/movies", movies);
+app.use(context + "/movies", seasons);
 app.use(context + "/states", states);
 app.use(context + "/allocine", allocine);
 

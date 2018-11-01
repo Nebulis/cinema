@@ -1,9 +1,11 @@
-import React, { useContext, useEffect, useState } from "react";
+import React, { Fragment, useContext, useEffect, useState } from "react";
 import { withRouter } from "react-router-dom";
-import { getMovie, updateMovie } from "./MovieAPI";
+import * as MovieAPI from "./MovieAPI";
 import { UserContext } from "../Login/UserContext";
 import { MovieSeen } from "./MovieSeen";
 import { MoviesContext } from "./MoviesContext";
+import { SeasonYear } from "./SeasonYear";
+import { produce } from "immer";
 
 export const Movie = withRouter(({ match, history }) => {
   // get contexts
@@ -14,16 +16,24 @@ export const Movie = withRouter(({ match, history }) => {
   const [movie, setMovie] = useState();
 
   // crate effects
-  useEffect(() => getMovie(match.params.id, user).then(setMovie), [
+  useEffect(() => MovieAPI.getMovie(match.params.id, user).then(setMovie), [
     match.params.id
   ]);
 
   // create actions
-  const update = (field, value) => () => {
-    updateMovie({ ...movie, [field]: value }, user).then(updatedMovie => {
-      setMovie(updatedMovie);
-      movies.update(updatedMovie._id, updatedMovie);
-    });
+  const updateMovie = transform => () => {
+    MovieAPI.updateMovie(produce(movie, transform), user).then(mergeContext);
+  };
+  const updateSeason = transform => seasonIndex => {
+    const newMovie = produce(movie, transform);
+    const season = newMovie.seasons[seasonIndex];
+    MovieAPI.updateSeason(newMovie, season, user).then(mergeContext);
+  };
+
+  // helper
+  const mergeContext = updatedMovie => {
+    setMovie(updatedMovie);
+    movies.update(updatedMovie._id, updatedMovie);
   };
 
   return (
@@ -61,8 +71,44 @@ export const Movie = withRouter(({ match, history }) => {
             {movie.type === "Film" ? (
               <MovieSeen
                 seen={movie.seen}
-                onClick={update("seen", !movie.seen)}
+                onClick={updateMovie(movie => {
+                  movie.seen = !movie.seen;
+                })}
               />
+            ) : (
+              undefined
+            )}
+          </div>
+          <div className="text-center">
+            {movie.type !== "Film" ? (
+              <Fragment>
+                <div>
+                  {movie.seasons.map((season, index) => (
+                    <div key={index}>
+                      Season {index + 1}{" "}
+                      <SeasonYear
+                        value={season.productionYear}
+                        onChange={productionYear =>
+                          updateSeason(movie => {
+                            movie.seasons[
+                              index
+                            ].productionYear = productionYear;
+                          })(index)
+                        }
+                      />
+                    </div>
+                  ))}
+                </div>
+                <button
+                  className="btn btn-primary"
+                  onClick={() =>
+                    MovieAPI.addSeason(movie, user).then(mergeContext)
+                  }
+                >
+                  <i className="fas fa-plus" />
+                  &nbsp;Add season
+                </button>
+              </Fragment>
             ) : (
               undefined
             )}

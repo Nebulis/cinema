@@ -1,4 +1,5 @@
-import { Document, model, Schema } from "mongoose";
+import { Document, model, Schema, Types } from "mongoose";
+import { ISeason, seasonSchema } from "./season";
 
 // consider using typegoose
 interface IMovie extends Document {
@@ -8,6 +9,7 @@ interface IMovie extends Document {
   idAllocine: number;
   netflix: boolean;
   productionYear: number;
+  seasons: Types.DocumentArray<ISeason>;
   seen?: boolean;
   state: number;
   stateSummary: string;
@@ -23,6 +25,7 @@ const movieSchema = new Schema({
   idAllocine: Number,
   netflix: Boolean,
   productionYear: Number,
+  seasons: [seasonSchema],
   seen: Schema.Types.Mixed,
   state: Number,
   stateSummary: String,

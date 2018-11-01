@@ -2,7 +2,8 @@ import express from "express";
 import identity from "lodash/identity";
 import { DocumentQuery } from "mongoose";
 import { logger } from "../logger";
-import { Movie } from "../models/movieModel";
+import { Movie } from "../models/movie";
+import { throwMe } from "./util";
 
 export const router = express.Router();
 
@@ -109,10 +110,6 @@ router.get("/genre", (_, res, next) => {
 router.get("/type", (_, res) => {
   res.json(["Film", "Série"]);
 });
-
-function throwMe(error: Error) {
-  throw error;
-}
 
 // get movie by id
 router.get("/:id", (req, res, next) => {
