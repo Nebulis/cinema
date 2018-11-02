@@ -38,7 +38,16 @@ export const EditableField = props => {
           )}
         </Fragment>
       ) : (
-        <span onClick={() => setEdit(true)}>{value}</span>
+        <Fragment>
+          {/*tmp use render prop :)*/}
+          {props.bold ? (
+            <span onClick={() => setEdit(true)}>
+              <b>{value}</b>
+            </span>
+          ) : (
+            <span onClick={() => setEdit(true)}>{value}</span>
+          )}
+        </Fragment>
       )}
     </Fragment>
   );

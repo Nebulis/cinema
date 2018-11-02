@@ -44,7 +44,7 @@ export const Movie = withRouter(({ match, history }) => {
   };
 
   return (
-    <div className="p-2">
+    <div className="p-2 mb-10">
       {!movie ? (
         <span>Loading ....</span>
       ) : (
@@ -124,6 +124,7 @@ export const Movie = withRouter(({ match, history }) => {
                         <div key={episode._id}>
                           <div className="d-inline">
                             <EditableField
+                              bold={true}
                               value={episode.title}
                               placeholder="Title"
                               onChange={title =>
