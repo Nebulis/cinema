@@ -107,18 +107,6 @@ export const Movie = withRouter(({ match, history }) => {
                             })(seasonIndex)
                           }
                         />
-                        &nbsp;
-                        <button
-                          className="btn btn-primary"
-                          onClick={() =>
-                            MovieAPI.addEpisode(movie, season, user).then(
-                              mergeContext
-                            )
-                          }
-                        >
-                          <i className="fas fa-plus" />
-                          &nbsp;Add episode
-                        </button>
                       </div>
                       {season.episodes.map((episode, episodeIndex) => (
                         <div key={episode._id}>
@@ -152,6 +140,18 @@ export const Movie = withRouter(({ match, history }) => {
                           </div>
                         </div>
                       ))}
+
+                      <button
+                        className="btn btn-primary"
+                        onClick={() =>
+                          MovieAPI.addEpisode(movie, season, user).then(
+                            mergeContext
+                          )
+                        }
+                      >
+                        <i className="fas fa-plus" />
+                        &nbsp;Add episode
+                      </button>
                     </Fragment>
                   ))}
                 </div>
