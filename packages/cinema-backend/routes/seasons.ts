@@ -1,8 +1,8 @@
 import express from "express";
+import { Episode } from "../models/episode";
 import { Movie } from "../models/movie";
 import { ISeason, Season } from "../models/season";
 import { throwMe } from "./util";
-import { Episode } from "../models/episode";
 
 export const router = express.Router();
 
