@@ -4,7 +4,7 @@ import * as MovieAPI from "./MovieAPI";
 import { UserContext } from "../Login/UserContext";
 import { MovieSeen } from "./MovieSeen";
 import { MoviesContext } from "./MoviesContext";
-import { SeasonYear } from "./SeasonYear";
+import { EditableField } from "../Common/EditableField";
 import { produce } from "immer";
 
 export const Movie = withRouter(({ match, history }) => {
@@ -28,6 +28,13 @@ export const Movie = withRouter(({ match, history }) => {
     const newMovie = produce(movie, transform);
     const season = newMovie.seasons[seasonIndex];
     MovieAPI.updateSeason(newMovie, season, user).then(mergeContext);
+  };
+  const updateEpisode = transform => seasonIndex => episodeIndex => {
+    const newMovie = produce(movie, transform);
+    const season = newMovie.seasons[seasonIndex];
+    const episode = season.episodes[episodeIndex];
+    console.log(season, episode);
+    MovieAPI.updateEpisode(newMovie, season, episode, user).then(mergeContext);
   };
 
   // helper
@@ -83,20 +90,68 @@ export const Movie = withRouter(({ match, history }) => {
             {movie.type !== "Film" ? (
               <Fragment>
                 <div>
-                  {movie.seasons.map((season, index) => (
-                    <div key={index}>
-                      Season {index + 1}{" "}
-                      <SeasonYear
-                        value={season.productionYear}
-                        onChange={productionYear =>
-                          updateSeason(movie => {
-                            movie.seasons[
-                              index
-                            ].productionYear = productionYear;
-                          })(index)
-                        }
-                      />
-                    </div>
+                  {movie.seasons.map((season, seasonIndex) => (
+                    <Fragment key={season._id}>
+                      <div>
+                        Season {seasonIndex + 1}
+                        &nbsp;-&nbsp;
+                        <EditableField
+                          placeholder="YYYY"
+                          value={season.productionYear}
+                          transform={value => parseInt(value, 10)}
+                          onChange={productionYear =>
+                            updateSeason(movie => {
+                              movie.seasons[
+                                seasonIndex
+                              ].productionYear = productionYear;
+                            })(seasonIndex)
+                          }
+                        />
+                        &nbsp;
+                        <button
+                          className="btn btn-primary"
+                          onClick={() =>
+                            MovieAPI.addEpisode(movie, season, user).then(
+                              mergeContext
+                            )
+                          }
+                        >
+                          <i className="fas fa-plus" />
+                          &nbsp;Add episode
+                        </button>
+                      </div>
+                      {season.episodes.map((episode, episodeIndex) => (
+                        <div key={episode._id}>
+                          <div className="d-inline">
+                            <EditableField
+                              value={episode.title}
+                              placeholder="Title"
+                              onChange={title =>
+                                updateEpisode(movie => {
+                                  movie.seasons[seasonIndex].episodes[
+                                    episodeIndex
+                                  ].title = title;
+                                })(seasonIndex)(episodeIndex)
+                              }
+                            />
+                          </div>
+                          &nbsp;-&nbsp;
+                          <div className="d-inline">
+                            <EditableField
+                              value={episode.summary}
+                              placeholder="Summary"
+                              onChange={summary =>
+                                updateEpisode(movie => {
+                                  movie.seasons[seasonIndex].episodes[
+                                    episodeIndex
+                                  ].summary = summary;
+                                })(seasonIndex)(episodeIndex)
+                              }
+                            />
+                          </div>
+                        </div>
+                      ))}
+                    </Fragment>
                   ))}
                 </div>
                 <button

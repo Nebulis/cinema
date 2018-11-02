@@ -51,3 +51,22 @@ export const updateSeason = (movie, season, user) => {
     headers: headers(user)
   }).then(handleResponse);
 };
+
+export const addEpisode = (movie, season, user) => {
+  return fetch(`/api/movies/${movie._id}/seasons/${season._id}/episodes`, {
+    method: "POST",
+    body: JSON.stringify(season),
+    headers: headers(user)
+  }).then(handleResponse);
+};
+
+export const updateEpisode = (movie, season, episode, user) => {
+  return fetch(
+    `/api/movies/${movie._id}/seasons/${season._id}/episodes/${episode._id}`,
+    {
+      method: "PUT",
+      body: JSON.stringify(episode),
+      headers: headers(user)
+    }
+  ).then(handleResponse);
+};
