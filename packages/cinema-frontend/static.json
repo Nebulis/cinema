@@ -1,5 +1,8 @@
 {
   "root": "/app/packages/cinema-frontend/build/",
+  "routes": {
+    "/**": "index.html"
+  },
   "proxies": {
     "/login": {
       "origin": "https://cinema-backend.herokuapp.com/login"
