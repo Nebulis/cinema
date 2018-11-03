@@ -14,10 +14,16 @@ export const EditableField = props => {
             type="text"
             value={value}
             onChange={event => setValue(transform(event.target.value))}
+            onClick={event => {
+              event.preventDefault();
+              event.stopPropagation();
+            }}
           />
           <button
             className="btn btn-primary"
-            onClick={() => {
+            onClick={event => {
+              event.preventDefault();
+              event.stopPropagation();
               props.onChange(value);
               setEdit(false);
             }}
@@ -40,30 +46,16 @@ export const EditableField = props => {
           )}
         </Fragment>
       ) : (
-        <Fragment>
-          {/*tmp use render prop :)*/}
-          {props.bold ? (
-            <span
-              onClick={event => {
-                event.preventDefault();
-                event.stopPropagation();
-                setEdit(true);
-              }}
-            >
-              <b>{value}</b>
-            </span>
-          ) : (
-            <span
-              onClick={event => {
-                event.preventDefault();
-                event.stopPropagation();
-                setEdit(true);
-              }}
-            >
-              {value}
-            </span>
-          )}
-        </Fragment>
+        <span
+          onClick={event => {
+            event.preventDefault();
+            event.stopPropagation();
+            setEdit(true);
+          }}
+          className={props.className}
+        >
+          {value}
+        </span>
       )}
     </Fragment>
   );

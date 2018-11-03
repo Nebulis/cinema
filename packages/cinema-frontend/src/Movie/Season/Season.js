@@ -1,10 +1,13 @@
-import { Fragment, useContext, useState } from "react";
+import { useContext, useState } from "react";
 import { EditableField } from "../../Common/EditableField";
 import * as MovieAPI from "../MovieAPI";
 import React from "react";
 import { produce } from "immer";
 import { UserContext } from "../../Login/UserContext";
 import "./Season.css";
+import { MovieSeen } from "../MovieSeen";
+import { Episode } from "./Episode";
+import every from "lodash/every";
 
 const useAccordion = (initialValue = false) => {
   const [open, setOpen] = useState(initialValue);
@@ -18,25 +21,30 @@ export const Season = ({ movie, season, index, onMovieChanged }) => {
   const [open, toggle] = useAccordion();
 
   // actions
-  const updateSeason = transform => seasonIndex => {
+  const updateSeason = transform => {
     const newMovie = produce(movie, transform);
-    const season = newMovie.seasons[seasonIndex];
+    const season = newMovie.seasons[index];
     MovieAPI.updateSeason(newMovie, season, user).then(onMovieChanged);
   };
-  const updateEpisode = transform => seasonIndex => episodeIndex => {
-    const newMovie = produce(movie, transform);
-    const season = newMovie.seasons[seasonIndex];
-    const episode = season.episodes[episodeIndex];
-    console.log(season, episode);
-    MovieAPI.updateEpisode(newMovie, season, episode, user).then(
-      onMovieChanged
-    );
-  };
+
+  const seen = every(season.episodes, "seen");
 
   return (
     <div className="season">
       <div className="season-header" onClick={toggle}>
         <div>
+          <div
+            className="season-header-view"
+            onClick={event => {
+              event.preventDefault();
+              event.stopPropagation();
+              updateSeason(movie => {
+                movie.seasons[index].seen = !seen;
+              });
+            }}
+          >
+            <MovieSeen seen={seen} />
+          </div>
           Season {index + 1}
           &nbsp;-&nbsp;
           <EditableField
@@ -46,7 +54,7 @@ export const Season = ({ movie, season, index, onMovieChanged }) => {
             onChange={productionYear =>
               updateSeason(movie => {
                 movie.seasons[index].productionYear = productionYear;
-              })(index)
+              })
             }
           />
         </div>
@@ -61,38 +69,14 @@ export const Season = ({ movie, season, index, onMovieChanged }) => {
       <div className="episodes">
         {open &&
           season.episodes.map((episode, episodeIndex) => (
-            <div key={episode._id} className="d-flex episode">
-              <div className="col-2 align-items-center d-flex p-0">
-                <div className="text-center col-1">{episodeIndex + 1}</div>
-                <div className="text-center col-11">
-                  <EditableField
-                    bold={true}
-                    value={episode.title}
-                    placeholder="Title"
-                    onChange={title =>
-                      updateEpisode(movie => {
-                        movie.seasons[index].episodes[
-                          episodeIndex
-                        ].title = title;
-                      })(index)(episodeIndex)
-                    }
-                  />
-                </div>
-              </div>
-              <div className="col-10">
-                <EditableField
-                  value={episode.summary}
-                  placeholder="Summary"
-                  onChange={summary =>
-                    updateEpisode(movie => {
-                      movie.seasons[index].episodes[
-                        episodeIndex
-                      ].summary = summary;
-                    })(index)(episodeIndex)
-                  }
-                />
-              </div>
-            </div>
+            <Episode
+              key={episode._id}
+              movie={movie}
+              episode={episode}
+              seasonIndex={index}
+              index={episodeIndex}
+              onEpisodeChanged={onMovieChanged}
+            />
           ))}
       </div>
 

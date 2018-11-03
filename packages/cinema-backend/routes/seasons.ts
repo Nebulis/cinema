@@ -32,6 +32,11 @@ router.put("/:movieId/seasons/:seasonId", (req, res, next) => {
     .then(movie => {
       const season = movie.seasons.id(req.params.seasonId);
       season.productionYear = req.body.productionYear;
+      if (req.body.seen === false) {
+        season.episodes.forEach(episode => (episode.seen = false));
+      } else if (req.body.seen === true) {
+        season.episodes.forEach(episode => (episode.seen = true));
+      }
       return movie.save();
     })
     .then(movie => {
@@ -72,6 +77,7 @@ router.put(
         const episode = season.episodes.id(req.params.episodeId);
         episode.title = req.body.title;
         episode.summary = req.body.summary;
+        episode.seen = req.body.seen;
         return movie.save();
       })
       .then(movie => {

@@ -26,7 +26,7 @@ const movieSchema = new Schema({
   netflix: Boolean,
   productionYear: Number,
   seasons: [seasonSchema],
-  seen: Schema.Types.Mixed,
+  seen: Boolean,
   state: Number,
   stateSummary: String,
   summary: String,

@@ -18,6 +18,12 @@
   right: 10px;
 }
 
+.season-header-view {
+  position: absolute;
+  top: 2px;
+  left: 10px;
+}
+
 .episode {
   padding: 4px;
 }
@@ -29,4 +35,8 @@
 
 .episode:first-child  {
   border: 2px solid var(--movie-secondary);
+}
+
+.episode-title {
+  word-wrap: break-word;
 }
