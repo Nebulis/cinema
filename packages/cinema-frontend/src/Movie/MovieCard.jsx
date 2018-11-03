@@ -4,6 +4,7 @@ import { withUser } from "../Login/UserContext";
 import { Link } from "react-router-dom";
 import { MovieSeen } from "./MovieSeen";
 import { deleteMovie, updateMovie } from "./MovieAPI";
+import every from "lodash/every";
 
 export const MovieCard = withUser(
   ({ movie, onEdit, user, onChange, onDelete }) => {
@@ -47,7 +48,17 @@ export const MovieCard = withUser(
                 onClick={update("seen", !movie.seen)}
               />
             ) : (
-              undefined
+              <MovieSeen
+                seen={
+                  every(
+                    movie.seasons.map(
+                      season =>
+                        every(season.episodes, "seen") &&
+                        season.episodes.length > 0
+                    )
+                  ) && movie.seasons.length > 0
+                }
+              />
             )}
             <i
               className="fas fa-pencil-alt"
