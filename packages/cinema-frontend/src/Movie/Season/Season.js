@@ -27,7 +27,7 @@ export const Season = ({ movie, season, index, onMovieChanged }) => {
     MovieAPI.updateSeason(newMovie, season, user).then(onMovieChanged);
   };
 
-  const seen = every(season.episodes, "seen");
+  const seen = every(season.episodes, "seen") && season.episodes.length > 0;
 
   return (
     <div className="season">
