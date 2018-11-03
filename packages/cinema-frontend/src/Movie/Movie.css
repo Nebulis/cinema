@@ -26,7 +26,7 @@
 }
 
 
-/* movie cards */
+/* movie form */
 .movie-form.movie-modal .modal-dialog {
   max-width: 1200px;
 }
@@ -49,4 +49,7 @@
   top: 2px;
   right: 2px;
   color: var(--success);
+}
+.movie-container {
+  max-width: 100%;
 }

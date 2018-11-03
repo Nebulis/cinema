@@ -27,7 +27,9 @@ export const EditableField = props => {
           {value ? (
             <button
               className="btn btn-danger"
-              onClick={() => {
+              onClick={event => {
+                event.preventDefault();
+                event.stopPropagation();
                 setEdit(false);
               }}
             >
@@ -41,11 +43,25 @@ export const EditableField = props => {
         <Fragment>
           {/*tmp use render prop :)*/}
           {props.bold ? (
-            <span onClick={() => setEdit(true)}>
+            <span
+              onClick={event => {
+                event.preventDefault();
+                event.stopPropagation();
+                setEdit(true);
+              }}
+            >
               <b>{value}</b>
             </span>
           ) : (
-            <span onClick={() => setEdit(true)}>{value}</span>
+            <span
+              onClick={event => {
+                event.preventDefault();
+                event.stopPropagation();
+                setEdit(true);
+              }}
+            >
+              {value}
+            </span>
           )}
         </Fragment>
       )}

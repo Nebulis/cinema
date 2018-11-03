@@ -4,8 +4,8 @@ import * as MovieAPI from "./MovieAPI";
 import { UserContext } from "../Login/UserContext";
 import { MovieSeen } from "./MovieSeen";
 import { MoviesContext } from "./MoviesContext";
-import { EditableField } from "../Common/EditableField";
 import { produce } from "immer";
+import { Season } from "./Season/Season";
 
 export const Movie = withRouter(({ match, history }) => {
   // get contexts
@@ -15,7 +15,7 @@ export const Movie = withRouter(({ match, history }) => {
   // create state
   const [movie, setMovie] = useState();
 
-  // crate effects
+  // create effects
   useEffect(() => MovieAPI.getMovie(match.params.id, user).then(setMovie), [
     match.params.id
   ]);
@@ -23,18 +23,6 @@ export const Movie = withRouter(({ match, history }) => {
   // create actions
   const updateMovie = transform => () => {
     MovieAPI.updateMovie(produce(movie, transform), user).then(mergeContext);
-  };
-  const updateSeason = transform => seasonIndex => {
-    const newMovie = produce(movie, transform);
-    const season = newMovie.seasons[seasonIndex];
-    MovieAPI.updateSeason(newMovie, season, user).then(mergeContext);
-  };
-  const updateEpisode = transform => seasonIndex => episodeIndex => {
-    const newMovie = produce(movie, transform);
-    const season = newMovie.seasons[seasonIndex];
-    const episode = season.episodes[episodeIndex];
-    console.log(season, episode);
-    MovieAPI.updateEpisode(newMovie, season, episode, user).then(mergeContext);
   };
 
   // helper
@@ -44,11 +32,11 @@ export const Movie = withRouter(({ match, history }) => {
   };
 
   return (
-    <div className="p-2 mb-10">
+    <div className="container movie-container">
       {!movie ? (
         <span>Loading ....</span>
       ) : (
-        <div>
+        <div className="p-5">
           <i
             onClick={() => history.goBack()}
             className="fas fa-arrow-circle-left fa-3x"
@@ -61,18 +49,20 @@ export const Movie = withRouter(({ match, history }) => {
             }}
             title="Return to the list of movies"
           />
-          <h1>
-            {movie.title} - {movie.productionYear}
-          </h1>
           <div className="d-flex">
-            <div className="pr-2">
+            <div>
               <img
                 src={movie.fileUrl}
                 style={{ maxHeight: "300px" }}
                 alt="movie poster"
               />
             </div>
-            <div className="pl-2">{movie.summary}</div>
+            <div className="pl-2 d-flex flex-column">
+              <h1 className="text-center">
+                {movie.title} - {movie.productionYear}
+              </h1>
+              <div>{movie.summary}</div>
+            </div>
           </div>
           <div>
             {movie.type === "Film" ? (
@@ -91,68 +81,12 @@ export const Movie = withRouter(({ match, history }) => {
               <Fragment>
                 <div>
                   {movie.seasons.map((season, seasonIndex) => (
-                    <Fragment key={season._id}>
-                      <div>
-                        Season {seasonIndex + 1}
-                        &nbsp;-&nbsp;
-                        <EditableField
-                          placeholder="YYYY"
-                          value={season.productionYear}
-                          transform={value => parseInt(value, 10)}
-                          onChange={productionYear =>
-                            updateSeason(movie => {
-                              movie.seasons[
-                                seasonIndex
-                              ].productionYear = productionYear;
-                            })(seasonIndex)
-                          }
-                        />
-                      </div>
-                      {season.episodes.map((episode, episodeIndex) => (
-                        <div key={episode._id}>
-                          <div className="d-inline">
-                            <EditableField
-                              bold={true}
-                              value={episode.title}
-                              placeholder="Title"
-                              onChange={title =>
-                                updateEpisode(movie => {
-                                  movie.seasons[seasonIndex].episodes[
-                                    episodeIndex
-                                  ].title = title;
-                                })(seasonIndex)(episodeIndex)
-                              }
-                            />
-                          </div>
-                          &nbsp;-&nbsp;
-                          <div className="d-inline">
-                            <EditableField
-                              value={episode.summary}
-                              placeholder="Summary"
-                              onChange={summary =>
-                                updateEpisode(movie => {
-                                  movie.seasons[seasonIndex].episodes[
-                                    episodeIndex
-                                  ].summary = summary;
-                                })(seasonIndex)(episodeIndex)
-                              }
-                            />
-                          </div>
-                        </div>
-                      ))}
-
-                      <button
-                        className="btn btn-primary"
-                        onClick={() =>
-                          MovieAPI.addEpisode(movie, season, user).then(
-                            mergeContext
-                          )
-                        }
-                      >
-                        <i className="fas fa-plus" />
-                        &nbsp;Add episode
-                      </button>
-                    </Fragment>
+                    <Season
+                      movie={movie}
+                      season={season}
+                      index={seasonIndex}
+                      onMovieChanged={mergeContext}
+                    />
                   ))}
                 </div>
                 <button

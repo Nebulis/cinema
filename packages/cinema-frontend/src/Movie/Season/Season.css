@@ -1,0 +1,32 @@
+.season {
+  margin: 2px 0;
+}
+
+.season-header {
+  position: relative;
+  background-color: var(--movie-secondary);
+  color: var(--movie-primary);
+  font-size: 1.5em;
+  font-weight: bold;
+  padding: 2px;
+  cursor: pointer;
+}
+
+.season-header-arrow {
+  position: absolute;
+  top: 2px;
+  right: 10px;
+}
+
+.episode {
+  padding: 4px;
+}
+
+.episode:not(:first-child) {
+  border: 2px solid var(--movie-secondary);
+  border-top: none;
+}
+
+.episode:first-child  {
+  border: 2px solid var(--movie-secondary);
+}
