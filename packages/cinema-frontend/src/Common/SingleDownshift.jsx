@@ -18,24 +18,22 @@ export class SingleDownshift extends React.Component {
           selectedItem,
           toggleMenu
         }) => (
-          <div style={{ margin: "auto", position: "relative" }}>
+          <div
+            style={{
+              margin: "auto",
+              position: "relative",
+              width: "100%"
+            }}
+          >
             <div
               {...css({
                 cursor: "pointer",
                 position: "relative",
-                borderRadius: "6px",
-                borderTopRadius: 6,
-                borderBottomRightRadius: isOpen ? 0 : 6,
-                borderBottomLeftRadius: isOpen ? 0 : 6,
-                padding: 10,
+                padding: ".375rem .75rem",
                 paddingRight: 50,
-                boxShadow: "0 2px 3px 0 rgba(34,36,38,.15)",
-                borderColor: "#96c8da",
-                borderTopWidth: "1",
-                borderRightWidth: 1,
-                borderBottomWidth: 1,
-                borderLeftWidth: 1,
-                borderStyle: "solid"
+                border: "1px solid #ced4da",
+                borderRadius: ".25rem",
+                backgroundColor: "white"
               })}
               onClick={() => {
                 toggleMenu();
@@ -51,9 +49,7 @@ export class SingleDownshift extends React.Component {
                 {selectedItem ? (
                   <div
                     {...css({
-                      margin: 2,
-                      paddingTop: 2,
-                      paddingBottom: 2,
+                      margin: "0 2px",
                       paddingLeft: 8,
                       paddingRight: 8,
                       display: "inline-block",
@@ -74,7 +70,13 @@ export class SingleDownshift extends React.Component {
                     </div>
                   </div>
                 ) : (
-                  placeholder
+                  <span
+                    {...css({
+                      color: "#6c757d;"
+                    })}
+                  >
+                    {placeholder}
+                  </span>
                 )}
               </div>
               <ControllerButton>

@@ -354,16 +354,14 @@ class MovieFormWithContext extends React.Component {
                       handleChange={this.onSelect("genre")}
                     />
                   </div>
-                  <div className="form-row">
-                    <div className="form-group">
-                      <label>Type</label>
-                      <SingleDownshift
-                        selectedItem={this.state.movie.type}
-                        placeholder="Type"
-                        items={this.props.application.types}
-                        onChange={this.onSelect("type")}
-                      />
-                    </div>
+                  <div className="form-group">
+                    <label>Type</label>
+                    <SingleDownshift
+                      selectedItem={this.state.movie.type}
+                      placeholder="Type"
+                      items={this.props.application.types}
+                      onChange={this.onSelect("type")}
+                    />
                   </div>
                   <div className="form-group">
                     <label htmlFor="production-year">Production Year</label>
