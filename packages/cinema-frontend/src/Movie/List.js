@@ -23,7 +23,9 @@ const buildQuery = (filters, offset) => {
     .filter(key => key !== "genres") // handle genres manually)
     .filter(
       key =>
-        (!isArray(filters[key]) && filters[key]) ||
+        (!isArray(filters[key]) &&
+          filters[key] !== null &&
+          filters[key] !== "") ||
         (isArray(filters[key]) && filters[key].length > 0)
     )
     .map(key => `${key}=${filters[key]}`)
