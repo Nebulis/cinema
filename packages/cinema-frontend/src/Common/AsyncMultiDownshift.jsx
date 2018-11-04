@@ -26,7 +26,8 @@ const BaseMultiDownshift = BaseComponent =>
             toggleMenu,
             clickOnItem = () => void 0,
             displayItem = identity,
-            displayBackground = () => "#ccc"
+            displayBackground = () => "#ccc",
+            isSelected = item => selectedItems.includes(item)
           }) => (
             <div
               style={{
@@ -132,7 +133,7 @@ const BaseMultiDownshift = BaseComponent =>
                           item,
                           index,
                           isActive: highlightedIndex === index,
-                          isSelected: selectedItems.includes(item)
+                          isSelected: isSelected(item)
                         })}
                       >
                         {item}

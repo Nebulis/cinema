@@ -80,6 +80,9 @@ export class MultiDownshiftWithReverse extends React.Component {
   displayBackground = item => {
     return item[1] ? "#ccc" : "tomato";
   };
+  isSelected = itemToFind => {
+    return this.state.selectedItems.find(item => item[0] === itemToFind);
+  };
 
   getStateAndHelpers(downshift) {
     const { selectedItems } = this.state;
@@ -88,7 +91,8 @@ export class MultiDownshiftWithReverse extends React.Component {
       removeItem,
       clickOnItem,
       displayItem,
-      displayBackground
+      displayBackground,
+      isSelected
     } = this;
     return {
       getRemoveButtonProps: getRemoveButtonProps(downshift),
@@ -97,6 +101,7 @@ export class MultiDownshiftWithReverse extends React.Component {
       clickOnItem: clickOnItem(downshift),
       displayItem,
       displayBackground,
+      isSelected,
       ...downshift
     };
   }

@@ -114,7 +114,7 @@ export const MoviesFilter = () => {
               .onChange
           }
           items={genres}
-          selectedItems={[["Action", true], ["Aventure", true]]}
+          selectedItems={filters.genres}
         />
       </div>
       <div className="form-group mx-sm-3" style={{ width: "220px" }}>
@@ -125,6 +125,7 @@ export const MoviesFilter = () => {
               .onChange
           }
           items={types}
+          selectedItems={filters.types}
         />
       </div>
       <div className="form-group">{renderSeen()}</div>
