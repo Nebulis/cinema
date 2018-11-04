@@ -13,9 +13,7 @@ interface IListQueryParams {
   notGenres: string; // ; separated genres
   types: string; // ; separated types
   seen: string; // merge with seen and transform to boolean
-  unseen: string;
   netflix: string; // merge with netflix and transform to boolean
-  unnetflix: string;
   productionYear: string;
   limit?: string;
   offset?: string;
@@ -23,10 +21,8 @@ interface IListQueryParams {
 const buildQuery = ({
   title,
   netflix,
-  unnetflix,
   productionYear,
   seen,
-  unseen,
   notGenres,
   genres,
   types
@@ -45,20 +41,15 @@ const buildQuery = ({
   query = Movie.find({
     ...titleFilter
   });
-  if (netflix !== unnetflix) {
+  if (netflix !== null && netflix !== undefined) {
     query = query.and([{ netflix: !!netflix }]);
   }
   if (productionYear) {
     query = query.and([{ productionYear }]);
   }
-
-  if (seen !== unseen) {
-    query = query.and([
-      // must match
-      // - film where field.seen = seen
-      // - tvshows where seen in field.seen
-      { $or: [{ seen: !!seen }, { seen: { $in: [!!seen] } }] }
-    ]);
+  if (seen !== null && seen !== undefined) {
+    // todo => handle seen for tv shows
+    query = query.and([{ seen: !!seen }]);
   }
 
   if (genres) {

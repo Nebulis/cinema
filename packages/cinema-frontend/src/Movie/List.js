@@ -95,9 +95,6 @@ export const List = () => {
             onAdd={movie => add(movie)}
             onUpdate={movie => update(movie._id, movie)}
           />
-          <div>
-            Display {movies.length} of {count} found movies/tvshows
-          </div>
           <i
             onClick={() => {
               setMovie(newMovie());
@@ -114,6 +111,9 @@ export const List = () => {
             title="Add a movie or a tv show"
           />
           <MoviesFilter />
+          <h2 className="text-center">
+            {movies.length} of {count} found movies/tvshows
+          </h2>
           <div className="movies">
             {movies.map(movie => (
               <MovieCard

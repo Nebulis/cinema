@@ -27,10 +27,10 @@ export class MoviesProvider extends React.Component {
     this.setState({ movies: [] });
   };
 
-  onChange = name => value => {
+  onChange = name => (value = "") => {
     this.invalidate(); // hmmm :)
     this.setState(({ filters }) => ({
-      filters: { ...filters, [name]: value || "" }
+      filters: { ...filters, [name]: value }
     }));
   };
 
@@ -42,8 +42,8 @@ export class MoviesProvider extends React.Component {
       title: "",
       genres: [],
       types: [],
-      seen: false,
-      unseen: false,
+      seen: null, // null = dont care, true = have seen, false = have not seen
+      netflix: null, // null = dont care, true = on netflix, false = not on netflix
       limit: 30
     },
     onChange: this.onChange,

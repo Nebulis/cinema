@@ -20,3 +20,13 @@ body {
   overflow: hidden;
   white-space: nowrap;
 }
+
+.netflix {
+  cursor: pointer;
+  font: 25px Roboto;
+}
+
+.netflix-small {
+  cursor: pointer;
+  font: 19px Roboto;
+}

@@ -24,11 +24,50 @@ const forInput = (
 export const MoviesFilter = () => {
   const { filters, onChange } = useContext(MoviesContext);
   const { genres, types } = useContext(ApplicationContext);
-  const { seen, unseen, netflix, unnetflix } = filters;
+  const { seen, netflix } = filters;
+
+  const renderSeen = () => {
+    let color = "",
+      icon = "fa-eye",
+      onClick = () => onChange("seen")(true);
+    if (seen === true) {
+      color = "var(--success)";
+      onClick = () => onChange("seen")(false);
+    } else if (seen === false) {
+      color = "var(--danger)";
+      icon = "fa-eye-slash";
+      onClick = () => onChange("seen")(null);
+    }
+    return (
+      <i
+        className={`fas ${icon}`}
+        style={{
+          color,
+          cursor: "pointer"
+        }}
+        onClick={onClick}
+      />
+    );
+  };
+
+  const renderNetflix = () => {
+    let color = "black",
+      onClick = () => onChange("netflix")(true);
+    if (netflix === true) {
+      color = "var(--danger)";
+      onClick = () => onChange("netflix")(null);
+    }
+
+    return (
+      <span onClick={onClick} className="netflix" style={{ color }}>
+        N
+      </span>
+    );
+  };
 
   return (
-    <form className="form-inline movies-filter">
-      <div className="form-group mx-sm-3">
+    <form className="form-inline movies-filter mt-4 mb-4 ml-3">
+      <div className="form-group">
         <input
           {...forInput({ filters, onChange }, "productionYear", value =>
             parseInt(value, 10)
@@ -48,7 +87,7 @@ export const MoviesFilter = () => {
           className="form-control"
         />
       </div>
-      <div className="form-group mx-sm-3" style={{ maxWidth: "300px" }}>
+      <div className="form-group" style={{ minWidth: "220px" }}>
         <AsyncMultiDownshiftwithReverse
           placeholder="Genre"
           handleChange={
@@ -56,9 +95,10 @@ export const MoviesFilter = () => {
               .onChange
           }
           items={genres}
+          selectedItems={[["Action", true], ["Aventure", true]]}
         />
       </div>
-      <div className="form-group mx-sm-3" style={{ maxWidth: "300px" }}>
+      <div className="form-group mx-sm-3" style={{ width: "220px" }}>
         <AsyncMultiDownshift
           placeholder="Type"
           handleChange={
@@ -68,56 +108,8 @@ export const MoviesFilter = () => {
           items={types}
         />
       </div>
-      <div className="form-group mx-sm-3">
-        <i
-          className="fas fa-eye"
-          style={{
-            color: seen ? "var(--success)" : "",
-            cursor: "pointer"
-          }}
-          onClick={() => onChange("seen")(!seen)}
-        />
-        <i
-          className="fas fa-eye-slash"
-          style={{
-            color: unseen ? "var(--success)" : "",
-            cursor: "pointer"
-          }}
-          onClick={() => onChange("unseen")(!unseen)}
-        />
-      </div>
-      <div className="form-group mx-sm-3">
-        <span
-          className="fa-stack fa-1g"
-          onClick={() => onChange("netflix")(!netflix)}
-          style={{
-            cursor: "pointer"
-          }}
-        >
-          <i
-            className="far fa-circle fa-stack-2x"
-            style={{
-              color: netflix ? "var(--danger)" : "black"
-            }}
-          />
-          <i className="fab fa-neos fa-stack-1x" />
-        </span>
-        <span
-          className="fa-stack fa-1g"
-          onClick={() => onChange("unnetflix")(!unnetflix)}
-          style={{
-            cursor: "pointer"
-          }}
-        >
-          <i
-            className="fas fa-ban fa-stack-2x"
-            style={{
-              color: unnetflix ? "var(--danger)" : "black"
-            }}
-          />
-          <i className="fab fa-neos fa-stack-1x" />
-        </span>
-      </div>
+      <div className="form-group">{renderSeen()}</div>
+      <div className="form-group mx-sm-3">{renderNetflix()}</div>
     </form>
   );
 };

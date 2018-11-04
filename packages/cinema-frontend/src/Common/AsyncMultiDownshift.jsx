@@ -6,23 +6,20 @@ import { MultiDownshiftWithReverse } from "./MultiDownshiftWithReverse";
 
 const BaseMultiDownshift = BaseComponent =>
   class extends Component {
-    constructor(props) {
-      super(props);
-      this.input = React.createRef();
-    }
-
     render() {
       const { handleChange, placeholder, items, selectedItems } = this.props;
       return (
-        <BaseComponent onChange={handleChange} selectedItems={selectedItems}>
+        <BaseComponent
+          onChange={handleChange}
+          selectedItems={selectedItems}
+          placeholder={placeholder}
+        >
           {({
-            getInputProps,
             getToggleButtonProps,
             getMenuProps,
             getRemoveButtonProps,
             removeItem,
             isOpen,
-            inputValue,
             selectedItems,
             getItemProps,
             highlightedIndex,
@@ -31,28 +28,25 @@ const BaseMultiDownshift = BaseComponent =>
             displayItem = identity,
             displayBackground = () => "#ccc"
           }) => (
-            <div style={{ margin: "auto", position: "relative" }}>
+            <div
+              style={{
+                margin: "auto",
+                position: "relative",
+                width: "100%"
+              }}
+            >
               <div
                 {...css({
                   cursor: "pointer",
                   position: "relative",
-                  borderRadius: "6px",
-                  borderTopRadius: 6,
-                  borderBottomRightRadius: isOpen ? 0 : 6,
-                  borderBottomLeftRadius: isOpen ? 0 : 6,
-                  padding: 10,
+                  padding: ".375rem .75rem",
                   paddingRight: 50,
-                  boxShadow: "0 2px 3px 0 rgba(34,36,38,.15)",
-                  borderColor: "#96c8da",
-                  borderTopWidth: "1",
-                  borderRightWidth: 1,
-                  borderBottomWidth: 1,
-                  borderLeftWidth: 1,
-                  borderStyle: "solid"
+                  border: "1px solid #ced4da",
+                  borderRadius: ".25rem",
+                  backgroundColor: "white"
                 })}
                 onClick={() => {
                   toggleMenu();
-                  !isOpen && this.input.current.focus();
                 }}
               >
                 <div
@@ -62,71 +56,60 @@ const BaseMultiDownshift = BaseComponent =>
                     alignItems: "center"
                   })}
                 >
-                  {selectedItems.length > 0
-                    ? selectedItems.map((item, index) => (
+                  {selectedItems.length > 0 ? (
+                    selectedItems.map((item, index) => (
+                      <div
+                        key={index}
+                        {...css({
+                          margin: "0 2px",
+                          paddingLeft: 8,
+                          paddingRight: 8,
+                          display: "inline-block",
+                          wordWrap: "none",
+                          backgroundColor: displayBackground(item),
+                          borderRadius: 2
+                        })}
+                        onClick={event => {
+                          event.preventDefault();
+                          event.stopPropagation();
+                          clickOnItem(item, index);
+                        }}
+                      >
                         <div
-                          key={index}
                           {...css({
-                            margin: 2,
-                            paddingTop: 2,
-                            paddingBottom: 2,
-                            paddingLeft: 8,
-                            paddingRight: 8,
-                            display: "inline-block",
-                            wordWrap: "none",
-                            backgroundColor: displayBackground(item),
-                            borderRadius: 2
+                            display: "grid",
+                            gridGap: 6,
+                            gridAutoFlow: "column",
+                            alignItems: "center"
                           })}
-                          onClick={event => {
-                            event.preventDefault();
-                            event.stopPropagation();
-                            clickOnItem(item, index);
-                          }}
                         >
-                          <div
+                          <span>{displayItem(item)}</span>
+                          <button
+                            {...getRemoveButtonProps({ item })}
                             {...css({
-                              display: "grid",
-                              gridGap: 6,
-                              gridAutoFlow: "column",
-                              alignItems: "center"
+                              cursor: "pointer",
+                              lineHeight: 0.8,
+                              border: "none",
+                              backgroundColor: "transparent",
+                              padding: "0",
+                              fontSize: "16px"
                             })}
+                            type="button"
                           >
-                            <span>{displayItem(item)}</span>
-                            <button
-                              {...getRemoveButtonProps({ item })}
-                              {...css({
-                                cursor: "pointer",
-                                lineHeight: 0.8,
-                                border: "none",
-                                backgroundColor: "transparent",
-                                padding: "0",
-                                fontSize: "16px"
-                              })}
-                              type="button"
-                            >
-                              𝘅
-                            </button>
-                          </div>
+                            𝘅
+                          </button>
                         </div>
-                      ))
-                    : placeholder}
-                  <input
-                    {...getInputProps({
-                      ref: this.input,
-                      onKeyUp(event) {
-                        if (event.key === "Backspace" && !inputValue) {
-                          removeItem(selectedItems[selectedItems.length - 1]);
-                        }
-                      },
-                      ...css({
-                        border: "none",
-                        marginLeft: 6,
-                        flex: 1,
-                        fontSize: 14,
-                        minHeight: 27
-                      })
-                    })}
-                  />
+                      </div>
+                    ))
+                  ) : (
+                    <span
+                      {...css({
+                        color: "#6c757d;"
+                      })}
+                    >
+                      {placeholder}
+                    </span>
+                  )}
                 </div>
                 <ControllerButton
                   {...getToggleButtonProps({

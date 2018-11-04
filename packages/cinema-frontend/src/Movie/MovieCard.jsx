@@ -34,14 +34,25 @@ export const MovieCard = withUser(
             className="movie-card-actions"
             style={{ position: "absolute", top: 2, right: 4 }}
           >
-            <i
-              className="fab fa-neos"
+            {movie.type !== "Film" && (
+              <i
+                className="fas fa-ban"
+                style={{
+                  cursor: "pointer",
+                  color: movie.finished ? "var(--danger)" : "black"
+                }}
+                onClick={update("finished", !movie.finished)}
+              />
+            )}
+            <span
+              className="netflix-small"
               style={{
-                cursor: "pointer",
                 color: movie.netflix ? "var(--danger)" : "black"
               }}
               onClick={update("netflix", !movie.netflix)}
-            />
+            >
+              N
+            </span>
             {movie.type === "Film" ? (
               <MovieSeen
                 seen={movie.seen}
@@ -64,14 +75,6 @@ export const MovieCard = withUser(
               className="fas fa-pencil-alt"
               onClick={onEdit}
               style={{ cursor: "pointer" }}
-            />
-            <i
-              className="fas fa-ban"
-              style={{
-                cursor: "pointer",
-                color: movie.finished ? "#fecc00" : "black"
-              }}
-              onClick={update("finished", !movie.finished)}
             />
             <i
               className="fas fa-trash"
