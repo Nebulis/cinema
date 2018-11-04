@@ -61,7 +61,14 @@ export const Movie = withRouter(({ match, history }) => {
               <h1 className="text-center">
                 {movie.title} - {movie.productionYear}
               </h1>
-              <div>{movie.summary}</div>
+              <div>
+                {movie.summary.split("\n").map((item, key) => (
+                  <Fragment key={key}>
+                    {item}
+                    <br />
+                  </Fragment>
+                ))}
+              </div>
             </div>
           </div>
           <div>
