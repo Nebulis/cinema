@@ -54,7 +54,7 @@ const buildQuery = ({
   }
   if (seen !== null && seen !== undefined) {
     // todo => handle seen for tv shows
-    query = query.and([{ seen: !!seen }]);
+    query = query.and([{ seen: seen === "true" }]);
   }
 
   if (genres) {

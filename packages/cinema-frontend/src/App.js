@@ -4,16 +4,18 @@ import "./App.css";
 import { List } from "./Movie/List";
 import { Movie } from "./Movie/Movie";
 import { Header } from "./Header";
+import { Statistics } from "./Statistics/Statistics";
 
 class App extends Component {
   render() {
     return (
       <Fragment>
-        <Header />
         <Router>
           <Fragment>
+            <Header />
             <Route exact path="/" component={List} />
             <Route exact path="/movie/:id" component={Movie} />
+            <Route exact path="/stats" component={Statistics} />
           </Fragment>
         </Router>
       </Fragment>

@@ -1,0 +1,21 @@
+.progress-bar.seen {
+  background-color: var(--success);
+}
+.progress-bar.unseen {
+  background-color: var(--danger);
+}
+
+.stat-card {
+  margin-top: 20px;
+  box-shadow: 5px 5px 15px 4px var(--movie-secondary-lighter);
+  background-color: var(--movie-accent);
+}
+
+.stat-card .movie-progress .progress-bar {
+  color: var(--movie-secondary) !important;
+}
+
+.stat-card .movie-progress {
+  display: flex;
+  overflow: hidden;
+}
