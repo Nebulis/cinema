@@ -12,8 +12,9 @@ interface IListQueryParams {
   genres: string; // ; separated genres
   notGenres: string; // ; separated genres
   types: string; // ; separated types
-  seen: string; // merge with seen and transform to boolean
-  netflix: string; // merge with netflix and transform to boolean
+  seen: string; // transform to boolean
+  netflix: string; // transform to boolean
+  finished: string; // transform to boolean
   productionYear: string;
   limit?: string;
   offset?: string;
@@ -21,6 +22,7 @@ interface IListQueryParams {
 const buildQuery = ({
   title,
   netflix,
+  finished,
   productionYear,
   seen,
   notGenres,
@@ -41,6 +43,9 @@ const buildQuery = ({
   query = Movie.find({
     ...titleFilter
   });
+  if (finished !== null && finished !== undefined) {
+    query = query.and([{ finished: !!finished }]);
+  }
   if (netflix !== null && netflix !== undefined) {
     query = query.and([{ netflix: !!netflix }]);
   }
