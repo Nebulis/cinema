@@ -4,6 +4,9 @@
 .progress-bar.unseen {
   background-color: var(--danger);
 }
+.progress-bar.pending {
+  background-color: var(--warning);
+}
 
 .stat-card {
   margin-top: 20px;

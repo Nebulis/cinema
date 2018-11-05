@@ -19,6 +19,48 @@ interface IListQueryParams {
   limit?: string;
   offset?: string;
 }
+
+function buildSeen(seen: boolean) {
+  if (seen) {
+    // rules to be seen
+    // all episodes must have been seen, at least 1 season, no empty season (with no episodes)
+    return [
+      {
+        $nor: [
+          {
+            "seasons.episodes.seen": false // it must not contain false (no unseen)
+          },
+          {
+            "seasons.episodes.seen": null // it must not contain null (no unseen)
+          },
+          {
+            "seasons.episodes": { $size: 0 } // it must not have no episodes
+          }
+        ]
+      },
+      { "seasons.1": { $exists: true } } // it must have at least one season
+    ];
+  } else {
+    // rules to be not seen
+    // no episodes must be seen or there is no season
+    return [
+      {
+        $or: [
+          {
+            $nor: [
+              {
+                "seasons.episodes.seen": true // it must not contain true (no seen)
+              }
+            ]
+          },
+          // { "seasons.episodes": { $size: 0 } }, // it can have no episodes
+          { seasons: { $size: 0 } } // it can have no seasons
+        ]
+      }
+    ];
+  }
+}
+
 const buildQuery = ({
   title,
   netflix,
@@ -54,7 +96,30 @@ const buildQuery = ({
   }
   if (seen !== null && seen !== undefined) {
     // todo => handle seen for tv shows
-    query = query.and([{ seen: seen === "true" }]);
+    query = query.and([
+      {
+        $or: [
+          {
+            $and: [
+              {
+                type: "Film"
+              },
+              {
+                seen: seen === "true"
+              }
+            ]
+          },
+          {
+            $and: [
+              {
+                type: "Série"
+              },
+              ...buildSeen(seen === "true")
+            ]
+          }
+        ]
+      }
+    ]);
   }
 
   if (genres) {
@@ -133,6 +198,7 @@ router.post("/", (req, res, next) => {
     title: req.body.title,
     type: req.body.type
   });
+  logger.info("Create", movie);
 
   movie
     .save()

@@ -119,20 +119,38 @@ export const Statistics = () => {
                             className="progress-bar unseen"
                             role="progressbar"
                             style={{
-                              width: `${(genre.unseen * 100) /
+                              width: `calc(20px + ${(genre.unseen * 100) /
                                 orderBy(type.genres, ["count"], ["desc"])[0]
-                                  .count}%`
+                                  .count}%)`
                             }}
                           >
                             {genre.unseen}
                           </div>
+                          {genre.count - genre.unseen - genre.seen ? (
+                            <div
+                              className="progress-bar pending"
+                              role="progressbar"
+                              style={{
+                                width: `calc(20px + ${((genre.count -
+                                  genre.unseen -
+                                  genre.seen) *
+                                  100) /
+                                  orderBy(type.genres, ["count"], ["desc"])[0]
+                                    .count}%)`
+                              }}
+                            >
+                              {genre.count - genre.unseen - genre.seen}
+                            </div>
+                          ) : (
+                            undefined
+                          )}
                           <div
                             className="progress-bar seen"
                             role="progressbar"
                             style={{
-                              width: `${(genre.seen * 100) /
+                              width: `calc(20px + ${(genre.seen * 100) /
                                 orderBy(type.genres, ["count"], ["desc"])[0]
-                                  .count}%`
+                                  .count}%)`
                             }}
                           >
                             {genre.seen}
