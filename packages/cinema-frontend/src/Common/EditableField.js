@@ -9,16 +9,29 @@ export const EditableField = props => {
     <Fragment>
       {edit ? (
         <Fragment>
-          <input
-            placeholder={props.placeholder}
-            type="text"
-            value={value}
-            onChange={event => setValue(transform(event.target.value))}
-            onClick={event => {
-              event.preventDefault();
-              event.stopPropagation();
-            }}
-          />
+          {props.textarea ? (
+            <textarea
+              placeholder={props.placeholder}
+              style={{ width: "100%" }}
+              onChange={event => setValue(transform(event.target.value))}
+              onClick={event => {
+                event.preventDefault();
+                event.stopPropagation();
+              }}
+              value={value}
+            />
+          ) : (
+            <input
+              placeholder={props.placeholder}
+              type="text"
+              value={value}
+              onChange={event => setValue(transform(event.target.value))}
+              onClick={event => {
+                event.preventDefault();
+                event.stopPropagation();
+              }}
+            />
+          )}
           <button
             className="btn btn-primary"
             onClick={event => {

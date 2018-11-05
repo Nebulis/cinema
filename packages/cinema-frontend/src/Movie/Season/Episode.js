@@ -61,6 +61,7 @@ export const Episode = ({
       </div>
       <div className="col-10 align-items-center d-flex">
         <EditableField
+          textarea={true}
           value={episode.summary}
           placeholder="Summary"
           className={`${ellipsis} d-block episode-summary w-100 text-left`}
