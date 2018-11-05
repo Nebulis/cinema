@@ -31,7 +31,7 @@ const movieSchema = new Schema({
   stateSummary: String,
   summary: String,
   title: String,
-  trash: Boolean
+  type: String
 });
 
 export const Movie = model<IMovie>("Movie", movieSchema);
