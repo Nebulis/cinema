@@ -30,7 +30,7 @@ export const updateMovie = (movie, user) => {
 };
 
 export const deleteMovie = (movie, user) => {
-  fetch(`/api/movies/${movie._id}`, {
+  return fetch(`/api/movies/${movie._id}`, {
     method: "DELETE",
     headers: headers(user)
   }).then(handleResponse);
