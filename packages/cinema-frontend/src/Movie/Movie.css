@@ -53,3 +53,14 @@
 .movie-container {
   max-width: 100%;
 }
+
+/* movie page */
+
+.single-movie-card {
+  box-shadow: 5px 5px 15px 4px var(--movie-secondary-lighter);
+  background-color: var(--movie-accent);
+}
+
+.single-movie-subtitle {
+  color: var(--movie-primary-darker);
+}

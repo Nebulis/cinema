@@ -36,7 +36,7 @@ export const Movie = withRouter(({ match, history }) => {
       {!movie ? (
         <span>Loading ....</span>
       ) : (
-        <div className="p-5">
+        <div className="p-5 mt-3 single-movie-card">
           <i
             onClick={() => history.goBack()}
             className="fas fa-arrow-circle-left fa-3x"
@@ -49,7 +49,7 @@ export const Movie = withRouter(({ match, history }) => {
             }}
             title="Return to the list of movies"
           />
-          <div className="d-flex">
+          <div className="d-flex justify-content-center">
             <div>
               <img
                 src={movie.fileUrl}
@@ -61,6 +61,9 @@ export const Movie = withRouter(({ match, history }) => {
               <h1 className="text-center">
                 {movie.title} - {movie.productionYear}
               </h1>
+              <h6 className="text-center single-movie-subtitle">
+                {movie.genre.join(",")}
+              </h6>
               <div>
                 {movie.summary.split("\n").map((item, key) => (
                   <Fragment key={key}>
