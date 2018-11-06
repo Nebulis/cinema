@@ -14,11 +14,16 @@ export const Episode = ({ episode, index, onEpisodeChanged }) => {
   const [ellipsis, setEllipsis] = useState("ellipsis");
 
   // actions
-  const updateEpisode = transform => seasonIndex => {
+  const updateSeason = transform => {
+    const newMovie = produce(movie, transform);
+    const season = newMovie.seasons[seasonIndex];
+    // onEpisodeChanged(newMovie);
+    MovieAPI.updateSeason(newMovie, season, user).then(onEpisodeChanged);
+  };
+  const updateEpisode = transform => {
     const newMovie = produce(movie, transform);
     const season = newMovie.seasons[seasonIndex];
     const episode = season.episodes[index];
-    console.log(season, episode);
     MovieAPI.updateEpisode(newMovie, season, episode, user).then(
       onEpisodeChanged
     );
@@ -35,11 +40,18 @@ export const Episode = ({ episode, index, onEpisodeChanged }) => {
             cursor: "pointer"
           }}
           onClick={() =>
-            updateEpisode(movie => {
-              movie.seasons[seasonIndex].episodes[index].seen = !movie.seasons[
-                seasonIndex
-              ].episodes[index].seen;
-            })(seasonIndex)
+            updateSeason(movie => {
+              if (!movie.seasons[seasonIndex].episodes[index].seen) {
+                for (let i = 0; i <= index; i++) {
+                  movie.seasons[seasonIndex].episodes[i].seen = true;
+                }
+              } else {
+                // eslint-disable-next-line prettier/prettier
+                for (let i = index; i < movie.seasons[seasonIndex].episodes.length; i++) {
+                  movie.seasons[seasonIndex].episodes[i].seen = false;
+                }
+              }
+            })
           }
         >
           {index + 1}
@@ -47,13 +59,15 @@ export const Episode = ({ episode, index, onEpisodeChanged }) => {
         <div className="text-center col-11">
           <EditableInput
             lock={lock}
-            className="font-weight-bold episode-title"
+            className={`font-weight-bold episode-title ${
+              episode.seen ? "seen" : ""
+            }`}
             value={episode.title}
             placeholder="Title"
             onChange={title =>
               updateEpisode(movie => {
                 movie.seasons[seasonIndex].episodes[index].title = title;
-              })(seasonIndex)
+              })
             }
           />
         </div>
@@ -69,7 +83,7 @@ export const Episode = ({ episode, index, onEpisodeChanged }) => {
           onChange={summary =>
             updateEpisode(movie => {
               movie.seasons[seasonIndex].episodes[index].summary = summary;
-            })(seasonIndex)
+            })
           }
         />
         {ellipsis && (

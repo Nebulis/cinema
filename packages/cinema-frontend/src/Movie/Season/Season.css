@@ -40,3 +40,6 @@
 .episode-title {
   word-wrap: break-word;
 }
+.episode-title.seen {
+  color: var(--success);
+}
