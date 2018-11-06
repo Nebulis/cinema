@@ -1,4 +1,4 @@
-import { useContext, useState } from "react";
+import { useContext, Fragment } from "react";
 import { EditableInput } from "../../Common/EditableField";
 import * as MovieAPI from "../MovieAPI";
 import React from "react";
@@ -8,17 +8,16 @@ import "./Season.css";
 import { MovieSeen } from "../MovieSeen";
 import { Episode } from "./Episode";
 import every from "lodash/every";
+import { useToggle } from "../../Common/hooks";
+import { MovieContext } from "../Movie";
 
-const useAccordion = (initialValue = false) => {
-  const [open, setOpen] = useState(initialValue);
-  const toggle = () => setOpen(!open);
-  return [open, toggle];
-};
+export const SeasonContext = React.createContext({});
 
-export const Season = ({ movie, season, index, onMovieChanged }) => {
+export const Season = ({ season, index, onMovieChanged }) => {
   // get contexts
   const user = useContext(UserContext);
-  const [open, toggle] = useAccordion();
+  const { movie, lock } = useContext(MovieContext);
+  const [open, toggle] = useToggle();
 
   // actions
   const updateSeason = transform => {
@@ -48,6 +47,7 @@ export const Season = ({ movie, season, index, onMovieChanged }) => {
           Season {index + 1}
           &nbsp;-&nbsp;
           <EditableInput
+            lock={lock}
             placeholder="YYYY"
             value={season.productionYear}
             transform={value => parseInt(value, 10)}
@@ -67,29 +67,35 @@ export const Season = ({ movie, season, index, onMovieChanged }) => {
         </div>
       </div>
       <div className="episodes">
-        {open &&
-          season.episodes.map((episode, episodeIndex) => (
-            <Episode
-              key={episode._id}
-              movie={movie}
-              episode={episode}
-              seasonIndex={index}
-              index={episodeIndex}
-              onEpisodeChanged={onMovieChanged}
-            />
-          ))}
+        <SeasonContext.Provider value={{ season, index }}>
+          {open &&
+            season.episodes.map((episode, episodeIndex) => (
+              <Episode
+                key={episode._id}
+                episode={episode}
+                index={episodeIndex}
+                onEpisodeChanged={onMovieChanged}
+              />
+            ))}
+        </SeasonContext.Provider>
       </div>
 
-      {open && (
-        <button
-          className="btn btn-primary"
-          onClick={() =>
-            MovieAPI.addEpisode(movie, season, user).then(onMovieChanged)
-          }
-        >
-          <i className="fas fa-plus" />
-          &nbsp;Add episode
-        </button>
+      {!lock ? (
+        <Fragment>
+          {open && (
+            <button
+              className="btn btn-primary"
+              onClick={() =>
+                MovieAPI.addEpisode(movie, season, user).then(onMovieChanged)
+              }
+            >
+              <i className="fas fa-plus" />
+              &nbsp;Add episode
+            </button>
+          )}
+        </Fragment>
+      ) : (
+        undefined
       )}
     </div>
   );

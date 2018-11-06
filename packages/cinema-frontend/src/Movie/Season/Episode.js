@@ -3,16 +3,14 @@ import React, { useContext, useState } from "react";
 import { UserContext } from "../../Login/UserContext";
 import { produce } from "immer";
 import * as MovieAPI from "../MovieAPI";
+import { MovieContext } from "../Movie";
+import { SeasonContext } from "./Season";
 
-export const Episode = ({
-  movie,
-  episode,
-  index,
-  onEpisodeChanged,
-  seasonIndex
-}) => {
+export const Episode = ({ episode, index, onEpisodeChanged }) => {
   // get contexts
   const user = useContext(UserContext);
+  const { movie, lock } = useContext(MovieContext);
+  const { index: seasonIndex } = useContext(SeasonContext);
   const [ellipsis, setEllipsis] = useState("ellipsis");
 
   // actions
@@ -48,6 +46,7 @@ export const Episode = ({
         </div>
         <div className="text-center col-11">
           <EditableInput
+            lock={lock}
             className="font-weight-bold episode-title"
             value={episode.title}
             placeholder="Title"
@@ -61,6 +60,7 @@ export const Episode = ({
       </div>
       <div className="col-md-12 col-xl-10 align-items-center d-flex">
         <EditableTextarea
+          lock={lock}
           style={{ width: "100%" }}
           rows={4}
           value={episode.summary}

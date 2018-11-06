@@ -5,9 +5,10 @@ const EditableField = props => {
   const [value, setValue] = useState(props.value || "");
   const [edit, setEdit] = useState(!props.value);
   const transform = props.transform || identity;
+  const lock = props.lock || false;
   return (
     <Fragment>
-      {edit ? (
+      {!lock && edit ? (
         <Fragment>
           {props.renderFormField({
             ...props,
@@ -46,9 +47,11 @@ const EditableField = props => {
             className: props.className,
             value,
             onClick: event => {
-              event.preventDefault();
-              event.stopPropagation();
-              setEdit(true);
+              if (!lock) {
+                event.preventDefault();
+                event.stopPropagation();
+                setEdit(true);
+              }
             }
           })}
         </Fragment>
