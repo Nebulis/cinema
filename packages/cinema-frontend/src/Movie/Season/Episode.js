@@ -1,4 +1,4 @@
-import { EditableField } from "../../Common/EditableField";
+import { EditableInput, EditableTextarea } from "../../Common/EditableField";
 import React, { useContext, useState } from "react";
 import { UserContext } from "../../Login/UserContext";
 import { produce } from "immer";
@@ -27,8 +27,8 @@ export const Episode = ({
   };
 
   return (
-    <div className="d-flex episode">
-      <div className="col-2 align-items-center d-flex p-0">
+    <div className="row episode mr-0 ml-0">
+      <div className=" col-md-12 col-xl-2 align-items-center d-flex p-0">
         <div
           className="text-center col-1"
           style={{
@@ -47,7 +47,7 @@ export const Episode = ({
           {index + 1}
         </div>
         <div className="text-center col-11">
-          <EditableField
+          <EditableInput
             className="font-weight-bold episode-title"
             value={episode.title}
             placeholder="Title"
@@ -59,9 +59,10 @@ export const Episode = ({
           />
         </div>
       </div>
-      <div className="col-10 align-items-center d-flex">
-        <EditableField
-          textarea={true}
+      <div className="col-md-12 col-xl-10 align-items-center d-flex">
+        <EditableTextarea
+          style={{ width: "100%" }}
+          rows={4}
           value={episode.summary}
           placeholder="Summary"
           className={`${ellipsis} d-block episode-summary w-100 text-left`}

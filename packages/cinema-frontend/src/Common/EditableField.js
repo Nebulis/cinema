@@ -1,7 +1,7 @@
 import React, { Fragment, useState } from "react";
 import identity from "lodash/identity";
 
-export const EditableField = props => {
+const EditableField = props => {
   const [value, setValue] = useState(props.value || "");
   const [edit, setEdit] = useState(!props.value);
   const transform = props.transform || identity;
@@ -9,29 +9,11 @@ export const EditableField = props => {
     <Fragment>
       {edit ? (
         <Fragment>
-          {props.textarea ? (
-            <textarea
-              placeholder={props.placeholder}
-              style={{ width: "100%" }}
-              onChange={event => setValue(transform(event.target.value))}
-              onClick={event => {
-                event.preventDefault();
-                event.stopPropagation();
-              }}
-              value={value}
-            />
-          ) : (
-            <input
-              placeholder={props.placeholder}
-              type="text"
-              value={value}
-              onChange={event => setValue(transform(event.target.value))}
-              onClick={event => {
-                event.preventDefault();
-                event.stopPropagation();
-              }}
-            />
-          )}
+          {props.renderFormField({
+            ...props,
+            value,
+            onChange: event => setValue(transform(event.target.value))
+          })}
           <button
             className="btn btn-primary"
             onClick={event => {
@@ -59,17 +41,70 @@ export const EditableField = props => {
           )}
         </Fragment>
       ) : (
-        <span
-          onClick={event => {
-            event.preventDefault();
-            event.stopPropagation();
-            setEdit(true);
-          }}
-          className={props.className}
-        >
-          {value}
-        </span>
+        <Fragment>
+          {props.renderValue({
+            className: props.className,
+            value,
+            onClick: event => {
+              event.preventDefault();
+              event.stopPropagation();
+              setEdit(true);
+            }
+          })}
+        </Fragment>
       )}
     </Fragment>
   );
 };
+
+export const EditableInput = props => (
+  <EditableField
+    {...props}
+    renderFormField={fieldProps => (
+      <input
+        placeholder={fieldProps.placeholder}
+        type="text"
+        value={fieldProps.value}
+        onChange={fieldProps.onChange}
+        onClick={event => {
+          event.preventDefault();
+          event.stopPropagation();
+        }}
+      />
+    )}
+    renderValue={valueProps => (
+      <span onClick={valueProps.onClick} className={valueProps.className}>
+        {valueProps.value}
+      </span>
+    )}
+  />
+);
+
+export const EditableTextarea = props => (
+  <EditableField
+    {...props}
+    renderFormField={fieldProps => (
+      <textarea
+        placeholder={fieldProps.placeholder}
+        style={fieldProps.style}
+        value={fieldProps.value}
+        rows={fieldProps.rows || 2}
+        onChange={fieldProps.onChange}
+        onClick={event => {
+          event.preventDefault();
+          event.stopPropagation();
+        }}
+      />
+    )}
+    renderValue={valueProps => (
+      <span onClick={valueProps.onClick} className={valueProps.className}>
+        {valueProps.value.split("\n").map((item, key) => (
+          <Fragment key={key}>
+            {item}
+            <br />
+          </Fragment>
+        ))}
+      </span>
+    )}
+  />
+);

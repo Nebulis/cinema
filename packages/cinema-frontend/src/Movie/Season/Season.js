@@ -1,5 +1,5 @@
 import { useContext, useState } from "react";
-import { EditableField } from "../../Common/EditableField";
+import { EditableInput } from "../../Common/EditableField";
 import * as MovieAPI from "../MovieAPI";
 import React from "react";
 import { produce } from "immer";
@@ -47,7 +47,7 @@ export const Season = ({ movie, season, index, onMovieChanged }) => {
           </div>
           Season {index + 1}
           &nbsp;-&nbsp;
-          <EditableField
+          <EditableInput
             placeholder="YYYY"
             value={season.productionYear}
             transform={value => parseInt(value, 10)}

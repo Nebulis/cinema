@@ -6,6 +6,7 @@ import { MovieSeen } from "./MovieSeen";
 import { MoviesContext } from "./MoviesContext";
 import { produce } from "immer";
 import { Season } from "./Season/Season";
+import { EditableTextarea } from "../Common/EditableField";
 
 export const Movie = withRouter(({ match, history }) => {
   // get contexts
@@ -57,7 +58,7 @@ export const Movie = withRouter(({ match, history }) => {
                 alt="movie poster"
               />
             </div>
-            <div className="pl-2 d-flex flex-column">
+            <div className="pl-2 d-flex flex-column" style={{ flexGrow: 1 }}>
               <h1 className="text-center">
                 {movie.title} - {movie.productionYear}
               </h1>
@@ -65,12 +66,17 @@ export const Movie = withRouter(({ match, history }) => {
                 {movie.genre.join(",")}
               </h6>
               <div>
-                {movie.summary.split("\n").map((item, key) => (
-                  <Fragment key={key}>
-                    {item}
-                    <br />
-                  </Fragment>
-                ))}
+                <EditableTextarea
+                  value={movie.summary}
+                  style={{ width: "100%" }}
+                  placeholder="Summary"
+                  rows="7"
+                  onChange={summary =>
+                    updateMovie(movie => {
+                      movie.summary = summary;
+                    })()
+                  }
+                />
               </div>
             </div>
           </div>
