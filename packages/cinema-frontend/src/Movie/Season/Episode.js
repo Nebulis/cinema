@@ -10,7 +10,7 @@ export const Episode = ({ episode, index, onEpisodeChanged }) => {
   // get contexts
   const user = useContext(UserContext);
   const { movie, lock } = useContext(MovieContext);
-  const { index: seasonIndex } = useContext(SeasonContext);
+  const { season, index: seasonIndex } = useContext(SeasonContext);
   const [ellipsis, setEllipsis] = useState("ellipsis");
 
   // actions
@@ -32,6 +32,20 @@ export const Episode = ({ episode, index, onEpisodeChanged }) => {
   return (
     <div className="row episode mr-0 ml-0">
       <div className=" col-md-12 col-xl-2 align-items-center d-flex p-0">
+        {!lock && (
+          <i
+            className="fas fa-times delete-episode"
+            onClick={event => {
+              event.preventDefault();
+              event.stopPropagation();
+              if (window.confirm("Delete episode ?")) {
+                MovieAPI.deleteEpisode(movie, season, episode, user).then(
+                  onEpisodeChanged
+                );
+              }
+            }}
+          />
+        )}
         <div
           className="text-center col-1"
           style={{

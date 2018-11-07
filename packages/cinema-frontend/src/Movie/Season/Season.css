@@ -50,6 +50,17 @@
 .episode-title {
   word-wrap: break-word;
 }
+
 .episode-title.seen {
   color: var(--success);
+}
+
+.delete-episode {
+  color: var(--danger);
+  position: absolute;
+  font-size: 0.8em;
+  top: -2px;
+  left: -2px;
+  cursor: pointer;
+  z-index: 1;
 }

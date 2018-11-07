@@ -106,3 +106,26 @@ router.put(
       .catch(next);
   }
 );
+
+// delete episode
+router.delete(
+  "/:movieId/seasons/:seasonId/episodes/:episodeId",
+  (req, res, next) => {
+    Movie.findById(req.params.movieId)
+      .then(
+        movie =>
+          movie || throwMe(new Error(`Movie ${req.params.seasonId} not found`))
+      )
+      .then(movie => {
+        movie.seasons
+          .id(req.params.seasonId)
+          .episodes.id(req.params.episodeId)
+          .remove();
+        return movie.save();
+      })
+      .then(movie => {
+        res.json(movie);
+      })
+      .catch(next);
+  }
+);

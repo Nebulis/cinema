@@ -77,3 +77,13 @@ export const updateEpisode = (movie, season, episode, user) => {
     }
   ).then(handleResponse);
 };
+
+export const deleteEpisode = (movie, season, episode, user) => {
+  return fetch(
+    `/api/movies/${movie._id}/seasons/${season._id}/episodes/${episode._id}`,
+    {
+      method: "DELETE",
+      headers: headers(user)
+    }
+  ).then(handleResponse);
+};

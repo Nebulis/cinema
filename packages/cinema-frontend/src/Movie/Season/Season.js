@@ -44,16 +44,20 @@ export const Season = ({ season, index, onMovieChanged }) => {
           >
             <MovieSeen seen={seen} />
           </div>
-          <i
-            className="fas fa-times delete-season"
-            onClick={event => {
-              event.preventDefault();
-              event.stopPropagation();
-              if (window.confirm("Delete season ?")) {
-                MovieAPI.deleteSeason(movie, season, user).then(onMovieChanged);
-              }
-            }}
-          />
+          {!lock && (
+            <i
+              className="fas fa-times delete-season"
+              onClick={event => {
+                event.preventDefault();
+                event.stopPropagation();
+                if (window.confirm("Delete season ?")) {
+                  MovieAPI.deleteSeason(movie, season, user).then(
+                    onMovieChanged
+                  );
+                }
+              }}
+            />
+          )}
           &nbsp;Season {index + 1}
           &nbsp;-&nbsp;
           <EditableInput
