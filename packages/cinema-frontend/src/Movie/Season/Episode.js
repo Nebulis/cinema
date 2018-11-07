@@ -60,10 +60,7 @@ export const Episode = ({ episode, index, onEpisodeChanged }) => {
                   movie.seasons[seasonIndex].episodes[i].seen = true;
                 }
               } else {
-                // eslint-disable-next-line prettier/prettier
-                for (let i = index; i < movie.seasons[seasonIndex].episodes.length; i++) {
-                  movie.seasons[seasonIndex].episodes[i].seen = false;
-                }
+                movie.seasons[seasonIndex].episodes[index].seen = false;
               }
             })
           }
