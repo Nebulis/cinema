@@ -52,6 +52,13 @@ export const updateSeason = (movie, season, user) => {
   }).then(handleResponse);
 };
 
+export const deleteSeason = (movie, season, user) => {
+  return fetch(`/api/movies/${movie._id}/seasons/${season._id}`, {
+    method: "DELETE",
+    headers: headers(user)
+  }).then(handleResponse);
+};
+
 export const addEpisode = (movie, season, user) => {
   return fetch(`/api/movies/${movie._id}/seasons/${season._id}/episodes`, {
     method: "POST",

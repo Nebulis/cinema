@@ -48,6 +48,23 @@ router.put("/:movieId/seasons/:seasonId", (req, res, next) => {
     .catch(next);
 });
 
+// delete season
+router.delete("/:movieId/seasons/:seasonId", (req, res, next) => {
+  Movie.findById(req.params.movieId)
+    .then(
+      movie =>
+        movie || throwMe(new Error(`Movie ${req.params.seasonId} not found`))
+    )
+    .then(movie => {
+      movie.seasons.id(req.params.seasonId).remove();
+      return movie.save();
+    })
+    .then(movie => {
+      res.json(movie);
+    })
+    .catch(next);
+});
+
 // create episode
 router.post("/:movieId/seasons/:seasonId/episodes", (req, res, next) => {
   Movie.findById(req.params.movieId)

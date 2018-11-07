@@ -12,6 +12,16 @@
   cursor: pointer;
 }
 
+.season-header input {
+  font-size: 0.8em;
+}
+
+.season-header .delete-season {
+  color: var(--danger);
+  font-size: 0.8em;
+  cursor: pointer;
+}
+
 .season-header-arrow {
   position: absolute;
   top: 2px;

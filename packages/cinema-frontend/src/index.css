@@ -30,3 +30,8 @@ body {
   cursor: pointer;
   font: 19px Roboto;
 }
+
+.header a {
+  color: var(--movie-primary);
+  text-decoration: none;
+}
