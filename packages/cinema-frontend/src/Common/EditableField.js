@@ -26,20 +26,6 @@ const EditableField = props => {
           >
             OK
           </button>
-          {value ? (
-            <button
-              className="btn btn-danger"
-              onClick={event => {
-                event.preventDefault();
-                event.stopPropagation();
-                setEdit(false);
-              }}
-            >
-              Cancel
-            </button>
-          ) : (
-            undefined
-          )}
         </Fragment>
       ) : (
         <Fragment>
