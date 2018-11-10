@@ -91,6 +91,7 @@ export const Movie = withRouter(({ match, history }) => {
                 </h6>
                 <div>
                   <EditableTextarea
+                    split={true}
                     lock={lock}
                     value={movie.summary}
                     style={{ width: "100%" }}

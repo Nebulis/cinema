@@ -87,12 +87,16 @@ export const EditableTextarea = props => (
     )}
     renderValue={valueProps => (
       <span onClick={valueProps.onClick} className={valueProps.className}>
-        {valueProps.value.split("\n").map((item, key) => (
-          <Fragment key={key}>
-            {item}
-            <br />
-          </Fragment>
-        ))}
+        {props.split ? (
+          valueProps.value.split("\n").map((item, key) => (
+            <Fragment key={key}>
+              {item}
+              <br />
+            </Fragment>
+          ))
+        ) : (
+          <Fragment>{valueProps.value}</Fragment>
+        )}
       </span>
     )}
   />
