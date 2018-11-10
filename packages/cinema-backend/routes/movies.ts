@@ -38,7 +38,7 @@ function buildSeen(seen: string) {
           }
         ]
       },
-      { "seasons.1": { $exists: true } } // it must have at least one season
+      { "seasons.0": { $exists: true } } // it must have at least one season
     ];
   } else if (seen === "partial") {
     // rules to be partially seen
