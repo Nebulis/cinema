@@ -1,6 +1,6 @@
 import React, { useContext } from "react";
 import identity from "lodash/identity";
-import { MoviesContext } from "./MoviesContext";
+import { MoviesContext } from "../Common/MoviesContext";
 import {
   AsyncMultiDownshift,
   AsyncMultiDownshiftwithReverse

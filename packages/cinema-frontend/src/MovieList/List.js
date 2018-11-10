@@ -2,14 +2,15 @@ import React, { Fragment, useContext, useEffect, useState } from "react";
 import { MovieCard } from "./MovieCard";
 import isArray from "lodash/isArray";
 import { ApplicationContext, LOADING } from "../ApplicationContext";
-import { MoviesContext } from "./MoviesContext";
+import { MoviesContext } from "../Common/MoviesContext";
 import { MoviesFilter } from "./MoviesFilter";
-import { getMovies } from "./MovieAPI";
+import * as MovieAPI from "../Common/MovieAPI";
 import { UserContext } from "../Login/UserContext";
 import debounce from "lodash/debounce";
 import { MovieForm } from "./MovieForm";
 
 const newMovie = () => ({});
+const getMovies = MovieAPI.getMovies(true);
 
 const buildQuery = (filters, offset) => {
   // can use lodash/partition to one line
@@ -41,21 +42,33 @@ const buildQuery = (filters, offset) => {
 export const List = () => {
   // load contexts
   const { status } = useContext(ApplicationContext);
-  const { movies, count, addAll, filters, add, update } = useContext(
-    MoviesContext
-  );
+  const {
+    invalidate,
+    movies,
+    count,
+    addAll,
+    filters,
+    add,
+    update
+  } = useContext(MoviesContext);
   const user = useContext(UserContext);
 
   // create state
   const [offset, setOffset] = useState(movies.length / filters.limit);
   const [movie, setMovie] = useState(newMovie());
   const [key, setKey] = useState(0);
+  const [loaded, setLoaded] = useState(false);
 
   //create actions
   const loadMore = offset => {
+    invalidate();
+    setLoaded(false);
     getMovies(buildQuery(filters, offset), user)
       .then(addAll)
-      .then(() => setOffset(offset + 1)); // useInc
+      .then(() => {
+        setOffset(offset + 1); // useInc
+        setLoaded(true);
+      });
   };
   const showMovie = () => {
     // ignore first trigger, needed for backward navigation
@@ -77,6 +90,7 @@ export const List = () => {
       if (movies.length === 0) {
         debouncedLoadMore(0);
       }
+      setLoaded(false);
       return () => debouncedLoadMore.cancel();
     },
     [filters]
@@ -114,7 +128,19 @@ export const List = () => {
           />
           <MoviesFilter />
           <h2 className="text-center">
-            {movies.length} of {count} found movies/tvshows
+            {movies.length === count && count > 0 ? (
+              <span>{count} movies/tvshows</span>
+            ) : movies.length < count ? (
+              <span>
+                {movies.length} of {count} movies/tvshows
+              </span>
+            ) : loaded ? (
+              <span> No movies/tvshows</span>
+            ) : (
+              <span>
+                <i className="fas fa-spinner fa-spin fa-2x" />
+              </span>
+            )}
           </h2>
           <div className="movies">
             {movies.map(movie => (
@@ -132,14 +158,18 @@ export const List = () => {
               />
             ))}
           </div>
-          <div className="text-center m-3">
-            <button
-              onClick={() => loadMore(offset)}
-              className="btn btn-primary btn-lg"
-            >
-              Load more
-            </button>
-          </div>
+          {movies.length < count ? (
+            <div className="text-center m-3">
+              <button
+                onClick={() => loadMore(offset)}
+                className="btn btn-primary btn-lg"
+              >
+                Load more
+              </button>
+            </div>
+          ) : (
+            undefined
+          )}
         </Fragment>
       )}
     </div>

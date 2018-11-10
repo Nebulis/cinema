@@ -1,11 +1,11 @@
 import React, { Fragment, useContext, useEffect, useState } from "react";
 import { ApplicationContext } from "../ApplicationContext";
-import * as MovieAPI from "../Movie/MovieAPI";
+import * as MovieAPI from "../Common/MovieAPI";
 import "./Statistics.css";
 import { produce } from "immer";
 import { UserContext } from "../Login/UserContext";
 import orderBy from "lodash/orderBy";
-
+const getMovies = MovieAPI.getMovies(false);
 const initialState = (types, genres) => {
   return types.map(type => ({
     name: type,
@@ -28,7 +28,7 @@ export const Statistics = () => {
   // actions
   const fetchByTypes = (types, genres) => {
     types.forEach(type =>
-      MovieAPI.getMovies(`types=${type}&limit=0`, user)
+      getMovies(`types=${type}&limit=0`, user)
         .then(data =>
           setStats(
             produce(
@@ -39,20 +39,18 @@ export const Statistics = () => {
         )
         .then(() =>
           genres.forEach(genre => {
-            MovieAPI.getMovies(
-              `types=${type}&genres=${genre}&limit=0`,
-              user
-            ).then(data =>
-              setStats(
-                produce(
-                  draft =>
-                    void (draft
-                      .find(t => type === t.name)
-                      .genres.find(g => genre === g.name).count = data.count)
+            getMovies(`types=${type}&genres=${genre}&limit=0`, user).then(
+              data =>
+                setStats(
+                  produce(
+                    draft =>
+                      void (draft
+                        .find(t => type === t.name)
+                        .genres.find(g => genre === g.name).count = data.count)
+                  )
                 )
-              )
             );
-            MovieAPI.getMovies(
+            getMovies(
               `types=${type}&genres=${genre}&seen=true&limit=0`,
               user
             ).then(data =>
@@ -65,7 +63,7 @@ export const Statistics = () => {
                 )
               )
             );
-            MovieAPI.getMovies(
+            getMovies(
               `types=${type}&genres=${genre}&seen=false&limit=0`,
               user
             ).then(data =>
@@ -105,7 +103,7 @@ export const Statistics = () => {
                 <div>
                   {orderBy(type.genres, ["count"], ["desc"]).map(
                     (genre, index) => (
-                      <Fragment>
+                      <Fragment key={index}>
                         <div>
                           {" "}
                           {genre.count} {genre.name} ({" "}

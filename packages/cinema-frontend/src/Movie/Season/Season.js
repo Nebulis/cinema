@@ -1,16 +1,16 @@
 import { useContext, Fragment } from "react";
 import { EditableInput } from "../../Common/EditableField";
-import * as MovieAPI from "../MovieAPI";
+import * as MovieAPI from "../../Common/MovieAPI";
 import React from "react";
 import { produce } from "immer";
 import { UserContext } from "../../Login/UserContext";
 import "./Season.css";
-import { MovieSeen } from "../MovieSeen";
+import { MovieSeen } from "../../Common/MovieSeen";
 import { Episode } from "./Episode";
 import every from "lodash/every";
 import some from "lodash/some";
 import { useToggle } from "../../Common/hooks";
-import { MovieContext } from "../Movie";
+import { MovieContext } from "../../Movie/Movie";
 
 export const SeasonContext = React.createContext({});
 

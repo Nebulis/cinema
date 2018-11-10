@@ -1,0 +1,55 @@
+/* movie cards*/
+.movie-card {
+  display: flex;
+  min-width: 350px;
+  max-width: 350px;
+  margin-top: 20px;
+  box-shadow: 5px 5px 15px 4px var(--movie-secondary-lighter);
+  background-color: var(--movie-accent);
+  cursor: pointer;
+}
+
+.movie-card:hover {
+  box-shadow: 5px 5px 15px 6px var(--movie-highlight);
+}
+
+.movie-card > * {
+  width: 100%;
+}
+
+.movie-card .poster > img {
+  width: 60%;
+}
+
+.movie-card .movie-card-actions > * {
+  margin: 0 1px;
+}
+
+
+/* movie form */
+.movie-form.movie-modal .modal-dialog {
+  max-width: 1200px;
+}
+
+.movie-form .allocine-movie {
+  border: 2px solid lightgray;
+}
+
+.movie-form .allocine-movie.selected, .allocine-movie.selected:hover {
+  border: 2px solid var(--success);
+}
+
+.movie-form .allocine-movie:hover {
+  border: 2px solid black;
+  cursor: pointer;
+}
+
+.movie-form .selected-movie-icon {
+  position: absolute;
+  top: 2px;
+  right: 2px;
+  color: var(--success);
+}
+.movie-container {
+  max-width: 100%;
+}

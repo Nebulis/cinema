@@ -1,9 +1,9 @@
 import React from "react";
-import "./Movie.css";
+import "./MovieList.css";
 import { withUser } from "../Login/UserContext";
 import { Link } from "react-router-dom";
-import { MovieSeen } from "./MovieSeen";
-import { deleteMovie, updateMovie } from "./MovieAPI";
+import { MovieSeen } from "../Common/MovieSeen";
+import { deleteMovie, updateMovie } from "../Common/MovieAPI";
 import every from "lodash/every";
 import some from "lodash/some";
 

@@ -15,10 +15,21 @@ export const getMovie = (id, user) => {
   }).then(handleResponse);
 };
 
-export const getMovies = (search, user) => {
+let controller;
+export const getMovies = abortable => (search, user) => {
+  if (abortable && controller) {
+    controller.abort();
+  }
+  controller = new AbortController();
   return fetch(`/api/movies?${search}`, {
-    headers: headers(user)
-  }).then(handleResponse);
+    headers: headers(user),
+    signal: controller.signal
+  })
+    .then(response => {
+      controller = null;
+      return response;
+    })
+    .then(handleResponse);
 };
 
 export const updateMovie = (movie, user) => {

@@ -16,9 +16,7 @@ export const Header = () => {
         <Link to="/">Cinematheque</Link>
       </h1>
       <Fetch endpoint="/api/movies?limit=0">
-        {({ data }) =>
-          data ? <h6>{data.count} movies/tvshows</h6> : undefined
-        }
+        {({ data }) => <h6>{data ? data.count : 0} movies/tvshows</h6>}
       </Fetch>
       <Link to="/stats">
         <i

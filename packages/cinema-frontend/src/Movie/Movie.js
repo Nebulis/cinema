@@ -1,13 +1,14 @@
 import React, { Fragment, useContext, useEffect, useState } from "react";
 import { withRouter } from "react-router-dom";
-import * as MovieAPI from "./MovieAPI";
+import * as MovieAPI from "../Common/MovieAPI";
 import { UserContext } from "../Login/UserContext";
-import { MovieSeen } from "./MovieSeen";
-import { MoviesContext } from "./MoviesContext";
+import { MovieSeen } from "../Common/MovieSeen";
+import { MoviesContext } from "../Common/MoviesContext";
 import { produce } from "immer";
 import { Season } from "./Season/Season";
 import { EditableTextarea } from "../Common/EditableField";
 import { useToggle } from "../Common/hooks";
+import "./Movie.css";
 
 export const MovieContext = React.createContext({});
 
@@ -38,7 +39,9 @@ export const Movie = withRouter(({ match, history }) => {
   return (
     <div className="container movie-container">
       {!movie ? (
-        <span>Loading ....</span>
+        <h2 className="text-center mt-2">
+          <i className="fas fa-spinner fa-spin fa-2x" />
+        </h2>
       ) : (
         <Fragment>
           <i

@@ -1,7 +1,7 @@
 import React, { Component, Fragment } from "react";
 import { BrowserRouter as Router, Route } from "react-router-dom";
 import "./App.css";
-import { List } from "./Movie/List";
+import { List } from "./MovieList/List";
 import { Movie } from "./Movie/Movie";
 import { Header } from "./Header";
 import { Statistics } from "./Statistics/Statistics";

@@ -5,9 +5,7 @@ export const MoviesContext = React.createContext();
 
 export class MoviesProvider extends React.Component {
   add = movie => {
-    this.setState({
-      movies: [movie, ...this.state.movies]
-    });
+    this.setState(({ movies }) => ({ movies: [movie, ...movies] }));
   };
 
   update = (id, movie) => {
@@ -20,16 +18,17 @@ export class MoviesProvider extends React.Component {
   };
 
   addAll = ({ data, count }) => {
-    this.setState({ movies: [...this.state.movies, ...data], count });
+    this.setState(({ movies }) => ({ movies: [...movies, ...data], count }));
   };
 
   invalidate = () => {
-    this.setState({ movies: [] });
+    this.setState({ movies: [], count: 0 });
   };
 
   onChange = name => (value = "") => {
-    this.invalidate(); // hmmm :)
     this.setState(({ filters }) => ({
+      movies: [],
+      count: 0,
       filters: { ...filters, [name]: value }
     }));
   };

@@ -2,7 +2,7 @@ import { EditableInput, EditableTextarea } from "../../Common/EditableField";
 import React, { useContext, useState } from "react";
 import { UserContext } from "../../Login/UserContext";
 import { produce } from "immer";
-import * as MovieAPI from "../MovieAPI";
+import * as MovieAPI from "../../Common/MovieAPI";
 import { MovieContext } from "../Movie";
 import { SeasonContext } from "./Season";
 
