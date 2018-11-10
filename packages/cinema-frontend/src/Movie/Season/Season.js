@@ -8,6 +8,7 @@ import "./Season.css";
 import { MovieSeen } from "../MovieSeen";
 import { Episode } from "./Episode";
 import every from "lodash/every";
+import some from "lodash/some";
 import { useToggle } from "../../Common/hooks";
 import { MovieContext } from "../Movie";
 
@@ -27,6 +28,7 @@ export const Season = ({ season, index, onMovieChanged }) => {
   };
 
   const seen = every(season.episodes, "seen") && season.episodes.length > 0;
+  const oneSeen = some(season.episodes, "seen") && season.episodes.length > 0;
 
   return (
     <div className="season">
@@ -42,7 +44,7 @@ export const Season = ({ season, index, onMovieChanged }) => {
               });
             }}
           >
-            <MovieSeen seen={seen} />
+            <MovieSeen seen={seen} partial={oneSeen} />
           </div>
           {!lock && (
             <i

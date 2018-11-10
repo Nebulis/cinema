@@ -13,7 +13,7 @@ export const Header = () => {
       }}
     >
       <h1 className="header">
-        <Link to="?">Cinematheque</Link>
+        <Link to="/">Cinematheque</Link>
       </h1>
       <Fetch endpoint="/api/movies?limit=0">
         {({ data }) =>

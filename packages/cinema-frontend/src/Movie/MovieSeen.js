@@ -1,10 +1,10 @@
 import React from "react";
 
-export const MovieSeen = ({ seen, onClick }) => (
+export const MovieSeen = ({ seen, onClick, partial = false }) => (
   <i
     className="fas fa-eye"
     style={{
-      color: seen ? "var(--success)" : "",
+      color: partial && !seen ? "var(--warning)" : seen ? "var(--success)" : "",
       cursor: "pointer"
     }}
     onClick={onClick}
