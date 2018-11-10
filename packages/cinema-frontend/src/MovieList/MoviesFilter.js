@@ -29,11 +29,14 @@ export const MoviesFilter = () => {
   const renderSeen = () => {
     let color = "",
       icon = "fa-eye",
-      onClick = () => onChange("seen")(true);
-    if (seen === true) {
+      onClick = () => onChange("seen")("true");
+    if (seen === "true") {
       color = "var(--success)";
-      onClick = () => onChange("seen")(false);
-    } else if (seen === false) {
+      onClick = () => onChange("seen")("partial");
+    } else if (seen === "partial") {
+      color = "var(--warning)";
+      onClick = () => onChange("seen")("false");
+    } else if (seen === "false") {
       color = "var(--danger)";
       icon = "fa-eye-slash";
       onClick = () => onChange("seen")(null);

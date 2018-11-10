@@ -20,8 +20,8 @@ interface IListQueryParams {
   offset?: string;
 }
 
-function buildSeen(seen: boolean) {
-  if (seen) {
+function buildSeen(seen: string) {
+  if (seen === "true") {
     // rules to be seen
     // all episodes must have been seen, at least 1 season, no empty season (with no episodes)
     return [
@@ -39,6 +39,32 @@ function buildSeen(seen: boolean) {
         ]
       },
       { "seasons.1": { $exists: true } } // it must have at least one season
+    ];
+  } else if (seen === "partial") {
+    // rules to be partially seen
+    // at least one seen episode
+    // at least one notseen episode
+    return [
+      {
+        $and: [
+          {
+            "seasons.episodes.seen": true // it must contain true (seen)
+          },
+          {
+            $or: [
+              {
+                "seasons.episodes.seen": false // it must contain false (no seen)
+              },
+              {
+                "seasons.episodes.seen": null // it must contain null (no seen)
+              },
+              {
+                "seasons.episodes.seen": { $exists: false } // it must contain null (no seen)
+              }
+            ]
+          }
+        ]
+      }
     ];
   } else {
     // rules to be not seen
@@ -99,25 +125,27 @@ const buildQuery = ({
     query = query.and([
       {
         $or: [
-          {
-            $and: [
-              {
-                type: "Film"
+          seen === "partial"
+            ? null
+            : {
+                $and: [
+                  {
+                    type: "Film"
+                  },
+                  {
+                    seen: seen === "true"
+                  }
+                ]
               },
-              {
-                seen: seen === "true"
-              }
-            ]
-          },
           {
             $and: [
               {
                 type: "Série"
               },
-              ...buildSeen(seen === "true")
+              ...buildSeen(seen)
             ]
           }
-        ]
+        ].filter(Boolean)
       }
     ]);
   }
