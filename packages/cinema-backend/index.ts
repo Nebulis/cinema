@@ -11,6 +11,7 @@ import { router as allocine } from "./routes/allocine";
 import { router as movies } from "./routes/movies";
 import { router as seasons } from "./routes/seasons";
 import { router as states } from "./routes/states";
+import { router as tags } from "./routes/tags";
 
 connect(
   `mongodb://${process.env.MONGO_USER}:${process.env.MONGO_PASSWD}@${
@@ -71,6 +72,7 @@ app.use(context + "/", router);
 app.use(context + "/movies", movies);
 app.use(context + "/movies", seasons);
 app.use(context + "/states", states);
+app.use(context + "/tags", tags);
 app.use(context + "/allocine", allocine);
 
 // front

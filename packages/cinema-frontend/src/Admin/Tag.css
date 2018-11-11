@@ -1,0 +1,10 @@
+.tag {
+  padding: 0.25em 0.6em;
+  font-weight: 700;
+  text-align: center;
+  white-space: nowrap;
+}
+
+.tag.big {
+  font-size: 1.5em;
+}

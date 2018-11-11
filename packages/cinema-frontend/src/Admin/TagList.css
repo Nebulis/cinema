@@ -1,0 +1,12 @@
+.tags-card {
+  margin-top: 20px;
+  box-shadow: 5px 5px 15px 4px var(--movie-secondary-lighter);
+  background-color: var(--movie-accent);
+  padding: 15px;
+}
+
+.colorpicker {
+  height: 38px;
+  padding: 0;
+  min-width: 50px;
+}
