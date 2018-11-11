@@ -7,13 +7,13 @@ interface IMovie extends Document {
   finished: boolean;
   genre: string[];
   idAllocine: number;
-  netflix: boolean;
   productionYear: number;
   seasons: Types.DocumentArray<ISeason>;
   seen?: boolean;
   state: number;
   stateSummary: string;
   summary: string;
+  tags: string[];
   title: string;
   type: string;
 }
@@ -23,13 +23,13 @@ const movieSchema = new Schema({
   finished: Boolean, // is tv show finished ?
   genre: [String],
   idAllocine: Number,
-  netflix: Boolean,
   productionYear: Number,
   seasons: [seasonSchema],
   seen: Boolean,
   state: Number,
   stateSummary: String,
   summary: String,
+  tags: [String],
   title: String,
   type: String
 });

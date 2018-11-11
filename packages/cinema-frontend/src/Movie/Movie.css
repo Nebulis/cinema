@@ -6,3 +6,10 @@
 .single-movie-subtitle {
   color: var(--movie-primary-darker);
 }
+
+.movie-tag {
+  cursor: pointer;
+}
+.movie-tag:not(.selected) {
+  opacity: 0.4;
+}

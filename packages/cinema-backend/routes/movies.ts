@@ -13,7 +13,6 @@ interface IListQueryParams {
   notGenres: string; // ; separated genres
   types: string; // ; separated types
   seen: string; // transform to boolean
-  netflix: string; // transform to boolean
   finished: string; // transform to boolean
   productionYear: string;
   limit?: string;
@@ -89,7 +88,6 @@ function buildSeen(seen: string) {
 
 const buildQuery = ({
   title,
-  netflix,
   finished,
   productionYear,
   seen,
@@ -113,9 +111,6 @@ const buildQuery = ({
   });
   if (finished !== null && finished !== undefined) {
     query = query.and([{ finished: !!finished }]);
-  }
-  if (netflix !== null && netflix !== undefined) {
-    query = query.and([{ netflix: !!netflix }]);
   }
   if (productionYear) {
     query = query.and([{ productionYear }]);
@@ -217,7 +212,6 @@ router.post("/", (req, res, next) => {
     finished: false,
     genre: req.body.genre,
     idAllocine: req.body.idAllocine,
-    netflix: false,
     productionYear: req.body.productionYear,
     seen: false,
     state: req.body.state,
@@ -252,7 +246,7 @@ router.put("/:id", (req, res, next) => {
       movie.finished = req.body.finished;
       movie.summary = req.body.summary;
       movie.fileUrl = req.body.fileUrl;
-      movie.netflix = req.body.netflix;
+      movie.tags = req.body.tags;
 
       return movie.save();
     })

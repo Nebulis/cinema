@@ -21,16 +21,6 @@ body {
   white-space: nowrap;
 }
 
-.netflix {
-  cursor: pointer;
-  font: 21px Roboto;
-}
-
-.netflix-small {
-  cursor: pointer;
-  font: 19px Roboto;
-}
-
 .header a {
   color: var(--movie-primary);
   text-decoration: none;

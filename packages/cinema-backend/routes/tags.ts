@@ -12,6 +12,7 @@ router.get("/", (_req, res, next) => {
 // create tag
 router.post("/", (req, res, next) => {
   const tag = new Tag({
+    _id: req.body.label,
     color: req.body.color,
     label: req.body.label
   });

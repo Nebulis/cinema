@@ -57,7 +57,8 @@ export const List = () => {
   const [offset, setOffset] = useState(movies.length / filters.limit);
   const [movie, setMovie] = useState(newMovie());
   const [key, setKey] = useState(0);
-  const [loaded, setLoaded] = useState(false);
+  // set to true otherwise when navigating back to the page, the loader is displayed
+  const [loaded, setLoaded] = useState(true);
 
   //create actions
   const loadMore = offset => {
@@ -92,8 +93,8 @@ export const List = () => {
       // no movies ? then automatically fetch some (note: every time a filter is updated, movies are cleaned up)
       if (movies.length === 0) {
         debouncedLoadMore(0);
+        setLoaded(false);
       }
-      setLoaded(false);
       return () => debouncedLoadMore.cancel();
     },
     [filters]

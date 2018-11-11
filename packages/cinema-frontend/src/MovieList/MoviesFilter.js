@@ -24,7 +24,7 @@ const forInput = (
 export const MoviesFilter = () => {
   const { filters, onChange } = useContext(MoviesContext);
   const { genres, types } = useContext(ApplicationContext);
-  const { seen, netflix, finished } = filters;
+  const { seen, finished } = filters;
 
   const renderSeen = () => {
     let color = "",
@@ -50,21 +50,6 @@ export const MoviesFilter = () => {
         }}
         onClick={onClick}
       />
-    );
-  };
-
-  const renderNetflix = () => {
-    let color = "black",
-      onClick = () => onChange("netflix")(true);
-    if (netflix === true) {
-      color = "var(--danger)";
-      onClick = () => onChange("netflix")(null);
-    }
-
-    return (
-      <span onClick={onClick} className="netflix" style={{ color }}>
-        N
-      </span>
     );
   };
 
@@ -132,7 +117,6 @@ export const MoviesFilter = () => {
         />
       </div>
       <div className="form-group">{renderSeen()}</div>
-      <div className="form-group mx-sm-3">{renderNetflix()}</div>
       <div className="form-group">{renderFinished()}</div>
     </form>
   );

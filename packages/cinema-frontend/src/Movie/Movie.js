@@ -9,13 +9,28 @@ import { Season } from "./Season/Season";
 import { EditableTextarea } from "../Common/EditableField";
 import { useToggle } from "../Common/hooks";
 import "./Movie.css";
+import { ApplicationContext } from "../ApplicationContext";
+import { Tag } from "../Admin/Tag";
 
 export const MovieContext = React.createContext({});
+
+const MovieTag = ({ tag, selected, onAdd, onDelete, lock }) =>
+  !lock ? (
+    <span onClick={selected ? onDelete : onAdd}>
+      <Tag
+        {...tag}
+        className={`movie-tag mr-2 ${selected ? "selected" : ""}`}
+      />
+    </span>
+  ) : selected ? (
+    <Tag {...tag} className={`mr-2 selected`} />
+  ) : null;
 
 export const Movie = withRouter(({ match, history }) => {
   // get contexts
   const user = useContext(UserContext);
   const movies = useContext(MoviesContext);
+  const { tags } = useContext(ApplicationContext);
   // create state
   const [movie, setMovie] = useState();
   const [lock, toggle] = useToggle(true);
@@ -81,6 +96,26 @@ export const Movie = withRouter(({ match, history }) => {
                   style={{ maxHeight: "300px" }}
                   alt="movie poster"
                 />
+                <div className="mt-2">
+                  {tags.map(tag => (
+                    <MovieTag
+                      key={tag._id}
+                      tag={tag}
+                      lock={lock}
+                      selected={movie.tags.find(
+                        movieTag => movieTag === tag._id
+                      )}
+                      onAdd={updateMovie(movie => {
+                        movie.tags.push(tag._id);
+                      })}
+                      onDelete={updateMovie(movie => {
+                        movie.tags = movie.tags.filter(
+                          movieTag => movieTag !== tag._id
+                        );
+                      })}
+                    />
+                  ))}
+                </div>
               </div>
               <div className="pl-2 d-flex flex-column" style={{ flexGrow: 1 }}>
                 <h1 className="text-center">

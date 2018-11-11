@@ -1,4 +1,5 @@
 import React from "react";
+import { getTags } from "./Common/TagAPI";
 
 export const ApplicationContext = React.createContext();
 export const withApplication = Component => props => (
@@ -11,10 +12,8 @@ export const LOADING = Symbol();
 export const LOADED = Symbol();
 
 export class ApplicationProvider extends React.Component {
-  state = {
-    genres: [],
-    types: [],
-    status: LOADING
+  set = field => fn => {
+    this.setState(state => ({ ...state, [field]: fn(state[field]) }));
   };
 
   componentDidMount() {
@@ -30,15 +29,24 @@ export class ApplicationProvider extends React.Component {
     };
     Promise.all([
       fetch("/api/movies/genre", options).then(handleResponse),
-      fetch("/api/movies/type", options).then(handleResponse)
-    ]).then(([genres, types]) => {
+      fetch("/api/movies/type", options).then(handleResponse),
+      getTags(this.props)
+    ]).then(([genres, types, tags]) => {
       this.setState({
         genres,
         types,
+        tags,
         status: LOADED
       });
     });
   }
+  state = {
+    genres: [],
+    types: [],
+    tags: [],
+    status: LOADING,
+    set: this.set
+  };
 
   render() {
     return (

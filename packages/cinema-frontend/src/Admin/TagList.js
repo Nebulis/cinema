@@ -1,9 +1,10 @@
 import React, { useEffect, useState, useContext } from "react";
 import "./TagList.css";
 import { useInput } from "../Common/hooks";
-import { createTag, deleteTag, getTags } from "../Common/TagAPI";
+import { createTag, deleteTag } from "../Common/TagAPI";
 import { UserContext } from "../Login/UserContext";
 import { Tag } from "./Tag";
+import { ApplicationContext } from "../ApplicationContext";
 
 const random = max => {
   return Math.floor(Math.random() * Math.floor(max));
@@ -21,16 +22,12 @@ const generateColor = () => {
 export const TagList = () => {
   // get context
   const user = useContext(UserContext);
+  const { tags, set } = useContext(ApplicationContext);
+  const setTags = set("tags");
 
   // create state
   const [color, setColor] = useInput(generateColor());
   const [label, setLabel] = useInput("");
-  const [tags, setTags] = useState([]);
-
-  //create effects
-  useEffect(() => {
-    getTags(user).then(setTags);
-  }, []);
 
   return (
     <div className="container tags-card">
@@ -97,6 +94,12 @@ export const TagList = () => {
                 setLabel("");
               });
           }}
+          disabled={
+            !label.value ||
+            tags.find(
+              tag => tag.label.toLowerCase() === label.value.toLowerCase()
+            )
+          }
         >
           <i className="fas fa-check" />
         </button>

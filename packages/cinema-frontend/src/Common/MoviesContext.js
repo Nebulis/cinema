@@ -42,7 +42,6 @@ export class MoviesProvider extends React.Component {
       genres: [],
       types: [],
       seen: null, // null = dont care, true = have seen, false = have not seen
-      netflix: null, // null = dont care, true = on netflix
       finished: null, // null = dont care, true = finished
       limit: 30
     },
