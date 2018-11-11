@@ -61,7 +61,10 @@ export const List = () => {
 
   //create actions
   const loadMore = offset => {
-    invalidate();
+    // invalidate if there is a new search
+    if (offset === 0) {
+      invalidate();
+    }
     setLoaded(false);
     getMovies(buildQuery(filters, offset), user)
       .then(addAll)
@@ -101,7 +104,9 @@ export const List = () => {
   return (
     <div>
       {status === LOADING ? (
-        <div>Loading ....</div>
+        <h2 className="text-center mt-2">
+          <i className="fas fa-spinner fa-spin fa-2x" />
+        </h2>
       ) : (
         <Fragment>
           <MovieForm
@@ -136,11 +141,7 @@ export const List = () => {
               </span>
             ) : loaded ? (
               <span> No movies/tvshows</span>
-            ) : (
-              <span>
-                <i className="fas fa-spinner fa-spin fa-2x" />
-              </span>
-            )}
+            ) : null}
           </h2>
           <div className="movies">
             {movies.map(movie => (
@@ -158,6 +159,13 @@ export const List = () => {
               />
             ))}
           </div>
+          <h2 className="text-center mt-2">
+            {!loaded ? (
+              <span>
+                <i className="fas fa-spinner fa-spin fa-2x" />
+              </span>
+            ) : null}
+          </h2>
           {movies.length < count ? (
             <div className="text-center m-3">
               <button
