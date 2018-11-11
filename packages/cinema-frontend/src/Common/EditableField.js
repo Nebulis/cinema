@@ -20,8 +20,10 @@ const EditableField = props => {
             onClick={event => {
               event.preventDefault();
               event.stopPropagation();
-              props.onChange(value);
-              setEdit(false);
+              if (value) {
+                props.onChange(value);
+                setEdit(false);
+              }
             }}
           >
             OK
