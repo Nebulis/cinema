@@ -40,6 +40,19 @@ export const updateMovie = (movie, user) => {
   }).then(handleResponse);
 };
 
+export const updateMoviePoster = (movie, file, user) => {
+  const data = new FormData();
+  data.append("file", file);
+  return fetch(`/api/movies/${movie._id}/poster`, {
+    method: "POST",
+    body: data,
+    headers: {
+      Accept: "application/json",
+      Authorization: `Bearer ${user.token}`
+    }
+  }).then(handleResponse);
+};
+
 export const deleteMovie = (movie, user) => {
   return fetch(`/api/movies/${movie._id}`, {
     method: "DELETE",

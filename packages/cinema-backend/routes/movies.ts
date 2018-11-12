@@ -1,10 +1,15 @@
+import AWS from "aws-sdk";
 import express from "express";
 import identity from "lodash/identity";
+import last from "lodash/last";
 import { DocumentQuery } from "mongoose";
+import multer from "multer";
+import uuid from "uuid/v4";
 import { logger } from "../logger";
 import { Movie } from "../models/movie";
 import { throwMe } from "./util";
 
+const s3 = new AWS.S3({});
 export const router = express.Router();
 
 interface IListQueryParams {
@@ -234,9 +239,46 @@ router.post("/", (req, res, next) => {
     .catch(next);
 });
 
+// update poster
+const upload = multer({ storage: multer.memoryStorage() });
+const Bucket = "cinema-lma";
+router.post("/:id/poster", upload.single("file"), (req, res, next) => {
+  const params: AWS.S3.PutObjectRequest = {
+    ACL: "public-read",
+    Body: req.file.buffer,
+    Bucket,
+    CacheControl: "max-age=63113904",
+    ContentType: req.file.mimetype,
+    Key: req.params.id + uuid()
+  };
+
+  Movie.findById(req.params.id)
+    .then(
+      movie => movie || throwMe(new Error(`Movie ${req.params.id} not found`))
+    )
+    .then(movie => {
+      // i really dont care about the type of this promise :)
+      let promise: Promise<any> = Promise.resolve();
+      if (movie.fileUrl && movie.fileUrl.startsWith("https://cinema-lma.s3")) {
+        promise = s3
+          .deleteObject({
+            Bucket,
+            Key: last(movie.fileUrl.split("/"))!
+          })
+          .promise();
+      }
+      return promise.then(() => s3.upload(params).promise()).then(data => {
+        movie.fileUrl = data.Location;
+        return movie.save();
+      });
+    })
+    .then(movie => res.json(movie))
+    .catch(next);
+});
+
 // update movie
 router.put("/:id", (req, res, next) => {
-  Movie.findById({ _id: req.params.id })
+  Movie.findById(req.params.id)
     .then(
       movie => movie || throwMe(new Error(`Movie ${req.params.id} not found`))
     )

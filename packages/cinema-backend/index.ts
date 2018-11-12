@@ -75,9 +75,6 @@ app.use(context + "/states", states);
 app.use(context + "/tags", tags);
 app.use(context + "/allocine", allocine);
 
-// front
-app.use("/front", express.static("./fo2/build"));
-
 app.set("port", process.env.PORT || 3000);
 
 const server = app.listen(app.get("port"), () => {

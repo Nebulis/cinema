@@ -1,4 +1,10 @@
-import React, { Fragment, useContext, useEffect, useState } from "react";
+import React, {
+  Fragment,
+  useContext,
+  useEffect,
+  useState,
+  useRef
+} from "react";
 import { withRouter } from "react-router-dom";
 import * as MovieAPI from "../Common/MovieAPI";
 import { UserContext } from "../Login/UserContext";
@@ -27,7 +33,6 @@ const MovieTag = ({ tag, selected, onAdd, onDelete, lock }) =>
       <Tag {...tag} className={`mr-1 selected`} />
     </span>
   ) : null;
-
 export const Movie = withRouter(({ match, history }) => {
   // get contexts
   const user = useContext(UserContext);
@@ -35,7 +40,9 @@ export const Movie = withRouter(({ match, history }) => {
   const { tags } = useContext(ApplicationContext);
   // create state
   const [movie, setMovie] = useState();
-  const [lock, toggle] = useToggle(false);
+  const [lock, toggle] = useToggle(true);
+
+  const fileRef = useRef();
 
   // create effects
   useEffect(() => MovieAPI.getMovie(match.params.id, user).then(setMovie), [
@@ -45,6 +52,11 @@ export const Movie = withRouter(({ match, history }) => {
   // create actions
   const updateMovie = transform => () => {
     MovieAPI.updateMovie(produce(movie, transform), user).then(mergeContext);
+  };
+  const handleFiles = files => {
+    if (files.length === 1) {
+      MovieAPI.updateMoviePoster(movie, files[0], user).then(mergeContext);
+    }
   };
 
   // helper
@@ -96,10 +108,26 @@ export const Movie = withRouter(({ match, history }) => {
                 className="d-flex"
                 style={{ flex: "0 0 250px", flexDirection: "column" }}
               >
+                <input
+                  accept=".jpg, .jpeg, .png"
+                  type="file"
+                  ref={fileRef}
+                  style={{ display: "none" }}
+                  onChange={event => handleFiles(event.target.files)}
+                />
                 <img
-                  src={movie.fileUrl || "/no-image.png"}
-                  style={{ height: "300px", width: "225px" }}
+                  src={
+                    movie.fileUrl
+                      ? movie.fileUrl.replace("http:", "https:")
+                      : "/no-image.png"
+                  }
+                  style={{
+                    height: "300px",
+                    width: "225px",
+                    cursor: lock ? "auto" : "pointer"
+                  }}
                   alt="movie poster"
+                  onClick={() => !lock && fileRef.current.click()}
                 />
                 <div className="d-flex flex-wrap">
                   {tags.map(tag => (
