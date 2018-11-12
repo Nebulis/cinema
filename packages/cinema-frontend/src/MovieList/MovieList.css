@@ -18,8 +18,8 @@
 }
 
 .movie-card .poster > img {
-  width: 60%;
   height: 246px; /* looks like normal height for most of images */
+  width: 185px; /* fix it so that all images have same width */
 }
 
 .movie-card .movie-card-actions > * {

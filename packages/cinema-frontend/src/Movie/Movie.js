@@ -16,14 +16,16 @@ export const MovieContext = React.createContext({});
 
 const MovieTag = ({ tag, selected, onAdd, onDelete, lock }) =>
   !lock ? (
-    <span onClick={selected ? onDelete : onAdd}>
+    <span onClick={selected ? onDelete : onAdd} className="mt-1">
       <Tag
         {...tag}
-        className={`movie-tag mr-2 ${selected ? "selected" : ""}`}
+        className={`movie-tag mr-1 ${selected ? "selected" : ""}`}
       />
     </span>
   ) : selected ? (
-    <Tag {...tag} className={`mr-2 selected`} />
+    <span className="mt-1">
+      <Tag {...tag} className={`mr-1 selected`} />
+    </span>
   ) : null;
 
 export const Movie = withRouter(({ match, history }) => {
@@ -33,7 +35,7 @@ export const Movie = withRouter(({ match, history }) => {
   const { tags } = useContext(ApplicationContext);
   // create state
   const [movie, setMovie] = useState();
-  const [lock, toggle] = useToggle(true);
+  const [lock, toggle] = useToggle(false);
 
   // create effects
   useEffect(() => MovieAPI.getMovie(match.params.id, user).then(setMovie), [
@@ -89,14 +91,17 @@ export const Movie = withRouter(({ match, history }) => {
                 lock ? "open" : "close"
               } movie for modifications`}
             />
-            <div className="d-flex justify-content-center">
-              <div>
+            <div className="d-flex">
+              <div
+                className="d-flex"
+                style={{ flex: "0 0 250px", flexDirection: "column" }}
+              >
                 <img
-                  src={movie.fileUrl}
-                  style={{ maxHeight: "300px" }}
+                  src={movie.fileUrl || "/no-image.png"}
+                  style={{ height: "300px", width: "225px" }}
                   alt="movie poster"
                 />
-                <div className="mt-2">
+                <div className="d-flex flex-wrap">
                   {tags.map(tag => (
                     <MovieTag
                       key={tag._id}
@@ -117,7 +122,7 @@ export const Movie = withRouter(({ match, history }) => {
                   ))}
                 </div>
               </div>
-              <div className="pl-2 d-flex flex-column" style={{ flexGrow: 1 }}>
+              <div className="pl-4 d-flex flex-column">
                 <h1 className="text-center">
                   {movie.title} - {movie.productionYear}
                 </h1>

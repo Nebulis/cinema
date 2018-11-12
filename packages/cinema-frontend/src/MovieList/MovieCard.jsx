@@ -88,7 +88,7 @@ export const MovieCard = ({ movie, onEdit, onChange, onDelete }) => {
           />
         </div>
         <div className="poster text-center">
-          <img src={movie.fileUrl} alt="movie poster" />
+          <img src={movie.fileUrl || "/no-image.png"} alt="movie poster" />
         </div>
         <div className="mt-2 text-center">
           {movie.tags.map(movieTag => (
