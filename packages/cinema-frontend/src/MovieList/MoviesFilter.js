@@ -6,6 +6,7 @@ import {
   AsyncMultiDownshiftwithReverse
 } from "../Common/AsyncMultiDownshift";
 import { ApplicationContext } from "../ApplicationContext";
+import { Tag } from "../Admin/Tag";
 
 const fromEvent = event => event.target.value;
 
@@ -21,9 +22,15 @@ const forInput = (
   };
 };
 
+const FilterTag = ({ tag, selected, onAdd, onDelete }) => (
+  <span onClick={selected ? onDelete : onAdd}>
+    <Tag {...tag} className={`filter-tag mr-2 ${selected ? "selected" : ""}`} />
+  </span>
+);
+
 export const MoviesFilter = () => {
   const { filters, onChange } = useContext(MoviesContext);
-  const { genres, types } = useContext(ApplicationContext);
+  const { genres, types, tags } = useContext(ApplicationContext);
   const { seen, finished } = filters;
 
   const renderSeen = () => {
@@ -73,8 +80,8 @@ export const MoviesFilter = () => {
   };
 
   return (
-    <form className="form-inline movies-filter mt-4 mb-4 ml-3">
-      <div className="form-group">
+    <form className="form-inline movies-filter mt-4 ml-3">
+      <div className="form-group mr-2">
         <input
           {...forInput({ filters, onChange }, "productionYear", value =>
             parseInt(value, 10)
@@ -86,7 +93,7 @@ export const MoviesFilter = () => {
           style={{ width: "90px" }}
         />
       </div>
-      <div className="form-group mx-sm-3">
+      <div className="form-group mr-2">
         <input
           type="text"
           {...forInput({ filters, onChange }, "title")}
@@ -94,7 +101,7 @@ export const MoviesFilter = () => {
           className="form-control"
         />
       </div>
-      <div className="form-group" style={{ minWidth: "220px" }}>
+      <div className="form-group mr-2" style={{ minWidth: "220px" }}>
         <AsyncMultiDownshiftwithReverse
           placeholder="Genre"
           handleChange={
@@ -105,7 +112,7 @@ export const MoviesFilter = () => {
           selectedItems={filters.genres}
         />
       </div>
-      <div className="form-group mx-sm-3" style={{ width: "220px" }}>
+      <div className="form-group mr-2" style={{ width: "220px" }}>
         <AsyncMultiDownshift
           placeholder="Type"
           handleChange={
@@ -116,8 +123,21 @@ export const MoviesFilter = () => {
           selectedItems={filters.types}
         />
       </div>
-      <div className="form-group">{renderSeen()}</div>
-      <div className="form-group">{renderFinished()}</div>
+      <div className="form-group mr-2">{renderSeen()}</div>
+      <div className="form-group mr-2">{renderFinished()}</div>
+      <div>
+        {tags.map(tag => (
+          <FilterTag
+            key={tag._id}
+            tag={tag}
+            selected={filters.tags.find(filterTag => filterTag === tag._id)}
+            onAdd={() => onChange("tags")([...filters.tags, tag._id])}
+            onDelete={() =>
+              onChange("tags")(filters.tags.filter(t => t !== tag._id))
+            }
+          />
+        ))}
+      </div>
     </form>
   );
 };

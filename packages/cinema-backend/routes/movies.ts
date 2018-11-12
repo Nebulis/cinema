@@ -10,6 +10,7 @@ export const router = express.Router();
 interface IListQueryParams {
   title: string;
   genres: string; // ; separated genres
+  tags: string; // ; separated tags
   notGenres: string; // ; separated genres
   types: string; // ; separated types
   seen: string; // transform to boolean
@@ -93,6 +94,7 @@ const buildQuery = ({
   seen,
   notGenres,
   genres,
+  tags,
   types
 }: IListQueryParams) => {
   let query: DocumentQuery<any[], any>; // fixme
@@ -143,6 +145,10 @@ const buildQuery = ({
         ].filter(Boolean)
       }
     ]);
+  }
+
+  if (tags) {
+    query = query.and([{ $or: tags.split(",").map(tag => ({ tags: tag })) }]);
   }
 
   if (genres) {

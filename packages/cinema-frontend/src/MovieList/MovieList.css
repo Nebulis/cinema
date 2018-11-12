@@ -51,6 +51,17 @@
   right: 2px;
   color: var(--success);
 }
+
+/* movie filters */
+.movies-filter > div {
+  margin-bottom: .5em !important; /* rofl bootstrap */
+}
 .movie-container {
   max-width: 100%;
+}
+.filter-tag {
+  cursor: pointer;
+}
+.filter-tag:not(.selected) {
+  opacity: 0.4;
 }

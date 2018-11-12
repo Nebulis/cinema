@@ -22,3 +22,15 @@
   display: flex;
   overflow: hidden;
 }
+
+.stat-card .card-body {
+  width: 400px;
+}
+
+.stat-tags-card {
+  height: max-content;
+}
+
+.stat-tags-card-card {
+  line-height: 1.5;
+}
