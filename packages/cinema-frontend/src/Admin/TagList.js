@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useContext } from "react";
+import React, { useContext } from "react";
 import "./TagList.css";
 import { useInput } from "../Common/hooks";
 import { createTag, deleteTag } from "../Common/TagAPI";

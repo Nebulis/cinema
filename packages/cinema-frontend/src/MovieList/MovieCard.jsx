@@ -99,7 +99,11 @@ export const MovieCard = ({ movie, onEdit, onChange, onDelete }) => {
         </div>
         <div className="mt-2 text-center">
           {movie.tags.map(movieTag => (
-            <Tag {...tags.find(tag => tag._id === movieTag)} className="mr-2" />
+            <Tag
+              key={movieTag}
+              {...tags.find(tag => tag._id === movieTag)}
+              className="mr-2"
+            />
           ))}
         </div>
       </div>
