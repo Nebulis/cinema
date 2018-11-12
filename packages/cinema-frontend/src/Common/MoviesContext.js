@@ -3,6 +3,17 @@ import findIndex from "lodash/findIndex";
 
 export const MoviesContext = React.createContext();
 
+const initialFilters = () => ({
+  productionYear: "",
+  title: "",
+  genres: [],
+  types: [],
+  tags: [],
+  seen: null, // null = dont care, true = have seen, false = have not seen
+  finished: null, // null = dont care, true = finished
+  limit: 30
+});
+
 export class MoviesProvider extends React.Component {
   add = movie => {
     this.setState(({ movies }) => ({ movies: [movie, ...movies] }));
@@ -25,6 +36,10 @@ export class MoviesProvider extends React.Component {
     this.setState({ movies: [], count: 0 });
   };
 
+  resetFilters = () => {
+    this.setState({ filters: initialFilters() });
+  };
+
   onChange = name => (value = "") => {
     this.setState(({ filters }) => ({
       movies: [],
@@ -36,21 +51,13 @@ export class MoviesProvider extends React.Component {
   state = {
     movies: [],
     count: 0,
-    filters: {
-      productionYear: "",
-      title: "",
-      genres: [],
-      types: [],
-      tags: [],
-      seen: null, // null = dont care, true = have seen, false = have not seen
-      finished: null, // null = dont care, true = finished
-      limit: 30
-    },
+    filters: initialFilters(),
     onChange: this.onChange,
     addAll: this.addAll,
     update: this.update,
     add: this.add,
-    invalidate: this.invalidate
+    invalidate: this.invalidate,
+    resetFilters: this.resetFilters
   };
 
   render() {

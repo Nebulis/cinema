@@ -6,6 +6,9 @@ import { produce } from "immer";
 import { UserContext } from "../Login/UserContext";
 import orderBy from "lodash/orderBy";
 import { Tag } from "../Admin/Tag";
+import { MoviesContext } from "../Common/MoviesContext";
+import { withRouter } from "react-router-dom";
+
 const getMovies = MovieAPI.getMovies(false);
 
 const initialState = (types, genres, tags) => {
@@ -28,10 +31,11 @@ const initialState = (types, genres, tags) => {
   };
 };
 
-export const Statistics = () => {
+export const Statistics = withRouter(({ history }) => {
   // get contexts
   const user = useContext(UserContext);
   const { genres, types, tags } = useContext(ApplicationContext);
+  const { resetFilters, onChange } = useContext(MoviesContext);
   const [stats, setStats] = useState(initialState(types, genres, tags));
 
   // actions
@@ -180,7 +184,18 @@ export const Statistics = () => {
       <div className="card stat-card stat-tags-card">
         <div className="card-body align-content-center">
           {stats.tags.map((tag, index) => (
-            <h5 className="text-center stat-tags-card-card mt-1" key={index}>
+            <h5
+              className="text-center stat-tags-card-card mt-1"
+              style={{
+                cursor: "pointer"
+              }}
+              key={index}
+              onClick={() => {
+                resetFilters();
+                onChange("tags")([tag.name]);
+                history.push("/");
+              }}
+            >
               <Tag label={`${tag.count} ${tag.name}`} color={tag.color} />
             </h5>
           ))}
@@ -188,4 +203,4 @@ export const Statistics = () => {
       </div>
     </div>
   );
-};
+});
