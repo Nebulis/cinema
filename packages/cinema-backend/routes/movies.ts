@@ -267,10 +267,12 @@ router.post("/:id/poster", upload.single("file"), (req, res, next) => {
           })
           .promise();
       }
-      return promise.then(() => s3.upload(params).promise()).then(data => {
-        movie.fileUrl = data.Location;
-        return movie.save();
-      });
+      return promise
+        .then(() => s3.upload(params).promise())
+        .then(data => {
+          movie.fileUrl = data.Location;
+          return movie.save();
+        });
     })
     .then(movie => res.json(movie))
     .catch(next);
