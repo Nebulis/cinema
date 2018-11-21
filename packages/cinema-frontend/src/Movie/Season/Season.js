@@ -9,7 +9,6 @@ import { MovieSeen } from "../../Common/MovieSeen";
 import { Episode } from "./Episode";
 import every from "lodash/every";
 import some from "lodash/some";
-import times from "lodash/times";
 import { useToggle } from "../../Common/hooks";
 import { MovieContext } from "../../Movie/Movie";
 
@@ -111,15 +110,14 @@ export const Season = ({ season, index, onMovieChanged }) => {
               />
               <button
                 className=" ml-1 btn btn-primary"
-                onClick={() =>
-                  Promise.all(
-                    times(parseInt(episodes, 10), () =>
-                      MovieAPI.addEpisode(movie, season, user)
-                    )
-                  )
-                    .then(() => MovieAPI.getMovie(movie._id, user))
-                    .then(onMovieChanged)
-                }
+                onClick={async () => {
+                  let times = parseInt(episodes, 10);
+                  while (times > 0) {
+                    await MovieAPI.addEpisode(movie, season, user);
+                    times--;
+                  }
+                  MovieAPI.getMovie(movie._id, user).then(onMovieChanged);
+                }}
               >
                 <i className="fas fa-plus" />
                 &nbsp;Add episode

@@ -17,7 +17,6 @@ import { useToggle } from "../Common/hooks";
 import "./Movie.css";
 import { ApplicationContext } from "../ApplicationContext";
 import { Tag } from "../Admin/Tag";
-import times from "lodash/times";
 
 export const MovieContext = React.createContext({});
 
@@ -42,7 +41,7 @@ export const Movie = withRouter(({ match, history }) => {
   const { tags } = useContext(ApplicationContext);
   // create state
   const [movie, setMovie] = useState();
-  const [lock, toggle] = useToggle(false);
+  const [lock, toggle] = useToggle(true);
 
   const fileRef = useRef();
 
@@ -195,7 +194,7 @@ export const Movie = withRouter(({ match, history }) => {
                     <div>
                       {movie.seasons.map((season, seasonIndex) => (
                         <Season
-                          key={seasonIndex}
+                          key={season._id}
                           season={season}
                           index={seasonIndex}
                           onMovieChanged={mergeContext}
@@ -214,15 +213,14 @@ export const Movie = withRouter(({ match, history }) => {
                       />
                       <button
                         className=" ml-1 btn btn-primary"
-                        onClick={() =>
-                          Promise.all(
-                            times(parseInt(seasons, 10), () =>
-                              MovieAPI.addSeason(movie, user)
-                            )
-                          )
-                            .then(() => MovieAPI.getMovie(movie._id, user))
-                            .then(mergeContext)
-                        }
+                        onClick={async () => {
+                          let times = parseInt(seasons, 10);
+                          while (times > 0) {
+                            await MovieAPI.addSeason(movie, user);
+                            times--;
+                          }
+                          MovieAPI.getMovie(movie._id, user).then(mergeContext);
+                        }}
                       >
                         <i className="fas fa-plus" />
                         &nbsp;Add season
