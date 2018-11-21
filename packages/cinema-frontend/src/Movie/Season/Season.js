@@ -1,4 +1,4 @@
-import { useContext, Fragment } from "react";
+import { useContext, Fragment, useState } from "react";
 import { EditableInput } from "../../Common/EditableField";
 import * as MovieAPI from "../../Common/MovieAPI";
 import React from "react";
@@ -9,6 +9,7 @@ import { MovieSeen } from "../../Common/MovieSeen";
 import { Episode } from "./Episode";
 import every from "lodash/every";
 import some from "lodash/some";
+import times from "lodash/times";
 import { useToggle } from "../../Common/hooks";
 import { MovieContext } from "../../Movie/Movie";
 
@@ -19,6 +20,7 @@ export const Season = ({ season, index, onMovieChanged }) => {
   const user = useContext(UserContext);
   const { movie, lock } = useContext(MovieContext);
   const [open, toggle] = useToggle();
+  const [episodes, setEpisodes] = useState("1");
 
   // actions
   const updateSeason = transform => {
@@ -99,15 +101,30 @@ export const Season = ({ season, index, onMovieChanged }) => {
       {!lock ? (
         <Fragment>
           {open && (
-            <button
-              className="btn btn-primary"
-              onClick={() =>
-                MovieAPI.addEpisode(movie, season, user).then(onMovieChanged)
-              }
-            >
-              <i className="fas fa-plus" />
-              &nbsp;Add episode
-            </button>
+            <div className="form-inline d-block mt-1 mb-1">
+              <input
+                type="text"
+                className="form-control"
+                style={{ width: "60px" }}
+                onChange={event => setEpisodes(event.target.value)}
+                value={episodes}
+              />
+              <button
+                className=" ml-1 btn btn-primary"
+                onClick={() =>
+                  Promise.all(
+                    times(parseInt(episodes, 10), () =>
+                      MovieAPI.addEpisode(movie, season, user)
+                    )
+                  )
+                    .then(() => MovieAPI.getMovie(movie._id, user))
+                    .then(onMovieChanged)
+                }
+              >
+                <i className="fas fa-plus" />
+                &nbsp;Add episode
+              </button>
+            </div>
           )}
         </Fragment>
       ) : (
