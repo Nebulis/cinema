@@ -1,6 +1,7 @@
 import express from "express";
 import { Movie } from "../models/movie";
 import { Tag } from "../models/tag";
+import { throwMe } from "./util";
 
 export const router = express.Router();
 
@@ -21,6 +22,21 @@ router.post("/", (req, res, next) => {
   tag
     .save()
     .then(insertedTag => res.json(insertedTag))
+    .catch(next);
+});
+
+// update tag
+router.put("/:id", (req, res, next) => {
+  Tag.findById(req.params.id)
+    .then(tag => tag || throwMe(new Error(`tag ${req.params.id} not found`)))
+    .then(tag => {
+      tag.color = req.body.color;
+      tag.label = req.body.label;
+      return tag.save();
+    })
+    .then(tag => {
+      res.json(tag);
+    })
     .catch(next);
 });
 

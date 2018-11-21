@@ -1,23 +1,13 @@
 import React, { useContext } from "react";
 import "./TagList.css";
 import { useInput } from "../Common/hooks";
-import { createTag, deleteTag } from "../Common/TagAPI";
+import { createTag } from "../Common/TagAPI";
 import { UserContext } from "../Login/UserContext";
 import { Tag } from "./Tag";
 import { ApplicationContext } from "../ApplicationContext";
-
-const random = max => {
-  return Math.floor(Math.random() * Math.floor(max));
-};
-const generateColor = () => {
-  return `#${random(256)
-    .toString(16)
-    .padStart(2, "0")}${random(256)
-    .toString(16)
-    .padStart(2, "0")}${random(256)
-    .toString(16)
-    .padStart(2, "0")}`;
-};
+import { TagListElement } from "./TagListElement";
+import { generateColor } from "./tag.utils";
+import { produce } from "immer";
 
 export const TagList = () => {
   // get context
@@ -31,34 +21,19 @@ export const TagList = () => {
 
   return (
     <div className="container tags-card">
-      {tags.map(tag => (
-        <div
+      {tags.map((tag, index) => (
+        <TagListElement
           key={tag._id}
-          className="mt-2 mb-2 d-flex"
-          style={{
-            overflow: "hidden" // Collapsing margins
+          tag={tag}
+          onDelete={() => setTags(tags => tags.filter(t => t._id !== tag._id))}
+          onUpdate={tag => {
+            setTags(tags =>
+              produce(tags, draft => {
+                draft[index] = tag;
+              })
+            );
           }}
-        >
-          {/* avoid the tag element to fill up all the available height */}
-          <div>
-            <Tag {...tag} big />
-          </div>
-          <button
-            type="button"
-            className="btn btn-danger ml-2"
-            onClick={event => {
-              event.preventDefault();
-              event.stopPropagation();
-              if (window.confirm("Delete tag ?")) {
-                deleteTag(tag, user).then(_ =>
-                  setTags(tags => tags.filter(t => t._id !== tag._id))
-                );
-              }
-            }}
-          >
-            <i className="fas fa-times" />
-          </button>
-        </div>
+        />
       ))}
       <form className="form-inline">
         <input type="color" className="form-control colorpicker" {...color} />
