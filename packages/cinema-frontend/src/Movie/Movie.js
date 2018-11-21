@@ -17,6 +17,7 @@ import { useToggle } from "../Common/hooks";
 import "./Movie.css";
 import { ApplicationContext } from "../ApplicationContext";
 import { Tag } from "../Admin/Tag";
+import times from "lodash/times";
 
 export const MovieContext = React.createContext({});
 
@@ -37,10 +38,11 @@ export const Movie = withRouter(({ match, history }) => {
   // get contexts
   const user = useContext(UserContext);
   const movies = useContext(MoviesContext);
+  const [seasons, setSeasons] = useState("1");
   const { tags } = useContext(ApplicationContext);
   // create state
   const [movie, setMovie] = useState();
-  const [lock, toggle] = useToggle(true);
+  const [lock, toggle] = useToggle(false);
 
   const fileRef = useRef();
 
@@ -202,15 +204,30 @@ export const Movie = withRouter(({ match, history }) => {
                     </div>
                   </MovieContext.Provider>
                   {!lock ? (
-                    <button
-                      className="btn btn-primary"
-                      onClick={() =>
-                        MovieAPI.addSeason(movie, user).then(mergeContext)
-                      }
-                    >
-                      <i className="fas fa-plus" />
-                      &nbsp;Add season
-                    </button>
+                    <div className="form-inline d-block mt-1 mb-1">
+                      <input
+                        type="text"
+                        className="form-control"
+                        style={{ width: "60px" }}
+                        onChange={event => setSeasons(event.target.value)}
+                        value={seasons}
+                      />
+                      <button
+                        className=" ml-1 btn btn-primary"
+                        onClick={() =>
+                          Promise.all(
+                            times(parseInt(seasons, 10), () =>
+                              MovieAPI.addSeason(movie, user)
+                            )
+                          )
+                            .then(() => MovieAPI.getMovie(movie._id, user))
+                            .then(mergeContext)
+                        }
+                      >
+                        <i className="fas fa-plus" />
+                        &nbsp;Add season
+                      </button>
+                    </div>
                   ) : (
                     undefined
                   )}
