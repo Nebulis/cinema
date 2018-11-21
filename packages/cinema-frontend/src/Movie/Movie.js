@@ -152,7 +152,7 @@ export const Movie = withRouter(({ match, history }) => {
                   ))}
                 </div>
               </div>
-              <div className="pl-4 d-flex flex-column">
+              <div className="pl-4 d-flex flex-column" style={{ flexGrow: 1 }}>
                 <h1 className="text-center">
                   {movie.title} - {movie.productionYear}
                 </h1>

@@ -52,16 +52,19 @@ export const EditableInput = props => (
   <EditableField
     {...props}
     renderFormField={fieldProps => (
-      <input
-        placeholder={fieldProps.placeholder}
-        type="text"
-        value={fieldProps.value}
-        onChange={fieldProps.onChange}
-        onClick={event => {
-          event.preventDefault();
-          event.stopPropagation();
-        }}
-      />
+      <div className="form-inline d-inline-block">
+        <input
+          className="form-control mr-1"
+          placeholder={fieldProps.placeholder}
+          type="text"
+          value={fieldProps.value}
+          onChange={fieldProps.onChange}
+          onClick={event => {
+            event.preventDefault();
+            event.stopPropagation();
+          }}
+        />
+      </div>
     )}
     renderValue={valueProps => (
       <span onClick={valueProps.onClick} className={valueProps.className}>
@@ -76,6 +79,7 @@ export const EditableTextarea = props => (
     {...props}
     renderFormField={fieldProps => (
       <textarea
+        className="form-control w-100"
         placeholder={fieldProps.placeholder}
         style={fieldProps.style}
         value={fieldProps.value}
