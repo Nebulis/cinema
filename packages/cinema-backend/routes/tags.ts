@@ -1,4 +1,5 @@
 import express from "express";
+import { Movie } from "../models/movie";
 import { Tag } from "../models/tag";
 
 export const router = express.Router();
@@ -25,7 +26,16 @@ router.post("/", (req, res, next) => {
 
 // create tag
 router.delete("/:id", (req, res, next) => {
-  Tag.findByIdAndDelete(req.params.id)
+  Movie.update(
+    { tags: req.params.id },
+    {
+      $pull: { tags: req.params.id }
+    },
+    { multi: true }
+  )
+    .then(_ => {
+      return Tag.findByIdAndDelete(req.params.id).exec();
+    })
     .then(_ => {
       res.json(204);
     })
