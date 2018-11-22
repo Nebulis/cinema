@@ -1,4 +1,4 @@
-import { useContext, Fragment } from "react";
+import { useContext, Fragment, useState } from "react";
 import { EditableInput } from "../../Common/EditableField";
 import * as MovieAPI from "../../Common/MovieAPI";
 import React from "react";
@@ -19,6 +19,7 @@ export const Season = ({ season, index, onMovieChanged }) => {
   const user = useContext(UserContext);
   const { movie, lock } = useContext(MovieContext);
   const [open, toggle] = useToggle();
+  const [episodes, setEpisodes] = useState("1");
 
   // actions
   const updateSeason = transform => {
@@ -99,15 +100,29 @@ export const Season = ({ season, index, onMovieChanged }) => {
       {!lock ? (
         <Fragment>
           {open && (
-            <button
-              className="btn btn-primary"
-              onClick={() =>
-                MovieAPI.addEpisode(movie, season, user).then(onMovieChanged)
-              }
-            >
-              <i className="fas fa-plus" />
-              &nbsp;Add episode
-            </button>
+            <div className="form-inline d-block mt-1 mb-1">
+              <input
+                type="text"
+                className="form-control"
+                style={{ width: "60px" }}
+                onChange={event => setEpisodes(event.target.value)}
+                value={episodes}
+              />
+              <button
+                className=" ml-1 btn btn-primary"
+                onClick={async () => {
+                  let times = parseInt(episodes, 10);
+                  while (times > 0) {
+                    await MovieAPI.addEpisode(movie, season, user);
+                    times--;
+                  }
+                  MovieAPI.getMovie(movie._id, user).then(onMovieChanged);
+                }}
+              >
+                <i className="fas fa-plus" />
+                &nbsp;Add episode
+              </button>
+            </div>
           )}
         </Fragment>
       ) : (

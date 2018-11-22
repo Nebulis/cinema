@@ -37,6 +37,7 @@ export const Movie = withRouter(({ match, history }) => {
   // get contexts
   const user = useContext(UserContext);
   const movies = useContext(MoviesContext);
+  const [seasons, setSeasons] = useState("1");
   const { tags } = useContext(ApplicationContext);
   // create state
   const [movie, setMovie] = useState();
@@ -150,7 +151,7 @@ export const Movie = withRouter(({ match, history }) => {
                   ))}
                 </div>
               </div>
-              <div className="pl-4 d-flex flex-column">
+              <div className="pl-4 d-flex flex-column" style={{ flexGrow: 1 }}>
                 <h1 className="text-center">
                   {movie.title} - {movie.productionYear}
                 </h1>
@@ -193,7 +194,7 @@ export const Movie = withRouter(({ match, history }) => {
                     <div>
                       {movie.seasons.map((season, seasonIndex) => (
                         <Season
-                          key={seasonIndex}
+                          key={season._id}
                           season={season}
                           index={seasonIndex}
                           onMovieChanged={mergeContext}
@@ -202,15 +203,29 @@ export const Movie = withRouter(({ match, history }) => {
                     </div>
                   </MovieContext.Provider>
                   {!lock ? (
-                    <button
-                      className="btn btn-primary"
-                      onClick={() =>
-                        MovieAPI.addSeason(movie, user).then(mergeContext)
-                      }
-                    >
-                      <i className="fas fa-plus" />
-                      &nbsp;Add season
-                    </button>
+                    <div className="form-inline d-block mt-1 mb-1">
+                      <input
+                        type="text"
+                        className="form-control"
+                        style={{ width: "60px" }}
+                        onChange={event => setSeasons(event.target.value)}
+                        value={seasons}
+                      />
+                      <button
+                        className=" ml-1 btn btn-primary"
+                        onClick={async () => {
+                          let times = parseInt(seasons, 10);
+                          while (times > 0) {
+                            await MovieAPI.addSeason(movie, user);
+                            times--;
+                          }
+                          MovieAPI.getMovie(movie._id, user).then(mergeContext);
+                        }}
+                      >
+                        <i className="fas fa-plus" />
+                        &nbsp;Add season
+                      </button>
+                    </div>
                   ) : (
                     undefined
                   )}

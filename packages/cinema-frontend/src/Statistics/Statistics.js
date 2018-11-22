@@ -24,6 +24,7 @@ const initialState = (types, genres, tags) => {
       }))
     })),
     tags: tags.map(tag => ({
+      id: tag._id,
       name: tag.label,
       color: tag.color,
       count: 0
@@ -96,10 +97,10 @@ export const Statistics = withRouter(({ history }) => {
 
   const fetchByTags = tags => {
     tags.forEach(tag =>
-      getMovies(`tags=${tag.label}&limit=0`, user).then(data =>
+      getMovies(`tags=${tag._id}&limit=0`, user).then(data =>
         setStats(
           produce(draft => {
-            draft.tags.find(t => tag.label === t.name).count += data.count;
+            draft.tags.find(t => tag._id === t.id).count += data.count;
           })
         )
       )
@@ -111,7 +112,7 @@ export const Statistics = withRouter(({ history }) => {
     () => {
       setStats(initialState(types, genres, tags));
       fetchByTypes(types, genres);
-      fetchByTags(tags, types);
+      fetchByTags(tags);
     },
     [types, genres, tags]
   );

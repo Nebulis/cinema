@@ -23,6 +23,14 @@ export const createTag = (tag, user) => {
   }).then(handleResponse);
 };
 
+export const updateTag = (tag, user) => {
+  return fetch(`/api/tags/${tag._id}`, {
+    method: "PUT",
+    body: JSON.stringify(tag),
+    headers: headers(user)
+  }).then(handleResponse);
+};
+
 export const deleteTag = (tag, user) => {
   return fetch(`/api/tags/${tag._id}`, {
     method: "DELETE",
