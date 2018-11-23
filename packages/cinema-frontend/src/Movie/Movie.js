@@ -37,7 +37,7 @@ export const Movie = withRouter(({ match, history }) => {
   // get contexts
   const user = useContext(UserContext);
   const movies = useContext(MoviesContext);
-  const [seasons, setSeasons] = useState("1");
+  const [seasons, setSeasons] = useState(1);
   const { tags } = useContext(ApplicationContext);
   // create state
   const [movie, setMovie] = useState();
@@ -51,7 +51,7 @@ export const Movie = withRouter(({ match, history }) => {
   ]);
 
   // create actions
-  const updateMovie = transform => () => {
+  const updateMovie = transform => {
     MovieAPI.updateMovie(produce(movie, transform), user).then(mergeContext);
   };
   const handleFiles = files => {
@@ -139,14 +139,18 @@ export const Movie = withRouter(({ match, history }) => {
                       selected={movie.tags.find(
                         movieTag => movieTag === tag._id
                       )}
-                      onAdd={updateMovie(movie => {
-                        movie.tags.push(tag._id);
-                      })}
-                      onDelete={updateMovie(movie => {
-                        movie.tags = movie.tags.filter(
-                          movieTag => movieTag !== tag._id
-                        );
-                      })}
+                      onAdd={() =>
+                        updateMovie(movie => {
+                          movie.tags.push(tag._id);
+                        })
+                      }
+                      onDelete={() =>
+                        updateMovie(movie => {
+                          movie.tags = movie.tags.filter(
+                            movieTag => movieTag !== tag._id
+                          );
+                        })
+                      }
                     />
                   ))}
                 </div>
@@ -205,16 +209,18 @@ export const Movie = withRouter(({ match, history }) => {
                   {!lock ? (
                     <div className="form-inline d-block mt-1 mb-1">
                       <input
-                        type="text"
+                        type="number"
                         className="form-control"
-                        style={{ width: "60px" }}
-                        onChange={event => setSeasons(event.target.value)}
+                        style={{ width: "80px" }}
+                        onChange={event =>
+                          setSeasons(parseInt(event.target.value, 10))
+                        }
                         value={seasons}
                       />
                       <button
                         className=" ml-1 btn btn-primary"
                         onClick={async () => {
-                          let times = parseInt(seasons, 10);
+                          let times = seasons || 1;
                           while (times > 0) {
                             await MovieAPI.addSeason(movie, user);
                             times--;

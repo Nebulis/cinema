@@ -19,7 +19,7 @@ export const Season = ({ season, index, onMovieChanged }) => {
   const user = useContext(UserContext);
   const { movie, lock } = useContext(MovieContext);
   const [open, toggle] = useToggle();
-  const [episodes, setEpisodes] = useState("1");
+  const [episodes, setEpisodes] = useState(1);
 
   // actions
   const updateSeason = transform => {
@@ -66,6 +66,7 @@ export const Season = ({ season, index, onMovieChanged }) => {
           <EditableInput
             lock={lock}
             placeholder="YYYY"
+            type="number"
             value={season.productionYear}
             transform={value => parseInt(value, 10)}
             onChange={productionYear =>
@@ -102,16 +103,18 @@ export const Season = ({ season, index, onMovieChanged }) => {
           {open && (
             <div className="form-inline d-block mt-1 mb-1">
               <input
-                type="text"
+                type="number"
                 className="form-control"
-                style={{ width: "60px" }}
-                onChange={event => setEpisodes(event.target.value)}
+                style={{ width: "80px" }}
+                onChange={event =>
+                  setEpisodes(parseInt(event.target.value, 10))
+                }
                 value={episodes}
               />
               <button
                 className=" ml-1 btn btn-primary"
                 onClick={async () => {
-                  let times = parseInt(episodes, 10);
+                  let times = episodes || 1;
                   while (times > 0) {
                     await MovieAPI.addEpisode(movie, season, user);
                     times--;
