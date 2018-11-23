@@ -296,7 +296,8 @@ router.put("/:id", (req, res, next) => {
       movie.finished = req.body.finished;
       movie.summary = req.body.summary;
       movie.fileUrl = req.body.fileUrl;
-      movie.tags = req.body.tags;
+      movie.tags = req.body.tags || movie.tags;
+      movie.seasons = req.body.seasons || movie.seasons;
 
       return movie.save();
     })

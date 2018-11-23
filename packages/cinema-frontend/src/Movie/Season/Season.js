@@ -14,12 +14,20 @@ import { MovieContext } from "../../Movie/Movie";
 
 export const SeasonContext = React.createContext({});
 
-export const Season = ({ season, index, onMovieChanged }) => {
+export const Season = ({
+  season,
+  index,
+  onMovieChanged,
+  onDragStart,
+  onDragOver,
+  onDragEnd
+}) => {
   // get contexts
   const user = useContext(UserContext);
   const { movie, lock } = useContext(MovieContext);
   const [open, toggle] = useToggle();
   const [episodes, setEpisodes] = useState(1);
+  const [opacity, setOpacity] = useState("1");
 
   // actions
   const updateSeason = transform => {
@@ -32,7 +40,23 @@ export const Season = ({ season, index, onMovieChanged }) => {
   const oneSeen = some(season.episodes, "seen") && season.episodes.length > 0;
 
   return (
-    <div className="season">
+    <div
+      className="season"
+      draggable
+      onDragStart={event => {
+        setOpacity("0.5");
+        event.dataTransfer.dropEffect = "move";
+        onDragStart();
+      }}
+      onDragEnd={() => {
+        onDragEnd();
+        setOpacity("1");
+      }}
+      onDragOver={() => onDragOver()}
+      style={{
+        opacity
+      }}
+    >
       <div className="season-header" onClick={toggle}>
         <div>
           <div

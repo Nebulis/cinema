@@ -39,6 +39,7 @@ export const Movie = withRouter(({ match, history }) => {
   const movies = useContext(MoviesContext);
   const [seasons, setSeasons] = useState(1);
   const { tags } = useContext(ApplicationContext);
+  const [drag, setDrag] = useState();
   // create state
   const [movie, setMovie] = useState();
   const [lock, toggle] = useToggle(true);
@@ -51,7 +52,7 @@ export const Movie = withRouter(({ match, history }) => {
   ]);
 
   // create actions
-  const updateMovie = transform => {
+  const updateMovie = (transform = value => value) => {
     MovieAPI.updateMovie(produce(movie, transform), user).then(mergeContext);
   };
   const handleFiles = files => {
@@ -226,6 +227,18 @@ export const Movie = withRouter(({ match, history }) => {
                           season={season}
                           index={seasonIndex}
                           onMovieChanged={mergeContext}
+                          onDragStart={() => setDrag(seasonIndex)}
+                          onDragOver={() => {
+                            if (seasonIndex !== drag) {
+                              setDrag(seasonIndex);
+                              movie.seasons = produce(movie.seasons, draft => {
+                                const tmp = draft[seasonIndex];
+                                draft[seasonIndex] = draft[drag];
+                                draft[drag] = tmp;
+                              });
+                            }
+                          }}
+                          onDragEnd={updateMovie}
                         />
                       ))}
                     </div>
