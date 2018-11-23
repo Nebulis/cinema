@@ -116,6 +116,7 @@ export const Season = ({ season, index, onMovieChanged }) => {
                     await MovieAPI.addEpisode(movie, season, user);
                     times--;
                   }
+                  setEpisodes(1);
                   MovieAPI.getMovie(movie._id, user).then(onMovieChanged);
                 }}
               >

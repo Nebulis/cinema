@@ -219,6 +219,7 @@ export const Movie = withRouter(({ match, history }) => {
                             await MovieAPI.addSeason(movie, user);
                             times--;
                           }
+                          setSeasons(1);
                           MovieAPI.getMovie(movie._id, user).then(mergeContext);
                         }}
                       >
