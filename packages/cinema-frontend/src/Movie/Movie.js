@@ -12,7 +12,7 @@ import { MovieSeen } from "../Common/MovieSeen";
 import { MoviesContext } from "../Common/MoviesContext";
 import { produce } from "immer";
 import { Season } from "./Season/Season";
-import { EditableTextarea } from "../Common/EditableField";
+import { EditableInput, EditableTextarea } from "../Common/EditableField";
 import { useToggle } from "../Common/hooks";
 import "./Movie.css";
 import { ApplicationContext } from "../ApplicationContext";
@@ -157,7 +157,29 @@ export const Movie = withRouter(({ match, history }) => {
               </div>
               <div className="pl-4 d-flex flex-column" style={{ flexGrow: 1 }}>
                 <h1 className="text-center">
-                  {movie.title} - {movie.productionYear}
+                  <EditableInput
+                    lock={lock}
+                    value={movie.title}
+                    placeholder="Title"
+                    onChange={title =>
+                      updateMovie(movie => {
+                        movie.title = title;
+                      })
+                    }
+                  />{" "}
+                  -{" "}
+                  <EditableInput
+                    lock={lock}
+                    value={movie.productionYear}
+                    placeholder="YYYY"
+                    type="number"
+                    transform={value => parseInt(value, 10)}
+                    onChange={productionYear =>
+                      updateMovie(movie => {
+                        movie.productionYear = productionYear;
+                      })
+                    }
+                  />
                 </h1>
                 <h6 className="text-center single-movie-subtitle">
                   {movie.genre.join(",")}
@@ -183,9 +205,11 @@ export const Movie = withRouter(({ match, history }) => {
               {movie.type === "Film" ? (
                 <MovieSeen
                   seen={movie.seen}
-                  onClick={updateMovie(movie => {
-                    movie.seen = !movie.seen;
-                  })}
+                  onClick={() =>
+                    updateMovie(movie => {
+                      movie.seen = !movie.seen;
+                    })
+                  }
                 />
               ) : (
                 undefined
