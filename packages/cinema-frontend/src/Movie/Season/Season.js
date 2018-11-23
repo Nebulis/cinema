@@ -20,7 +20,8 @@ export const Season = ({
   onMovieChanged,
   onDragStart,
   onDragOver,
-  onDragEnd
+  onDragEnd,
+  dragging
 }) => {
   // get contexts
   const user = useContext(UserContext);
@@ -28,12 +29,13 @@ export const Season = ({
   const [open, toggle] = useToggle();
   const [episodes, setEpisodes] = useState(1);
   const [opacity, setOpacity] = useState("1");
+  const [drag, setDrag] = useState();
 
   // actions
-  const updateSeason = transform => {
-    const newMovie = produce(movie, transform);
-    const season = newMovie.seasons[index];
-    MovieAPI.updateSeason(newMovie, season, user).then(onMovieChanged);
+  const updateSeason = (transform = value => value) => {
+    MovieAPI.updateSeason(movie, produce(season, transform), user).then(
+      onMovieChanged
+    );
   };
 
   const seen = every(season.episodes, "seen") && season.episodes.length > 0;
@@ -46,13 +48,17 @@ export const Season = ({
       onDragStart={event => {
         setOpacity("0.5");
         event.dataTransfer.dropEffect = "move";
+        event.stopPropagation();
         onDragStart();
       }}
-      onDragEnd={() => {
+      onDragEnd={event => {
+        event.stopPropagation();
         onDragEnd();
-        setOpacity("1");
+        setOpacity("1.5");
       }}
-      onDragOver={() => onDragOver()}
+      onDragOver={() => {
+        dragging && onDragOver();
+      }}
       style={{
         opacity
       }}
@@ -64,8 +70,8 @@ export const Season = ({
             onClick={event => {
               event.preventDefault();
               event.stopPropagation();
-              updateSeason(movie => {
-                movie.seasons[index].seen = !seen;
+              updateSeason(season => {
+                season.seen = !seen;
               });
             }}
           >
@@ -94,8 +100,8 @@ export const Season = ({
             value={season.productionYear}
             transform={value => parseInt(value, 10)}
             onChange={productionYear =>
-              updateSeason(movie => {
-                movie.seasons[index].productionYear = productionYear;
+              updateSeason(season => {
+                season.productionYear = productionYear;
               })
             }
           />
@@ -117,6 +123,24 @@ export const Season = ({
                 episode={episode}
                 index={episodeIndex}
                 onEpisodeChanged={onMovieChanged}
+                dragging={drag !== undefined}
+                onDragStart={() => {
+                  setDrag(episodeIndex);
+                }}
+                onDragOver={() => {
+                  if (episodeIndex !== drag) {
+                    setDrag(episodeIndex);
+                    season.episodes = produce(season.episodes, draft => {
+                      const tmp = draft[episodeIndex];
+                      draft[episodeIndex] = draft[drag];
+                      draft[drag] = tmp;
+                    });
+                  }
+                }}
+                onDragEnd={() => {
+                  updateSeason();
+                  setDrag();
+                }}
               />
             ))}
         </SeasonContext.Provider>

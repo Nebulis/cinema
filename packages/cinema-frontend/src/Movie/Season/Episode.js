@@ -6,18 +6,28 @@ import * as MovieAPI from "../../Common/MovieAPI";
 import { MovieContext } from "../Movie";
 import { SeasonContext } from "./Season";
 
-export const Episode = ({ episode, index, onEpisodeChanged }) => {
+export const Episode = ({
+  episode,
+  index,
+  onEpisodeChanged,
+  onDragStart,
+  onDragOver,
+  onDragEnd,
+  dragging
+}) => {
   // get contexts
   const user = useContext(UserContext);
   const { movie, lock } = useContext(MovieContext);
   const { season, index: seasonIndex } = useContext(SeasonContext);
+
+  // local state
   const [ellipsis, setEllipsis] = useState("ellipsis");
+  const [style, setStyle] = useState({});
 
   // actions
   const updateSeason = transform => {
     const newMovie = produce(movie, transform);
     const season = newMovie.seasons[seasonIndex];
-    // onEpisodeChanged(newMovie);
     MovieAPI.updateSeason(newMovie, season, user).then(onEpisodeChanged);
   };
   const updateEpisode = transform => {
@@ -30,7 +40,29 @@ export const Episode = ({ episode, index, onEpisodeChanged }) => {
   };
 
   return (
-    <div className="row episode mr-0 ml-0">
+    <div
+      className="row episode mr-0 ml-0"
+      draggable
+      onDragStart={event => {
+        setStyle({
+          backgroundColor: "var(--movie-secondary-lighter)",
+          opacity: "0.4",
+          color: "var(--movie-primary)"
+        });
+        event.dataTransfer.dropEffect = "move";
+        event.stopPropagation();
+        onDragStart();
+      }}
+      onDragOver={() => {
+        dragging && onDragOver();
+      }}
+      onDragEnd={event => {
+        event.stopPropagation();
+        onDragEnd();
+        setStyle({});
+      }}
+      style={style}
+    >
       <div className=" col-md-12 col-xl-2 align-items-center d-flex p-0">
         {!lock && (
           <i

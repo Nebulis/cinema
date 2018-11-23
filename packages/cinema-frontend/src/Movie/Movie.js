@@ -227,6 +227,7 @@ export const Movie = withRouter(({ match, history }) => {
                           season={season}
                           index={seasonIndex}
                           onMovieChanged={mergeContext}
+                          dragging={drag !== undefined}
                           onDragStart={() => setDrag(seasonIndex)}
                           onDragOver={() => {
                             if (seasonIndex !== drag) {
@@ -238,7 +239,10 @@ export const Movie = withRouter(({ match, history }) => {
                               });
                             }
                           }}
-                          onDragEnd={updateMovie}
+                          onDragEnd={() => {
+                            updateMovie();
+                            setDrag();
+                          }}
                         />
                       ))}
                     </div>
