@@ -193,7 +193,7 @@ export const Statistics = withRouter(({ history }) => {
               key={index}
               onClick={() => {
                 resetFilters();
-                onChange("tags")([tag.name]);
+                onChange("tags")([tag.id]);
                 history.push("/");
               }}
             >
