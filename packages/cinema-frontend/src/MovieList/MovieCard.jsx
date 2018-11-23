@@ -103,6 +103,15 @@ export const MovieCard = ({ movie, onEdit, onChange, onDelete }) => {
               key={movieTag}
               {...tags.find(tag => tag._id === movieTag)}
               className="mr-2"
+              onClick={() => {
+                const tag = tags.find(tag => tag._id === movieTag);
+                if (tag && tag.label.toLowerCase() === "netflix") {
+                  window.open(
+                    `https://www.netflix.com/search?q=${movie.title}`,
+                    "_blank"
+                  );
+                }
+              }}
             />
           ))}
         </div>

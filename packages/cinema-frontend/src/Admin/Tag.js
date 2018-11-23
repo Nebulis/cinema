@@ -14,7 +14,14 @@ const invertColor = hex => {
     : "#FFFFFF";
 };
 
-export const Tag = ({ color, label, big, className = "", style = {} }) => (
+export const Tag = ({
+  color,
+  label,
+  big,
+  className = "",
+  style = {},
+  onClick = () => void 0
+}) => (
   <span
     className={`tag ${big ? "big" : ""} ${className}`}
     style={{
@@ -22,6 +29,7 @@ export const Tag = ({ color, label, big, className = "", style = {} }) => (
       color: `${invertColor(color)}`,
       ...style
     }}
+    onClick={onClick}
   >
     {label}
   </span>

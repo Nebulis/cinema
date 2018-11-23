@@ -191,13 +191,16 @@ export const Statistics = withRouter(({ history }) => {
                 cursor: "pointer"
               }}
               key={index}
-              onClick={() => {
-                resetFilters();
-                onChange("tags")([tag.id]);
-                history.push("/");
-              }}
             >
-              <Tag label={`${tag.count} ${tag.name}`} color={tag.color} />
+              <Tag
+                label={`${tag.count} ${tag.name}`}
+                color={tag.color}
+                onClick={() => {
+                  resetFilters();
+                  onChange("tags")([tag.id]);
+                  history.push("/");
+                }}
+              />
             </h5>
           ))}
         </div>
