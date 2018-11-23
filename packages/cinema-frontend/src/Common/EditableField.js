@@ -56,7 +56,7 @@ export const EditableInput = props => (
         <input
           className="form-control mr-1"
           placeholder={fieldProps.placeholder}
-          type="text"
+          type={props.type || "text"}
           value={fieldProps.value}
           onChange={fieldProps.onChange}
           onClick={event => {
