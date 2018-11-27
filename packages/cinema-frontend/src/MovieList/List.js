@@ -1,4 +1,10 @@
-import React, { Fragment, useContext, useEffect, useState } from "react";
+import React, {
+  Fragment,
+  useContext,
+  useEffect,
+  useState,
+  useRef
+} from "react";
 import { MovieCard } from "./MovieCard";
 import isArray from "lodash/isArray";
 import { ApplicationContext, LOADING } from "../ApplicationContext";
@@ -61,18 +67,16 @@ export const List = () => {
   const [loaded, setLoaded] = useState(true);
 
   //create actions
-  const loadMore = offset => {
-    // invalidate if there is a new search
-    if (offset === 0) {
-      invalidate();
-    }
+  const loadMore = _ => {
     setLoaded(false);
-    getMovies(buildQuery(filters, offset), user)
-      .then(addAll)
-      .then(() => {
-        setOffset(offset + 1); // useInc
-        setLoaded(true);
-      });
+    getMovies(buildQuery(filters, offset), user).then(movies => {
+      // invalidate if there is a new search
+      if (offset === 0) {
+        invalidate();
+      }
+      setLoaded(true);
+      addAll(movies);
+    });
   };
   const showMovie = () => {
     // ignore first trigger, needed for backward navigation
@@ -91,8 +95,9 @@ export const List = () => {
         trailing: true
       });
       // no movies ? then automatically fetch some (note: every time a filter is updated, movies are cleaned up)
+      // the condition is needed in case of back navigation
       if (movies.length === 0) {
-        debouncedLoadMore(0);
+        debouncedLoadMore();
         setLoaded(false);
       }
       return () => debouncedLoadMore.cancel();
@@ -100,6 +105,18 @@ export const List = () => {
     [filters]
   );
   useEffect(showMovie, [movie]);
+
+  const isFirstRun = useRef(true);
+  useEffect(
+    () => {
+      if (isFirstRun.current) {
+        isFirstRun.current = false;
+        return;
+      }
+      loadMore();
+    },
+    [offset]
+  );
 
   // render
   return (
@@ -167,10 +184,10 @@ export const List = () => {
               </span>
             ) : null}
           </h2>
-          {movies.length < count ? (
+          {movies.length < count && loaded ? (
             <div className="text-center m-3">
               <button
-                onClick={() => loadMore(offset)}
+                onClick={() => setOffset(offset + 1)}
                 className="btn btn-primary btn-lg"
               >
                 Load more
