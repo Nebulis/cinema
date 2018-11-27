@@ -4,7 +4,7 @@
   "private": true,
   "dependencies": {
     "downshift": "3.1.5",
-    "emotion": "9.2.12",
+    "emotion": "10.0.0",
     "immer": "1.8.0",
     "lodash": "4.17.11",
     "react": "^16.7.0-alpha.0",
