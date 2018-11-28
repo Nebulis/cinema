@@ -11,6 +11,7 @@ import every from "lodash/every";
 import some from "lodash/some";
 import { useToggle } from "../../Common/hooks";
 import { MovieContext } from "../../Movie/Movie";
+import { NotificationContext } from "../../Notifications/NotificationContext";
 
 export const SeasonContext = React.createContext({});
 
@@ -26,6 +27,8 @@ export const Season = ({
   // get contexts
   const user = useContext(UserContext);
   const { movie, lock } = useContext(MovieContext);
+  const { dispatch } = useContext(NotificationContext);
+
   const [open, toggle] = useToggle();
   const [episodes, setEpisodes] = useState(1);
   const [opacity, setOpacity] = useState("1");
@@ -33,9 +36,14 @@ export const Season = ({
 
   // actions
   const updateSeason = (transform = value => value) => {
-    MovieAPI.updateSeason(movie, produce(season, transform), user).then(
-      onMovieChanged
-    );
+    MovieAPI.updateSeason(movie, produce(season, transform), user)
+      .then(onMovieChanged)
+      .catch(error => {
+        dispatch({
+          type: "ADD",
+          payload: { content: error.message, type: "error" }
+        });
+      });
   };
 
   const seen = every(season.episodes, "seen") && season.episodes.length > 0;

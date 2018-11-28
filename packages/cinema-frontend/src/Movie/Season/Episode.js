@@ -5,6 +5,7 @@ import { produce } from "immer";
 import * as MovieAPI from "../../Common/MovieAPI";
 import { MovieContext } from "../Movie";
 import { SeasonContext } from "./Season";
+import { NotificationContext } from "../../Notifications/NotificationContext";
 
 export const Episode = ({
   episode,
@@ -19,6 +20,7 @@ export const Episode = ({
   const user = useContext(UserContext);
   const { movie, lock } = useContext(MovieContext);
   const { season, index: seasonIndex } = useContext(SeasonContext);
+  const { dispatch } = useContext(NotificationContext);
 
   // local state
   const [ellipsis, setEllipsis] = useState("ellipsis");
@@ -28,15 +30,27 @@ export const Episode = ({
   const updateSeason = transform => {
     const newMovie = produce(movie, transform);
     const season = newMovie.seasons[seasonIndex];
-    MovieAPI.updateSeason(newMovie, season, user).then(onEpisodeChanged);
+    MovieAPI.updateSeason(newMovie, season, user)
+      .then(onEpisodeChanged)
+      .catch(error => {
+        dispatch({
+          type: "ADD",
+          payload: { content: error.message, type: "error" }
+        });
+      });
   };
   const updateEpisode = transform => {
     const newMovie = produce(movie, transform);
     const season = newMovie.seasons[seasonIndex];
     const episode = season.episodes[index];
-    MovieAPI.updateEpisode(newMovie, season, episode, user).then(
-      onEpisodeChanged
-    );
+    MovieAPI.updateEpisode(newMovie, season, episode, user)
+      .then(onEpisodeChanged)
+      .catch(error => {
+        dispatch({
+          type: "ADD",
+          payload: { content: error.message, type: "error" }
+        });
+      });
   };
 
   return (

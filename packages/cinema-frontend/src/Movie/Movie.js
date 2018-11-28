@@ -17,6 +17,7 @@ import { useToggle } from "../Common/hooks";
 import "./Movie.css";
 import { ApplicationContext } from "../ApplicationContext";
 import { Tag } from "../Admin/Tag";
+import { NotificationContext } from "../Notifications/NotificationContext";
 
 export const MovieContext = React.createContext({});
 
@@ -39,8 +40,9 @@ export const Movie = withRouter(({ match, history }) => {
   const movies = useContext(MoviesContext);
   const [seasons, setSeasons] = useState(1);
   const { tags } = useContext(ApplicationContext);
-  const [drag, setDrag] = useState();
+  const { dispatch } = useContext(NotificationContext);
   // create state
+  const [drag, setDrag] = useState();
   const [movie, setMovie] = useState();
   const [lock, toggle] = useToggle(true);
 
@@ -53,11 +55,25 @@ export const Movie = withRouter(({ match, history }) => {
 
   // create actions
   const updateMovie = (transform = value => value) => {
-    MovieAPI.updateMovie(produce(movie, transform), user).then(mergeContext);
+    MovieAPI.updateMovie(produce(movie, transform), user)
+      .then(mergeContext)
+      .catch(error => {
+        dispatch({
+          type: "ADD",
+          payload: { content: error.message, type: "error" }
+        });
+      });
   };
   const handleFiles = files => {
     if (files.length === 1) {
-      MovieAPI.updateMoviePoster(movie, files[0], user).then(mergeContext);
+      MovieAPI.updateMoviePoster(movie, files[0], user)
+        .then(mergeContext)
+        .catch(error => {
+          dispatch({
+            type: "ADD",
+            payload: { content: error.message, type: "error" }
+          });
+        });
     }
   };
 

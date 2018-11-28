@@ -6,6 +6,7 @@ import { Movie } from "./Movie/Movie";
 import { Header } from "./Header";
 import { Statistics } from "./Statistics/Statistics";
 import { TagList } from "./Admin/TagList";
+import { NotificationsList } from "./Notifications/NotificationsList";
 
 class App extends Component {
   render() {
@@ -14,6 +15,7 @@ class App extends Component {
         <Router>
           <Fragment>
             <Header />
+            <NotificationsList />
             <Route exact path="/" component={List} />
             <Route exact path="/movie/:id" component={Movie} />
             <Route exact path="/stats" component={Statistics} />

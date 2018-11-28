@@ -6,6 +6,7 @@ import { ApplicationProvider } from "./ApplicationContext";
 import { UserProvider, UserContext } from "./Login/UserContext";
 import { Login } from "./Login/Login";
 import { MoviesProvider } from "./Common/MoviesContext";
+import { NotificationProvider } from "./Notifications/NotificationContext";
 
 ReactDOM.render(
   <UserProvider>
@@ -14,7 +15,9 @@ ReactDOM.render(
         token ? (
           <ApplicationProvider token={token}>
             <MoviesProvider>
-              <App />
+              <NotificationProvider>
+                <App />
+              </NotificationProvider>
             </MoviesProvider>
           </ApplicationProvider>
         ) : (
