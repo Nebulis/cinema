@@ -157,7 +157,15 @@ export const Season = ({
       {!lock ? (
         <Fragment>
           {open && (
-            <div className="form-inline d-block mt-1 mb-1">
+            <div
+              className="form-inline d-block mt-1 mb-1"
+              draggable={true}
+              onDragStart={event => {
+                // disable drag and drop for this element
+                event.preventDefault();
+                event.stopPropagation();
+              }}
+            >
               <input
                 type="number"
                 className="form-control"
