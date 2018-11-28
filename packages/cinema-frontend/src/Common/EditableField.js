@@ -23,6 +23,12 @@ const EditableField = props => {
           })}
           <button
             className="btn btn-primary"
+            draggable={true}
+            onDragStart={event => {
+              // disable drag and drop for this element
+              event.preventDefault();
+              event.stopPropagation();
+            }}
             onClick={event => {
               event.preventDefault();
               event.stopPropagation();
@@ -69,6 +75,12 @@ export const EditableInput = props => (
               fieldProps.submit();
             }
           }}
+          draggable={true}
+          onDragStart={event => {
+            // disable drag and drop for this element
+            event.preventDefault();
+            event.stopPropagation();
+          }}
           onChange={fieldProps.onChange}
           onClick={event => {
             event.preventDefault();
@@ -99,6 +111,12 @@ export const EditableTextarea = props => (
           if (event.key === "Enter" && event.ctrlKey) {
             fieldProps.submit();
           }
+        }}
+        draggable={true}
+        onDragStart={event => {
+          // disable drag and drop for this element
+          event.preventDefault();
+          event.stopPropagation();
         }}
         onChange={fieldProps.onChange}
         onClick={event => {

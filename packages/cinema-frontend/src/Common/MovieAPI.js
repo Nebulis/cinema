@@ -25,11 +25,11 @@ export const getMovies = abortable => (search, user) => {
     headers: headers(user),
     signal: controller.signal
   })
+    .then(handleResponse)
     .then(response => {
       controller = null;
       return response;
-    })
-    .then(handleResponse);
+    });
 };
 
 export const updateMovie = (movie, user) => {
