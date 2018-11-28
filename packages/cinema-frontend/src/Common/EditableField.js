@@ -13,7 +13,13 @@ const EditableField = props => {
           {props.renderFormField({
             ...props,
             value,
-            onChange: event => setValue(transform(event.target.value))
+            onChange: event => setValue(transform(event.target.value)),
+            submit: () => {
+              if (value) {
+                props.onChange(value);
+                setEdit(false);
+              }
+            }
           })}
           <button
             className="btn btn-primary"
@@ -58,6 +64,11 @@ export const EditableInput = props => (
           placeholder={fieldProps.placeholder}
           type={props.type || "text"}
           value={fieldProps.value}
+          onKeyDown={event => {
+            if (event.key === "Enter") {
+              fieldProps.submit();
+            }
+          }}
           onChange={fieldProps.onChange}
           onClick={event => {
             event.preventDefault();
@@ -84,6 +95,11 @@ export const EditableTextarea = props => (
         style={fieldProps.style}
         value={fieldProps.value}
         rows={fieldProps.rows || 2}
+        onKeyDown={event => {
+          if (event.key === "Enter" && event.ctrlKey) {
+            fieldProps.submit();
+          }
+        }}
         onChange={fieldProps.onChange}
         onClick={event => {
           event.preventDefault();

@@ -10,7 +10,7 @@ import { NotificationContext } from "../../Notifications/NotificationContext";
 export const Episode = ({
   episode,
   index,
-  onEpisodeChanged,
+  onEpisodeChanged, // TODO this is a design flow ... it should really return the episode instead of the movie
   onDragStart,
   onDragOver,
   onDragEnd,
@@ -27,30 +27,47 @@ export const Episode = ({
   const [style, setStyle] = useState({});
 
   // actions
+  const episodeTag = () => {
+    return `S${(seasonIndex + 1).toString().padStart(2, "0")}E${(index + 1)
+      .toString()
+      .padStart(2, "0")}`;
+  };
+
   const updateSeason = transform => {
-    const newMovie = produce(movie, transform);
-    const season = newMovie.seasons[seasonIndex];
-    MovieAPI.updateSeason(newMovie, season, user)
+    return MovieAPI.updateSeason(movie, produce(season, transform), user)
       .then(onEpisodeChanged)
       .catch(error => {
         dispatch({
           type: "ADD",
           payload: { content: error.message, type: "error" }
         });
+        throw error;
       });
   };
   const updateEpisode = transform => {
-    const newMovie = produce(movie, transform);
-    const season = newMovie.seasons[seasonIndex];
-    const episode = season.episodes[index];
-    MovieAPI.updateEpisode(newMovie, season, episode, user)
-      .then(onEpisodeChanged)
-      .catch(error => {
-        dispatch({
-          type: "ADD",
-          payload: { content: error.message, type: "error" }
-        });
+    const transformedEpisode = produce(episode, transform); // optimistic update
+    onEpisodeChanged(
+      produce(movie, draft => {
+        draft.seasons[seasonIndex].episodes[index] = transformedEpisode;
+      })
+    );
+    return MovieAPI.updateEpisode(
+      movie,
+      season,
+      transformedEpisode,
+      user
+    ).catch(error => {
+      onEpisodeChanged(
+        produce(movie, draft => {
+          draft.seasons[seasonIndex].episodes[index] = episode;
+        })
+      );
+      dispatch({
+        type: "ADD",
+        payload: { content: error.message, type: "error" }
       });
+      throw error;
+    });
   };
 
   return (
@@ -100,14 +117,19 @@ export const Episode = ({
             cursor: "pointer"
           }}
           onClick={() =>
-            updateSeason(movie => {
-              if (!movie.seasons[seasonIndex].episodes[index].seen) {
+            updateSeason(season => {
+              if (!season.episodes[index].seen) {
                 for (let i = 0; i <= index; i++) {
-                  movie.seasons[seasonIndex].episodes[i].seen = true;
+                  season.episodes[i].seen = true;
                 }
               } else {
-                movie.seasons[seasonIndex].episodes[index].seen = false;
+                season.episodes[index].seen = false;
               }
+            }).then(() => {
+              dispatch({
+                type: "ADD",
+                payload: { content: "Update to seen", type: "success" }
+              });
             })
           }
         >
@@ -122,8 +144,16 @@ export const Episode = ({
             value={episode.title}
             placeholder="Title"
             onChange={title =>
-              updateEpisode(movie => {
-                movie.seasons[seasonIndex].episodes[index].title = title;
+              updateEpisode(episode => {
+                episode.title = title;
+              }).then(() => {
+                dispatch({
+                  type: "ADD",
+                  payload: {
+                    content: `${episodeTag()} - Title updated`,
+                    type: "success"
+                  }
+                });
               })
             }
           />
@@ -138,8 +168,16 @@ export const Episode = ({
           placeholder="Summary"
           className={`${ellipsis} d-block episode-summary w-100 text-left`}
           onChange={summary =>
-            updateEpisode(movie => {
-              movie.seasons[seasonIndex].episodes[index].summary = summary;
+            updateEpisode(episode => {
+              episode.summary = summary;
+            }).then(() => {
+              dispatch({
+                type: "ADD",
+                payload: {
+                  content: `${episodeTag()} - Summary updated`,
+                  type: "success"
+                }
+              });
             })
           }
         />

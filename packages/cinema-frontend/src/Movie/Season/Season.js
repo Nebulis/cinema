@@ -18,7 +18,7 @@ export const SeasonContext = React.createContext({});
 export const Season = ({
   season,
   index,
-  onMovieChanged,
+  onMovieChanged, // TODO this is a design flow ... it should be onSeasonChanged and update the season only
   onDragStart,
   onDragOver,
   onDragEnd,

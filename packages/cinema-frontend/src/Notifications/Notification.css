@@ -1,11 +1,12 @@
 .notification {
-  height: 40px;
+  min-height: 40px;
   width: 300px;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
   margin-bottom: 1em;
+  padding: 0.6em;
 }
 
 .notification.success {
@@ -26,7 +27,7 @@
 
 .notification-progress-bar {
   height: 10px;
-  width: 90%;
+  width: 100%;
   margin-bottom: 0.2em;
   border-radius: 3px;
 }
@@ -74,7 +75,7 @@
   75% {
     transform: translate3d(10px, 0, 0);
   }
-  90% {
+  100% {
     transform: translate3d(-5px, 0, 0);
   }
   to {
