@@ -1,4 +1,4 @@
-import React, { Fragment, useState } from "react";
+import React, { Fragment, useState, useRef } from "react";
 import identity from "lodash/identity";
 
 const EditableField = props => {
@@ -6,6 +6,15 @@ const EditableField = props => {
   const [edit, setEdit] = useState(!props.value);
   const transform = props.transform || identity;
   const lock = props.lock || false;
+
+  // handle props.value update
+  const lastInitialValue = useRef(props.value);
+  if (props.value !== lastInitialValue.current) {
+    setValue(props.value || "");
+    setEdit(!props.value);
+    lastInitialValue.current = props.value;
+  }
+
   return (
     <Fragment>
       {!lock && edit ? (
