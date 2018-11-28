@@ -27,22 +27,30 @@ export const Episode = ({
   const [style, setStyle] = useState({});
 
   // actions
+  const seasonTag = () => {
+    return `S${(seasonIndex + 1).toString().padStart(2, "0")}`;
+  };
   const episodeTag = () => {
-    return `S${(seasonIndex + 1).toString().padStart(2, "0")}E${(index + 1)
-      .toString()
-      .padStart(2, "0")}`;
+    return `${seasonTag()}E${(index + 1).toString().padStart(2, "0")}`;
+  };
+  const handleError = error => {
+    createNotification(error.message, "error");
+    // throw error;
+  };
+  const createNotification = (content, type = "success") => {
+    dispatch({
+      type: "ADD",
+      payload: {
+        content,
+        type
+      }
+    });
   };
 
   const updateSeason = transform => {
     return MovieAPI.updateSeason(movie, produce(season, transform), user)
       .then(onEpisodeChanged)
-      .catch(error => {
-        dispatch({
-          type: "ADD",
-          payload: { content: error.message, type: "error" }
-        });
-        throw error;
-      });
+      .catch(handleError);
   };
   const updateEpisode = transform => {
     const transformedEpisode = produce(episode, transform); // optimistic update
@@ -62,18 +70,14 @@ export const Episode = ({
           draft.seasons[seasonIndex].episodes[index] = episode;
         })
       );
-      dispatch({
-        type: "ADD",
-        payload: { content: error.message, type: "error" }
-      });
-      throw error;
+      handleError(error);
     });
   };
 
   return (
     <div
       className="row episode mr-0 ml-0"
-      draggable
+      draggable={!lock}
       onDragStart={event => {
         setStyle({
           backgroundColor: "var(--movie-secondary-lighter)",
@@ -102,9 +106,10 @@ export const Episode = ({
               event.preventDefault();
               event.stopPropagation();
               if (window.confirm("Delete episode ?")) {
-                MovieAPI.deleteEpisode(movie, season, episode, user).then(
-                  onEpisodeChanged
-                );
+                MovieAPI.deleteEpisode(movie, season, episode, user)
+                  .then(onEpisodeChanged)
+                  .then(() => createNotification(`${episodeTag()} - Deleted`))
+                  .catch(handleError);
               }
             }}
           />
@@ -125,12 +130,7 @@ export const Episode = ({
               } else {
                 season.episodes[index].seen = false;
               }
-            }).then(() => {
-              dispatch({
-                type: "ADD",
-                payload: { content: "Update to seen", type: "success" }
-              });
-            })
+            }).then(() => createNotification(`${seasonTag()} - Seen updated`))
           }
         >
           {index + 1}
@@ -146,15 +146,9 @@ export const Episode = ({
             onChange={title =>
               updateEpisode(episode => {
                 episode.title = title;
-              }).then(() => {
-                dispatch({
-                  type: "ADD",
-                  payload: {
-                    content: `${episodeTag()} - Title updated`,
-                    type: "success"
-                  }
-                });
-              })
+              }).then(() =>
+                createNotification(`${episodeTag()} - Title updated`)
+              )
             }
           />
         </div>
@@ -170,15 +164,9 @@ export const Episode = ({
           onChange={summary =>
             updateEpisode(episode => {
               episode.summary = summary;
-            }).then(() => {
-              dispatch({
-                type: "ADD",
-                payload: {
-                  content: `${episodeTag()} - Summary updated`,
-                  type: "success"
-                }
-              });
-            })
+            }).then(() =>
+              createNotification(`${episodeTag()} - Summary updated`)
+            )
           }
         />
         {ellipsis && (

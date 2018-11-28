@@ -54,26 +54,33 @@ export const Movie = withRouter(({ match, history }) => {
   ]);
 
   // create actions
+  const seasonTag = seasonIndex => {
+    return `S${(seasonIndex + 1).toString().padStart(2, "0")}`;
+  };
+  const handleError = error => {
+    createNotification(error.message, "error");
+    throw error;
+  };
+  const createNotification = (content, type = "success") => {
+    dispatch({
+      type: "ADD",
+      payload: {
+        content,
+        type
+      }
+    });
+  };
   const updateMovie = (transform = value => value) => {
-    MovieAPI.updateMovie(produce(movie, transform), user)
+    return MovieAPI.updateMovie(produce(movie, transform), user)
       .then(mergeContext)
-      .catch(error => {
-        dispatch({
-          type: "ADD",
-          payload: { content: error.message, type: "error" }
-        });
-      });
+      .catch(handleError);
   };
   const handleFiles = files => {
     if (files.length === 1) {
       MovieAPI.updateMoviePoster(movie, files[0], user)
         .then(mergeContext)
-        .catch(error => {
-          dispatch({
-            type: "ADD",
-            payload: { content: error.message, type: "error" }
-          });
-        });
+        .then(() => createNotification(`${movie.title} - Image uploaded`))
+        .catch(handleError);
     }
   };
 
@@ -159,14 +166,22 @@ export const Movie = withRouter(({ match, history }) => {
                       onAdd={() =>
                         updateMovie(movie => {
                           movie.tags.push(tag._id);
-                        })
+                        }).then(() =>
+                          createNotification(
+                            `${movie.title} - Tag ${tag.label} added`
+                          )
+                        )
                       }
                       onDelete={() =>
                         updateMovie(movie => {
                           movie.tags = movie.tags.filter(
                             movieTag => movieTag !== tag._id
                           );
-                        })
+                        }).then(() =>
+                          createNotification(
+                            `${movie.title} - Tag ${tag.label} deleted`
+                          )
+                        )
                       }
                     />
                   ))}
@@ -181,7 +196,9 @@ export const Movie = withRouter(({ match, history }) => {
                     onChange={title =>
                       updateMovie(movie => {
                         movie.title = title;
-                      })
+                      }).then(() =>
+                        createNotification(`${title} - Title updated`)
+                      )
                     }
                   />{" "}
                   -{" "}
@@ -194,7 +211,11 @@ export const Movie = withRouter(({ match, history }) => {
                     onChange={productionYear =>
                       updateMovie(movie => {
                         movie.productionYear = productionYear;
-                      })
+                      }).then(() =>
+                        createNotification(
+                          `${movie.title} - Production year updated`
+                        )
+                      )
                     }
                   />
                 </h1>
@@ -212,7 +233,9 @@ export const Movie = withRouter(({ match, history }) => {
                     onChange={summary =>
                       updateMovie(movie => {
                         movie.summary = summary;
-                      })()
+                      }).then(() =>
+                        createNotification(`${movie.title} - Summary updated`)
+                      )
                     }
                   />
                 </div>
@@ -225,7 +248,9 @@ export const Movie = withRouter(({ match, history }) => {
                   onClick={() =>
                     updateMovie(movie => {
                       movie.seen = !movie.seen;
-                    })
+                    }).then(() =>
+                      createNotification(`${movie.title} - Seen updated`)
+                    )
                   }
                 />
               ) : (
@@ -256,7 +281,11 @@ export const Movie = withRouter(({ match, history }) => {
                             }
                           }}
                           onDragEnd={() => {
-                            updateMovie();
+                            updateMovie().then(() =>
+                              createNotification(
+                                `${seasonTag(seasonIndex)} - Reordered`
+                              )
+                            );
                             setDrag();
                           }}
                         />
@@ -277,13 +306,20 @@ export const Movie = withRouter(({ match, history }) => {
                       <button
                         className=" ml-1 btn btn-primary"
                         onClick={async () => {
+                          const initialTimes = seasons || 1;
                           let times = seasons || 1;
                           while (times > 0) {
                             await MovieAPI.addSeason(movie, user);
                             times--;
                           }
                           setSeasons(1);
-                          MovieAPI.getMovie(movie._id, user).then(mergeContext);
+                          MovieAPI.getMovie(movie._id, user)
+                            .then(mergeContext)
+                            .then(() =>
+                              createNotification(
+                                `${movie.title} - Added ${initialTimes} seasons`
+                              )
+                            );
                         }}
                       >
                         <i className="fas fa-plus" />

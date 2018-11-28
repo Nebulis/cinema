@@ -35,15 +35,29 @@ export const Season = ({
   const [drag, setDrag] = useState();
 
   // actions
+  const episodeTag = episodeIndex => {
+    return `${seasonTag()}E${(episodeIndex + 1).toString().padStart(2, "0")}`;
+  };
+  const seasonTag = () => {
+    return `S${(index + 1).toString().padStart(2, "0")}`;
+  };
+  const handleError = error => {
+    createNotification(error.message, "error");
+    throw error;
+  };
+  const createNotification = (content, type = "success") => {
+    dispatch({
+      type: "ADD",
+      payload: {
+        content,
+        type
+      }
+    });
+  };
   const updateSeason = (transform = value => value) => {
-    MovieAPI.updateSeason(movie, produce(season, transform), user)
+    return MovieAPI.updateSeason(movie, produce(season, transform), user)
       .then(onMovieChanged)
-      .catch(error => {
-        dispatch({
-          type: "ADD",
-          payload: { content: error.message, type: "error" }
-        });
-      });
+      .catch(handleError);
   };
 
   const seen = every(season.episodes, "seen") && season.episodes.length > 0;
@@ -52,7 +66,7 @@ export const Season = ({
   return (
     <div
       className="season"
-      draggable
+      draggable={!lock}
       onDragStart={event => {
         setOpacity("0.5");
         event.dataTransfer.dropEffect = "move";
@@ -80,7 +94,9 @@ export const Season = ({
               event.stopPropagation();
               updateSeason(season => {
                 season.seen = !seen;
-              });
+              }).then(() =>
+                createNotification(`${seasonTag()} - Seen updated`)
+              );
             }}
           >
             <MovieSeen seen={seen} partial={oneSeen} />
@@ -92,9 +108,10 @@ export const Season = ({
                 event.preventDefault();
                 event.stopPropagation();
                 if (window.confirm("Delete season ?")) {
-                  MovieAPI.deleteSeason(movie, season, user).then(
-                    onMovieChanged
-                  );
+                  MovieAPI.deleteSeason(movie, season, user)
+                    .then(onMovieChanged)
+                    .then(() => createNotification(`${seasonTag()} - Deleted`))
+                    .catch(handleError);
                 }
               }}
             />
@@ -110,7 +127,9 @@ export const Season = ({
             onChange={productionYear =>
               updateSeason(season => {
                 season.productionYear = productionYear;
-              })
+              }).then(() =>
+                createNotification(`${seasonTag()} - Production year updated`)
+              )
             }
           />
         </div>
@@ -146,7 +165,9 @@ export const Season = ({
                   }
                 }}
                 onDragEnd={() => {
-                  updateSeason();
+                  updateSeason().then(() =>
+                    createNotification(`${episodeTag(index)} - Reordered`)
+                  );
                   setDrag();
                 }}
               />
@@ -178,13 +199,20 @@ export const Season = ({
               <button
                 className=" ml-1 btn btn-primary"
                 onClick={async () => {
+                  const initialTimes = episodes || 1;
                   let times = episodes || 1;
                   while (times > 0) {
                     await MovieAPI.addEpisode(movie, season, user);
                     times--;
                   }
                   setEpisodes(1);
-                  MovieAPI.getMovie(movie._id, user).then(onMovieChanged);
+                  MovieAPI.getMovie(movie._id, user)
+                    .then(onMovieChanged)
+                    .then(() =>
+                      createNotification(
+                        `${seasonTag()} - Added ${initialTimes} episodes`
+                      )
+                    );
                 }}
               >
                 <i className="fas fa-plus" />
