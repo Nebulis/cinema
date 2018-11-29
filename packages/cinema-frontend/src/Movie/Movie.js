@@ -25,17 +25,18 @@ const MovieTag = ({ tag, selected, onAdd, onDelete, lock }) =>
       <Tag {...tag} className={`mr-1 selected`} />
     </span>
   ) : null;
+
 export const Movie = withRouter(({ match, history }) => {
   // get contexts
   const user = useContext(UserContext);
-  const movies = useContext(MoviesContext);
+  const { dispatch: moviesDispatch } = useContext(MoviesContext);
   const [seasons, setSeasons] = useState(1);
   const { tags } = useContext(ApplicationContext);
   const { dispatch } = useContext(NotificationContext);
   // create state
   const [drag, setDrag] = useState();
   const [movie, setMovie] = useState();
-  const [lock, toggle] = useToggle(true);
+  const [lock, toggle] = useToggle(false);
 
   const fileRef = useRef();
 
@@ -74,9 +75,12 @@ export const Movie = withRouter(({ match, history }) => {
   };
 
   // helper
-  const mergeContext = updatedMovie => {
-    setMovie(updatedMovie);
-    movies.update(updatedMovie._id, updatedMovie);
+  const mergeContext = (updatedMovie, transform = value => value) => {
+    setMovie(prevMovie => {
+      const transformedMovie = produce(updatedMovie || prevMovie, transform);
+      moviesDispatch({ type: "UPDATE", payload: { id: transformedMovie._id, movie: transformedMovie } });
+      return transformedMovie;
+    });
   };
 
   return (

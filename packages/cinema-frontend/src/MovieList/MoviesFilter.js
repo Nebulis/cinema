@@ -21,9 +21,16 @@ const FilterTag = ({ tag, selected, onAdd, onDelete }) => (
 );
 
 export const MoviesFilter = () => {
-  const { filters, onChange } = useContext(MoviesContext);
+  const {
+    state: { filters },
+    dispatch
+  } = useContext(MoviesContext);
   const { genres, types, tags } = useContext(ApplicationContext);
   const { seen, finished } = filters;
+
+  const onChange = name => value => {
+    dispatch({ type: "FILTERS_CHANGED", payload: { name, value } });
+  };
 
   const renderSeen = () => {
     let color = "",

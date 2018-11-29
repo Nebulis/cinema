@@ -36,7 +36,7 @@ export const Statistics = withRouter(({ history }) => {
   // get contexts
   const user = useContext(UserContext);
   const { genres, types, tags } = useContext(ApplicationContext);
-  const { resetFilters, onChange } = useContext(MoviesContext);
+  const { dispatch } = useContext(MoviesContext);
   const [stats, setStats] = useState(initialState(types, genres, tags));
 
   // actions
@@ -169,8 +169,8 @@ export const Statistics = withRouter(({ history }) => {
                 label={`${tag.count} ${tag.name}`}
                 color={tag.color}
                 onClick={() => {
-                  resetFilters();
-                  onChange("tags")([tag.id]);
+                  dispatch({ type: "RESET_FILTERS" });
+                  dispatch({ type: "FILTERS_CHANGED", payload: { name: "tags", value: [tag.id] } });
                   history.push("/");
                 }}
               />

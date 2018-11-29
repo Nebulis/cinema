@@ -36,7 +36,8 @@ const buildQuery = (filters, offset) => {
 export const List = () => {
   // load contexts
   const { status } = useContext(ApplicationContext);
-  const { invalidate, movies, count, addAll, filters, add, update } = useContext(MoviesContext);
+  const { state, dispatch } = useContext(MoviesContext);
+  const { movies, filters, count } = state;
   const user = useContext(UserContext);
 
   // create state
@@ -52,10 +53,10 @@ export const List = () => {
     getMovies(buildQuery(filters, offset), user).then(movies => {
       // invalidate if there is a new search
       if (offset === 0) {
-        invalidate();
+        dispatch({ type: "INVALIDATE" });
       }
       setLoaded(true);
-      addAll(movies);
+      dispatch({ type: "ADD_ALL", payload: { movies: movies.data, count: movies.count } });
     });
   };
   const showMovie = () => {
@@ -111,8 +112,8 @@ export const List = () => {
             // force reinitialisation of movie form
             key={movie._id || key}
             movie={movie._id ? movie : null}
-            onAdd={movie => add(movie)}
-            onUpdate={movie => update(movie._id, movie)}
+            onAdd={movie => dispatch({ type: "ADD", payload: { movie } })}
+            onUpdate={movie => dispatch({ type: "UPDATE", payload: { movie, id: movie._id } })}
           />
           <i
             onClick={() => {
@@ -146,8 +147,8 @@ export const List = () => {
               <MovieCard
                 key={movie._id}
                 movie={movie}
-                onChange={movie => update(movie._id, movie)}
-                onDelete={_ => update(movie._id, undefined)}
+                onChange={movie => dispatch({ type: "UPDATE", payload: { movie, id: movie._id } })}
+                onDelete={_ => dispatch({ type: "UPDATE", payload: { id: movie._id } })}
                 onEdit={() => {
                   setMovie({
                     ...movie // create a new movie to force the show effect to be displayed
