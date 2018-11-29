@@ -1,10 +1,4 @@
-import React, {
-  Fragment,
-  useContext,
-  useEffect,
-  useState,
-  useRef
-} from "react";
+import React, { Fragment, useContext, useEffect, useState, useRef } from "react";
 import { withRouter } from "react-router-dom";
 import * as MovieAPI from "../Common/MovieAPI";
 import { UserContext } from "../Login/UserContext";
@@ -24,10 +18,7 @@ export const MovieContext = React.createContext({});
 const MovieTag = ({ tag, selected, onAdd, onDelete, lock }) =>
   !lock ? (
     <span onClick={selected ? onDelete : onAdd} className="mt-1">
-      <Tag
-        {...tag}
-        className={`movie-tag mr-1 ${selected ? "selected" : ""}`}
-      />
+      <Tag {...tag} className={`movie-tag mr-1 ${selected ? "selected" : ""}`} />
     </span>
   ) : selected ? (
     <span className="mt-1">
@@ -49,9 +40,7 @@ export const Movie = withRouter(({ match, history }) => {
   const fileRef = useRef();
 
   // create effects
-  useEffect(() => MovieAPI.getMovie(match.params.id, user).then(setMovie), [
-    match.params.id
-  ]);
+  useEffect(() => MovieAPI.getMovie(match.params.id, user).then(setMovie), [match.params.id]);
 
   // create actions
   const seasonTag = seasonIndex => {
@@ -110,10 +99,7 @@ export const Movie = withRouter(({ match, history }) => {
             }}
             title="Return to the list of movies"
           />
-          <div
-            className="p-5 mt-3 single-movie-card"
-            style={{ position: "relative" }}
-          >
+          <div className="p-5 mt-3 single-movie-card" style={{ position: "relative" }}>
             <i
               onClick={toggle}
               className={`fas ${lock ? "fa-lock" : "fa-lock-open"} fa-2x`}
@@ -124,15 +110,10 @@ export const Movie = withRouter(({ match, history }) => {
                 right: "5px",
                 cursor: "pointer"
               }}
-              title={`Click to ${
-                lock ? "open" : "close"
-              } movie for modifications`}
+              title={`Click to ${lock ? "open" : "close"} movie for modifications`}
             />
             <div className="d-flex">
-              <div
-                className="d-flex"
-                style={{ flex: "0 0 250px", flexDirection: "column" }}
-              >
+              <div className="d-flex" style={{ flex: "0 0 250px", flexDirection: "column" }}>
                 <input
                   accept=".jpg, .jpeg, .png"
                   type="file"
@@ -141,11 +122,7 @@ export const Movie = withRouter(({ match, history }) => {
                   onChange={event => handleFiles(event.target.files)}
                 />
                 <img
-                  src={
-                    movie.fileUrl
-                      ? movie.fileUrl.replace("http:", "https:")
-                      : "/no-image.png"
-                  }
+                  src={movie.fileUrl ? movie.fileUrl.replace("http:", "https:") : "/no-image.png"}
                   style={{
                     height: "300px",
                     width: "225px",
@@ -160,28 +137,16 @@ export const Movie = withRouter(({ match, history }) => {
                       key={tag._id}
                       tag={tag}
                       lock={lock}
-                      selected={movie.tags.find(
-                        movieTag => movieTag === tag._id
-                      )}
+                      selected={movie.tags.find(movieTag => movieTag === tag._id)}
                       onAdd={() =>
                         updateMovie(movie => {
                           movie.tags.push(tag._id);
-                        }).then(() =>
-                          createNotification(
-                            `${movie.title} - Tag ${tag.label} added`
-                          )
-                        )
+                        }).then(() => createNotification(`${movie.title} - Tag ${tag.label} added`))
                       }
                       onDelete={() =>
                         updateMovie(movie => {
-                          movie.tags = movie.tags.filter(
-                            movieTag => movieTag !== tag._id
-                          );
-                        }).then(() =>
-                          createNotification(
-                            `${movie.title} - Tag ${tag.label} deleted`
-                          )
-                        )
+                          movie.tags = movie.tags.filter(movieTag => movieTag !== tag._id);
+                        }).then(() => createNotification(`${movie.title} - Tag ${tag.label} deleted`))
                       }
                     />
                   ))}
@@ -196,9 +161,7 @@ export const Movie = withRouter(({ match, history }) => {
                     onChange={title =>
                       updateMovie(movie => {
                         movie.title = title;
-                      }).then(() =>
-                        createNotification(`${title} - Title updated`)
-                      )
+                      }).then(() => createNotification(`${title} - Title updated`))
                     }
                   />{" "}
                   -{" "}
@@ -211,17 +174,11 @@ export const Movie = withRouter(({ match, history }) => {
                     onChange={productionYear =>
                       updateMovie(movie => {
                         movie.productionYear = productionYear;
-                      }).then(() =>
-                        createNotification(
-                          `${movie.title} - Production year updated`
-                        )
-                      )
+                      }).then(() => createNotification(`${movie.title} - Production year updated`))
                     }
                   />
                 </h1>
-                <h6 className="text-center single-movie-subtitle">
-                  {movie.genre.join(",")}
-                </h6>
+                <h6 className="text-center single-movie-subtitle">{movie.genre.join(",")}</h6>
                 <div>
                   <EditableTextarea
                     split={true}
@@ -233,9 +190,7 @@ export const Movie = withRouter(({ match, history }) => {
                     onChange={summary =>
                       updateMovie(movie => {
                         movie.summary = summary;
-                      }).then(() =>
-                        createNotification(`${movie.title} - Summary updated`)
-                      )
+                      }).then(() => createNotification(`${movie.title} - Summary updated`))
                     }
                   />
                 </div>
@@ -248,9 +203,7 @@ export const Movie = withRouter(({ match, history }) => {
                   onClick={() =>
                     updateMovie(movie => {
                       movie.seen = !movie.seen;
-                    }).then(() =>
-                      createNotification(`${movie.title} - Seen updated`)
-                    )
+                    }).then(() => createNotification(`${movie.title} - Seen updated`))
                   }
                 />
               ) : (
@@ -281,11 +234,7 @@ export const Movie = withRouter(({ match, history }) => {
                             }
                           }}
                           onDragEnd={() => {
-                            updateMovie().then(() =>
-                              createNotification(
-                                `${seasonTag(seasonIndex)} - Reordered`
-                              )
-                            );
+                            updateMovie().then(() => createNotification(`${seasonTag(seasonIndex)} - Reordered`));
                             setDrag();
                           }}
                         />
@@ -298,9 +247,7 @@ export const Movie = withRouter(({ match, history }) => {
                         type="number"
                         className="form-control"
                         style={{ width: "80px" }}
-                        onChange={event =>
-                          setSeasons(parseInt(event.target.value, 10))
-                        }
+                        onChange={event => setSeasons(parseInt(event.target.value, 10))}
                         value={seasons}
                       />
                       <button
@@ -315,11 +262,7 @@ export const Movie = withRouter(({ match, history }) => {
                           setSeasons(1);
                           MovieAPI.getMovie(movie._id, user)
                             .then(mergeContext)
-                            .then(() =>
-                              createNotification(
-                                `${movie.title} - Added ${initialTimes} seasons`
-                              )
-                            );
+                            .then(() => createNotification(`${movie.title} - Added ${initialTimes} seasons`));
                         }}
                       >
                         <i className="fas fa-plus" />

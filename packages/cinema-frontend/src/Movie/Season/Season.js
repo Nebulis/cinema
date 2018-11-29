@@ -94,9 +94,7 @@ export const Season = ({
               event.stopPropagation();
               updateSeason(season => {
                 season.seen = !seen;
-              }).then(() =>
-                createNotification(`${seasonTag()} - Seen updated`)
-              );
+              }).then(() => createNotification(`${seasonTag()} - Seen updated`));
             }}
           >
             <MovieSeen seen={seen} partial={oneSeen} />
@@ -127,18 +125,12 @@ export const Season = ({
             onChange={productionYear =>
               updateSeason(season => {
                 season.productionYear = productionYear;
-              }).then(() =>
-                createNotification(`${seasonTag()} - Production year updated`)
-              )
+              }).then(() => createNotification(`${seasonTag()} - Production year updated`))
             }
           />
         </div>
         <div className="season-header-arrow">
-          {open ? (
-            <i className="fas fa-chevron-up" />
-          ) : (
-            <i className="fas fa-chevron-down" />
-          )}
+          {open ? <i className="fas fa-chevron-up" /> : <i className="fas fa-chevron-down" />}
         </div>
       </div>
       <div className="episodes">
@@ -165,9 +157,7 @@ export const Season = ({
                   }
                 }}
                 onDragEnd={() => {
-                  updateSeason().then(() =>
-                    createNotification(`${episodeTag(index)} - Reordered`)
-                  );
+                  updateSeason().then(() => createNotification(`${episodeTag(index)} - Reordered`));
                   setDrag();
                 }}
               />
@@ -191,9 +181,7 @@ export const Season = ({
                 type="number"
                 className="form-control"
                 style={{ width: "80px" }}
-                onChange={event =>
-                  setEpisodes(parseInt(event.target.value, 10))
-                }
+                onChange={event => setEpisodes(parseInt(event.target.value, 10))}
                 value={episodes}
               />
               <button
@@ -208,11 +196,7 @@ export const Season = ({
                   setEpisodes(1);
                   MovieAPI.getMovie(movie._id, user)
                     .then(onMovieChanged)
-                    .then(() =>
-                      createNotification(
-                        `${seasonTag()} - Added ${initialTimes} episodes`
-                      )
-                    );
+                    .then(() => createNotification(`${seasonTag()} - Added ${initialTimes} episodes`));
                 }}
               >
                 <i className="fas fa-plus" />

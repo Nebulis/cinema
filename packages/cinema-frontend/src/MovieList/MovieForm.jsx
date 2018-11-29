@@ -46,11 +46,7 @@ class MovieFormWithContext extends React.Component {
   }
 
   valid = () => {
-    return (
-      !isEmpty(this.state.movie.title) &&
-      this.state.movie.genre.length > 0 &&
-      !isEmpty(this.state.movie.type)
-    );
+    return !isEmpty(this.state.movie.title) && this.state.movie.genre.length > 0 && !isEmpty(this.state.movie.type);
   };
 
   add = () => {
@@ -89,9 +85,7 @@ class MovieFormWithContext extends React.Component {
       fetch(`/api/allocine?type=Série&title=${this.state.movie.title}`, {
         headers: headers(this.props.user)
       }).then(handleResponse)
-    ]).then(([movies, tvshows]) =>
-      this.setState({ allocine: { movies, tvshows } })
-    );
+    ]).then(([movies, tvshows]) => this.setState({ allocine: { movies, tvshows } }));
   };
 
   synchronizeMovieAllocine = idAllocine => {
@@ -167,8 +161,7 @@ class MovieFormWithContext extends React.Component {
   };
 
   onSelect = field => {
-    return value =>
-      this.setState({ movie: { ...this.state.movie, [field]: value } });
+    return value => this.setState({ movie: { ...this.state.movie, [field]: value } });
   };
 
   render() {
@@ -188,15 +181,8 @@ class MovieFormWithContext extends React.Component {
             <div className="modal-dialog modal-dialog-centered" role="document">
               <div className="modal-content">
                 <div className="modal-header">
-                  <h5 className="modal-title">
-                    {(movie && movie.title) || "New"}
-                  </h5>
-                  <button
-                    type="button"
-                    className="close"
-                    data-dismiss="modal"
-                    aria-label="Close"
-                  >
+                  <h5 className="modal-title">{(movie && movie.title) || "New"}</h5>
+                  <button type="button" className="close" data-dismiss="modal" aria-label="Close">
                     <span aria-hidden="true">&times;</span>
                   </button>
                 </div>
@@ -233,11 +219,7 @@ class MovieFormWithContext extends React.Component {
                           <Fragment>
                             <div onClick={toggle} style={{ cursor: "pointer" }}>
                               {this.state.allocine.movies.length} movies
-                              {open ? (
-                                <i className="fas fa-chevron-up" />
-                              ) : (
-                                <i className="fas fa-chevron-down" />
-                              )}
+                              {open ? <i className="fas fa-chevron-up" /> : <i className="fas fa-chevron-down" />}
                             </div>
                             <div
                               className="row"
@@ -251,33 +233,22 @@ class MovieFormWithContext extends React.Component {
                                 <div
                                   key={movie.code}
                                   className={`col-2 allocine-movie ${
-                                    movie.code === this.state.movie.idAllocine
-                                      ? "selected"
-                                      : ""
+                                    movie.code === this.state.movie.idAllocine ? "selected" : ""
                                   }`}
-                                  onClick={() =>
-                                    this.synchronizeMovieAllocine(movie.code)
-                                  }
+                                  onClick={() => this.synchronizeMovieAllocine(movie.code)}
                                 >
-                                  {movie.code ===
-                                  this.state.movie.idAllocine ? (
+                                  {movie.code === this.state.movie.idAllocine ? (
                                     <i className="fas fa-check-circle selected-movie-icon fa-2x" />
                                   ) : null}
                                   <div>
                                     {movie.title} -{" "}
                                     {movie.release && movie.release.releaseDate
-                                      ? new Date(
-                                          movie.release.releaseDate
-                                        ).getFullYear()
+                                      ? new Date(movie.release.releaseDate).getFullYear()
                                       : movie.productionYear}
                                   </div>
                                   <div>
                                     {movie.poster ? (
-                                      <img
-                                        src={movie.poster.href}
-                                        alt="movie poster"
-                                        style={{ width: "100%" }}
-                                      />
+                                      <img src={movie.poster.href} alt="movie poster" style={{ width: "100%" }} />
                                     ) : null}
                                   </div>
                                 </div>
@@ -295,11 +266,7 @@ class MovieFormWithContext extends React.Component {
                           <Fragment>
                             <div onClick={toggle} style={{ cursor: "pointer" }}>
                               {this.state.allocine.tvshows.length} tv shows
-                              {open ? (
-                                <i className="fas fa-chevron-up" />
-                              ) : (
-                                <i className="fas fa-chevron-down" />
-                              )}
+                              {open ? <i className="fas fa-chevron-up" /> : <i className="fas fa-chevron-down" />}
                             </div>
                             <div
                               className="row"
@@ -313,16 +280,11 @@ class MovieFormWithContext extends React.Component {
                                 <div
                                   key={tvshow.code}
                                   className={`col-2 allocine-movie ${
-                                    tvshow.code === this.state.movie.idAllocine
-                                      ? "selected"
-                                      : ""
+                                    tvshow.code === this.state.movie.idAllocine ? "selected" : ""
                                   }`}
-                                  onClick={() =>
-                                    this.synchronizeTvShowAllocine(tvshow.code)
-                                  }
+                                  onClick={() => this.synchronizeTvShowAllocine(tvshow.code)}
                                 >
-                                  {tvshow.code ===
-                                  this.state.movie.idAllocine ? (
+                                  {tvshow.code === this.state.movie.idAllocine ? (
                                     <i className="fas fa-check-circle selected-movie-icon fa-2x" />
                                   ) : null}
                                   <div>
@@ -330,11 +292,7 @@ class MovieFormWithContext extends React.Component {
                                   </div>
                                   <div>
                                     {tvshow.poster ? (
-                                      <img
-                                        src={tvshow.poster.href}
-                                        alt="tvshow poster"
-                                        style={{ width: "100%" }}
-                                      />
+                                      <img src={tvshow.poster.href} alt="tvshow poster" style={{ width: "100%" }} />
                                     ) : null}
                                   </div>
                                 </div>
@@ -371,9 +329,7 @@ class MovieFormWithContext extends React.Component {
                       id="production-year"
                       aria-describedby="production year"
                       placeholder="Enter production year"
-                      onChange={this.onInput("productionYear", data =>
-                        parseInt(data, 10)
-                      )}
+                      onChange={this.onInput("productionYear", data => parseInt(data, 10))}
                       value={this.state.movie.productionYear}
                     />
                   </div>
@@ -390,11 +346,7 @@ class MovieFormWithContext extends React.Component {
                   </div>
                 </div>
                 <div className="modal-footer">
-                  <button
-                    type="button"
-                    className="btn btn-secondary"
-                    data-dismiss="modal"
-                  >
+                  <button type="button" className="btn btn-secondary" data-dismiss="modal">
                     Close
                   </button>
                   <button

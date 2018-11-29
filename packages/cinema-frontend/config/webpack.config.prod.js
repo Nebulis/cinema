@@ -51,10 +51,7 @@ const getStyleLoaders = (cssOptions, preProcessor) => {
   const loaders = [
     {
       loader: MiniCssExtractPlugin.loader,
-      options: Object.assign(
-        {},
-        shouldUseRelativeAssetPaths ? { publicPath: "../../" } : undefined
-      )
+      options: Object.assign({}, shouldUseRelativeAssetPaths ? { publicPath: "../../" } : undefined)
     },
     {
       loader: require.resolve("css-loader"),
@@ -116,8 +113,7 @@ module.exports = {
     // We inferred the "public path" (such as / or /my-project) from homepage.
     publicPath: publicPath,
     // Point sourcemap entries to original disk location (format as URL on Windows)
-    devtoolModuleFilenameTemplate: info =>
-      path.relative(paths.appSrc, info.absoluteResourcePath).replace(/\\/g, "/")
+    devtoolModuleFilenameTemplate: info => path.relative(paths.appSrc, info.absoluteResourcePath).replace(/\\/g, "/")
   },
   optimization: {
     minimizer: [
@@ -275,9 +271,7 @@ module.exports = {
 
             loader: require.resolve("babel-loader"),
             options: {
-              customize: require.resolve(
-                "babel-preset-react-app/webpack-overrides"
-              ),
+              customize: require.resolve("babel-preset-react-app/webpack-overrides"),
 
               plugins: [
                 [
@@ -307,12 +301,7 @@ module.exports = {
               babelrc: false,
               configFile: false,
               compact: false,
-              presets: [
-                [
-                  require.resolve("babel-preset-react-app/dependencies"),
-                  { helpers: true }
-                ]
-              ],
+              presets: [[require.resolve("babel-preset-react-app/dependencies"), { helpers: true }]],
               cacheDirectory: true,
               // Save disk space when time isn't as important
               cacheCompression: true,
@@ -429,8 +418,7 @@ module.exports = {
     }),
     // Inlines the webpack runtime script. This script is too small to warrant
     // a network request.
-    shouldInlineRuntimeChunk &&
-      new InlineChunkHtmlPlugin(HtmlWebpackPlugin, [/runtime~.+[.]js/]),
+    shouldInlineRuntimeChunk && new InlineChunkHtmlPlugin(HtmlWebpackPlugin, [/runtime~.+[.]js/]),
     // Makes some environment variables available in index.html.
     // The public URL is available as %PUBLIC_URL% in index.html, e.g.:
     // <link rel="shortcut icon" href="%PUBLIC_URL%/favicon.ico">

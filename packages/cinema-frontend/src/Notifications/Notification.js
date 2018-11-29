@@ -8,9 +8,7 @@ export const Notification = ({ index, notification }) => {
   const { dispatch } = useContext(NotificationContext);
   return (
     <div
-      className={`notification ${notification.type} ${
-        notificationOut ? "out" : "in"
-      }`}
+      className={`notification ${notification.type} ${notificationOut ? "out" : "in"}`}
       onAnimationEnd={event => {
         if (event.animationName === "bounceIn") {
           setAnimateProgress(true);
@@ -21,9 +19,7 @@ export const Notification = ({ index, notification }) => {
     >
       <div className="notification-content">{notification.content}</div>
       <div
-        className={`notification-progress-bar progress-bar-striped ${
-          animateProgress ? "animate" : ""
-        }`}
+        className={`notification-progress-bar progress-bar-striped ${animateProgress ? "animate" : ""}`}
         style={notificationOut ? { width: "0" } : {}}
         onAnimationEnd={() => setNotificationOut(true)}
       />

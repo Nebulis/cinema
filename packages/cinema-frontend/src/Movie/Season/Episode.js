@@ -59,12 +59,7 @@ export const Episode = ({
         draft.seasons[seasonIndex].episodes[index] = transformedEpisode;
       })
     );
-    return MovieAPI.updateEpisode(
-      movie,
-      season,
-      transformedEpisode,
-      user
-    ).catch(error => {
+    return MovieAPI.updateEpisode(movie, season, transformedEpisode, user).catch(error => {
       onEpisodeChanged(
         produce(movie, draft => {
           draft.seasons[seasonIndex].episodes[index] = episode;
@@ -138,17 +133,13 @@ export const Episode = ({
         <div className="text-center col-11">
           <EditableInput
             lock={lock}
-            className={`font-weight-bold episode-title ${
-              episode.seen ? "seen" : ""
-            }`}
+            className={`font-weight-bold episode-title ${episode.seen ? "seen" : ""}`}
             value={episode.title}
             placeholder="Title"
             onChange={title =>
               updateEpisode(episode => {
                 episode.title = title;
-              }).then(() =>
-                createNotification(`${episodeTag()} - Title updated`)
-              )
+              }).then(() => createNotification(`${episodeTag()} - Title updated`))
             }
           />
         </div>
@@ -164,9 +155,7 @@ export const Episode = ({
           onChange={summary =>
             updateEpisode(episode => {
               episode.summary = summary;
-            }).then(() =>
-              createNotification(`${episodeTag()} - Summary updated`)
-            )
+            }).then(() => createNotification(`${episodeTag()} - Summary updated`))
           }
         />
         {ellipsis && (

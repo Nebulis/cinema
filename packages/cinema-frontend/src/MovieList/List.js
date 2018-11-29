@@ -1,10 +1,4 @@
-import React, {
-  Fragment,
-  useContext,
-  useEffect,
-  useState,
-  useRef
-} from "react";
+import React, { Fragment, useContext, useEffect, useState, useRef } from "react";
 import { MovieCard } from "./MovieCard";
 import isArray from "lodash/isArray";
 import { ApplicationContext, LOADING } from "../ApplicationContext";
@@ -20,19 +14,13 @@ const getMovies = MovieAPI.getMovies(true);
 
 const buildQuery = (filters, offset) => {
   // can use lodash/partition to one line
-  const genres = filters.genres
-    .filter(genre => genre[1])
-    .map(genre => genre[0]);
-  const notGenres = filters.genres
-    .filter(genre => !genre[1])
-    .map(genre => genre[0]);
+  const genres = filters.genres.filter(genre => genre[1]).map(genre => genre[0]);
+  const notGenres = filters.genres.filter(genre => !genre[1]).map(genre => genre[0]);
   return Object.keys(filters)
     .filter(key => key !== "genres") // handle genres manually)
     .filter(
       key =>
-        (!isArray(filters[key]) &&
-          filters[key] !== null &&
-          filters[key] !== "") ||
+        (!isArray(filters[key]) && filters[key] !== null && filters[key] !== "") ||
         (isArray(filters[key]) && filters[key].length > 0)
     )
     .map(key => `${key}=${filters[key]}`)
@@ -48,15 +36,7 @@ const buildQuery = (filters, offset) => {
 export const List = () => {
   // load contexts
   const { status } = useContext(ApplicationContext);
-  const {
-    invalidate,
-    movies,
-    count,
-    addAll,
-    filters,
-    add,
-    update
-  } = useContext(MoviesContext);
+  const { invalidate, movies, count, addAll, filters, add, update } = useContext(MoviesContext);
   const user = useContext(UserContext);
 
   // create state
@@ -186,10 +166,7 @@ export const List = () => {
           </h2>
           {movies.length < count && loaded ? (
             <div className="text-center m-3">
-              <button
-                onClick={() => setOffset(offset + 1)}
-                className="btn btn-primary btn-lg"
-              >
+              <button onClick={() => setOffset(offset + 1)} className="btn btn-primary btn-lg">
                 Load more
               </button>
             </div>

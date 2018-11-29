@@ -103,8 +103,7 @@ module.exports = {
     // This is the URL that app is served from. We use "/" in development.
     publicPath: publicPath,
     // Point sourcemap entries to original disk location (format as URL on Windows)
-    devtoolModuleFilenameTemplate: info =>
-      path.resolve(info.absoluteResourcePath).replace(/\\/g, "/")
+    devtoolModuleFilenameTemplate: info => path.resolve(info.absoluteResourcePath).replace(/\\/g, "/")
   },
   optimization: {
     // Automatically split vendor and commons
@@ -203,9 +202,7 @@ module.exports = {
             include: paths.appSrc,
             loader: require.resolve("babel-loader"),
             options: {
-              customize: require.resolve(
-                "babel-preset-react-app/webpack-overrides"
-              ),
+              customize: require.resolve("babel-preset-react-app/webpack-overrides"),
 
               plugins: [
                 [
@@ -237,12 +234,7 @@ module.exports = {
               babelrc: false,
               configFile: false,
               compact: false,
-              presets: [
-                [
-                  require.resolve("babel-preset-react-app/dependencies"),
-                  { helpers: true }
-                ]
-              ],
+              presets: [[require.resolve("babel-preset-react-app/dependencies"), { helpers: true }]],
               cacheDirectory: true,
               // Don't waste time on Gzipping the cache
               cacheCompression: false,

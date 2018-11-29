@@ -5,10 +5,7 @@ export class MultiDownshift extends React.Component {
   state = { selectedItems: this.props.selectedItems || [] };
 
   componentDidUpdate(prevProps) {
-    if (
-      prevProps.selectedItems !== this.props.selectedItems &&
-      this.props.selectedItems !== this.state.selectedItems
-    ) {
+    if (prevProps.selectedItems !== this.props.selectedItems && this.props.selectedItems !== this.state.selectedItems) {
       this.setState({ selectedItems: this.props.selectedItems || [] });
     }
   }
@@ -28,10 +25,7 @@ export class MultiDownshift extends React.Component {
 
   callOnChange = downshift => () => {
     if (this.props.onChange) {
-      this.props.onChange(
-        this.state.selectedItems,
-        this.getStateAndHelpers(downshift)
-      );
+      this.props.onChange(this.state.selectedItems, this.getStateAndHelpers(downshift));
     }
   };
 
@@ -85,12 +79,7 @@ export class MultiDownshift extends React.Component {
     const { render, children = render, ...props } = this.props;
     // TODO: compose together props (rather than overwriting them) like downshift does
     return (
-      <Downshift
-        {...props}
-        stateReducer={this.stateReducer}
-        onChange={this.handleSelection}
-        selectedItem={null}
-      >
+      <Downshift {...props} stateReducer={this.stateReducer} onChange={this.handleSelection} selectedItem={null}>
         {downshift => children(this.getStateAndHelpers(downshift))}
       </Downshift>
     );

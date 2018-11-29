@@ -27,16 +27,11 @@ class LoginWithContext extends Component {
             value={this.state.password}
             onChange={event => this.setState({ password: event.target.value })}
             onKeyDown={event => {
-              if (event.key === "Enter")
-                this.props.user.login(this.state.password);
+              if (event.key === "Enter") this.props.user.login(this.state.password);
             }}
           />
         </div>
-        <button
-          type="button"
-          className="btn btn-primary"
-          onClick={() => this.props.user.login(this.state.password)}
-        >
+        <button type="button" className="btn btn-primary" onClick={() => this.props.user.login(this.state.password)}>
           Submit
         </button>
       </div>

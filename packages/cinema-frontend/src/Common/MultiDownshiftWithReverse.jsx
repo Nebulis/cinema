@@ -19,18 +19,12 @@ export class MultiDownshiftWithReverse extends React.Component {
 
   callOnChange = downshift => () => {
     if (this.props.onChange) {
-      this.props.onChange(
-        this.state.selectedItems,
-        this.getStateAndHelpers(downshift)
-      );
+      this.props.onChange(this.state.selectedItems, this.getStateAndHelpers(downshift));
     }
   };
 
   handleSelection = (selectedItem, downshift) => {
-    if (
-      this.state.selectedItems.filter(item => selectedItem === item[0]).length >
-      0
-    ) {
+    if (this.state.selectedItems.filter(item => selectedItem === item[0]).length > 0) {
       this.removeItem([selectedItem], this.callOnChange(downshift));
     } else {
       this.addSelectedItem(selectedItem, this.callOnChange(downshift));
@@ -86,14 +80,7 @@ export class MultiDownshiftWithReverse extends React.Component {
 
   getStateAndHelpers(downshift) {
     const { selectedItems } = this.state;
-    const {
-      getRemoveButtonProps,
-      removeItem,
-      clickOnItem,
-      displayItem,
-      displayBackground,
-      isSelected
-    } = this;
+    const { getRemoveButtonProps, removeItem, clickOnItem, displayItem, displayBackground, isSelected } = this;
     return {
       getRemoveButtonProps: getRemoveButtonProps(downshift),
       removeItem,
@@ -109,12 +96,7 @@ export class MultiDownshiftWithReverse extends React.Component {
     const { render, children = render, ...props } = this.props;
     // TODO: compose together props (rather than overwriting them) like downshift does
     return (
-      <Downshift
-        {...props}
-        stateReducer={this.stateReducer}
-        onChange={this.handleSelection}
-        selectedItem={null}
-      >
+      <Downshift {...props} stateReducer={this.stateReducer} onChange={this.handleSelection} selectedItem={null}>
         {downshift => children(this.getStateAndHelpers(downshift))}
       </Downshift>
     );

@@ -49,10 +49,6 @@ export class ApplicationProvider extends React.Component {
   };
 
   render() {
-    return (
-      <ApplicationContext.Provider value={this.state}>
-        {this.props.children}
-      </ApplicationContext.Provider>
-    );
+    return <ApplicationContext.Provider value={this.state}>{this.props.children}</ApplicationContext.Provider>;
   }
 }

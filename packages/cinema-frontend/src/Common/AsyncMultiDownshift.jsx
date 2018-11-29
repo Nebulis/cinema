@@ -9,11 +9,7 @@ const BaseMultiDownshift = BaseComponent =>
     render() {
       const { handleChange, placeholder, items, selectedItems } = this.props;
       return (
-        <BaseComponent
-          onChange={handleChange}
-          selectedItems={selectedItems}
-          placeholder={placeholder}
-        >
+        <BaseComponent onChange={handleChange} selectedItems={selectedItems} placeholder={placeholder}>
           {({
             getToggleButtonProps,
             getMenuProps,
@@ -149,6 +145,4 @@ const BaseMultiDownshift = BaseComponent =>
   };
 
 export const AsyncMultiDownshift = BaseMultiDownshift(MultiDownshift);
-export const AsyncMultiDownshiftwithReverse = BaseMultiDownshift(
-  MultiDownshiftWithReverse
-);
+export const AsyncMultiDownshiftwithReverse = BaseMultiDownshift(MultiDownshiftWithReverse);

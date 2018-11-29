@@ -8,11 +8,7 @@ export const NotificationsList = () => {
   return (
     <div className="notification-list">
       {notifications.map((notification, index) => (
-        <Notification
-          key={notification.id}
-          index={index}
-          notification={notification}
-        />
+        <Notification key={notification.id} index={index} notification={notification} />
       ))}
     </div>
   );

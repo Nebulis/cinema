@@ -12,8 +12,7 @@ import { Tag } from "../Admin/Tag";
 export const MovieCard = ({ movie, onEdit, onChange, onDelete }) => {
   const user = useContext(UserContext);
   const { tags } = useContext(ApplicationContext);
-  const update = (field, value) => () =>
-    updateMovie({ ...movie, [field]: value }, user).then(onChange);
+  const update = (field, value) => () => updateMovie({ ...movie, [field]: value }, user).then(onChange);
 
   const title = `${movie.title}`;
   const subtitle = `${movie.productionYear} - ${movie.genre.join(",")}`;
@@ -31,10 +30,7 @@ export const MovieCard = ({ movie, onEdit, onChange, onDelete }) => {
         <h6 className="card-subtitle mb-2 text-muted ellipsis" title={subtitle}>
           {subtitle}
         </h6>
-        <div
-          className="movie-card-actions"
-          style={{ position: "absolute", top: 2, right: 4 }}
-        >
+        <div className="movie-card-actions" style={{ position: "absolute", top: 2, right: 4 }}>
           {movie.type !== "Film" && (
             <i
               className="fas fa-ban"
@@ -46,37 +42,20 @@ export const MovieCard = ({ movie, onEdit, onChange, onDelete }) => {
             />
           )}
           {movie.type === "Film" ? (
-            <MovieSeen
-              seen={movie.seen}
-              onClick={update("seen", !movie.seen)}
-            />
+            <MovieSeen seen={movie.seen} onClick={update("seen", !movie.seen)} />
           ) : (
             <MovieSeen
               seen={
-                every(
-                  movie.seasons.map(
-                    season =>
-                      every(season.episodes, "seen") &&
-                      season.episodes.length > 0
-                  )
-                ) && movie.seasons.length > 0
+                every(movie.seasons.map(season => every(season.episodes, "seen") && season.episodes.length > 0)) &&
+                movie.seasons.length > 0
               }
               partial={
-                some(
-                  movie.seasons.map(
-                    season =>
-                      some(season.episodes, "seen") &&
-                      season.episodes.length > 0
-                  )
-                ) && movie.seasons.length > 0
+                some(movie.seasons.map(season => some(season.episodes, "seen") && season.episodes.length > 0)) &&
+                movie.seasons.length > 0
               }
             />
           )}
-          <i
-            className="fas fa-pencil-alt"
-            onClick={onEdit}
-            style={{ cursor: "pointer" }}
-          />
+          <i className="fas fa-pencil-alt" onClick={onEdit} style={{ cursor: "pointer" }} />
           <i
             className="fas fa-trash"
             onClick={() => {
@@ -88,14 +67,7 @@ export const MovieCard = ({ movie, onEdit, onChange, onDelete }) => {
           />
         </div>
         <div className="poster text-center">
-          <img
-            src={
-              movie.fileUrl
-                ? movie.fileUrl.replace("http:", "https:")
-                : "/no-image.png"
-            }
-            alt="movie poster"
-          />
+          <img src={movie.fileUrl ? movie.fileUrl.replace("http:", "https:") : "/no-image.png"} alt="movie poster" />
         </div>
         <div className="mt-2 text-center">
           {movie.tags.map(movieTag => (
@@ -106,10 +78,7 @@ export const MovieCard = ({ movie, onEdit, onChange, onDelete }) => {
               onClick={() => {
                 const tag = tags.find(tag => tag._id === movieTag);
                 if (tag && tag.label.toLowerCase() === "netflix") {
-                  window.open(
-                    `https://www.netflix.com/search?q=${movie.title}`,
-                    "_blank"
-                  );
+                  window.open(`https://www.netflix.com/search?q=${movie.title}`, "_blank");
                 }
               }}
             />

@@ -61,10 +61,6 @@ export class MoviesProvider extends React.Component {
   };
 
   render() {
-    return (
-      <MoviesContext.Provider value={this.state}>
-        {this.props.children}
-      </MoviesContext.Provider>
-    );
+    return <MoviesContext.Provider value={this.state}>{this.props.children}</MoviesContext.Provider>;
   }
 }

@@ -92,22 +92,16 @@ export const addEpisode = (movie, season, user) => {
 };
 
 export const updateEpisode = (movie, season, episode, user) => {
-  return fetch(
-    `/api/movies/${movie._id}/seasons/${season._id}/episodes/${episode._id}`,
-    {
-      method: "PUT",
-      body: JSON.stringify(episode),
-      headers: headers(user)
-    }
-  ).then(handleResponse);
+  return fetch(`/api/movies/${movie._id}/seasons/${season._id}/episodes/${episode._id}`, {
+    method: "PUT",
+    body: JSON.stringify(episode),
+    headers: headers(user)
+  }).then(handleResponse);
 };
 
 export const deleteEpisode = (movie, season, episode, user) => {
-  return fetch(
-    `/api/movies/${movie._id}/seasons/${season._id}/episodes/${episode._id}`,
-    {
-      method: "DELETE",
-      headers: headers(user)
-    }
-  ).then(handleResponse);
+  return fetch(`/api/movies/${movie._id}/seasons/${season._id}/episodes/${episode._id}`, {
+    method: "DELETE",
+    headers: headers(user)
+  }).then(handleResponse);
 };

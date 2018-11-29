@@ -28,11 +28,7 @@ export const TagListElement = ({ tag, onDelete, onUpdate }) => {
           <div>
             <Tag {...tag} big />
           </div>
-          <button
-            type="button"
-            className="btn btn-primary ml-2"
-            onClick={toggleEdit}
-          >
+          <button type="button" className="btn btn-primary ml-2" onClick={toggleEdit}>
             <i className="fas fa-pencil-alt" />
           </button>
           <button
@@ -50,12 +46,7 @@ export const TagListElement = ({ tag, onDelete, onUpdate }) => {
       ) : (
         <form className="form-inline w-100">
           <input type="color" className="form-control colorpicker" {...color} />
-          <input
-            type="text"
-            className="form-control ml-2"
-            placeholder="Label"
-            {...label}
-          />
+          <input type="text" className="form-control ml-2" placeholder="Label" {...label} />
           <button
             type="button"
             className="btn btn-info btn-sm ml-2"
@@ -80,20 +71,11 @@ export const TagListElement = ({ tag, onDelete, onUpdate }) => {
                 .then(onUpdate)
                 .then(toggleEdit);
             }}
-            disabled={
-              !label.value ||
-              tags.find(
-                tag => tag.label.toLowerCase() === label.value.toLowerCase()
-              )
-            }
+            disabled={!label.value || tags.find(tag => tag.label.toLowerCase() === label.value.toLowerCase())}
           >
             <i className="fas fa-check" />
           </button>
-          <Tag
-            style={{ marginLeft: "auto" }}
-            color={color.value}
-            label={label.value || "Label"}
-          />
+          <Tag style={{ marginLeft: "auto" }} color={color.value} label={label.value || "Label"} />
         </form>
       )}
     </div>

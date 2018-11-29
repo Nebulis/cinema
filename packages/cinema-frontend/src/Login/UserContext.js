@@ -2,9 +2,7 @@ import React from "react";
 
 export const UserContext = React.createContext();
 export const withUser = Component => props => (
-  <UserContext.Consumer>
-    {user => <Component {...props} user={user} />}
-  </UserContext.Consumer>
+  <UserContext.Consumer>{user => <Component {...props} user={user} />}</UserContext.Consumer>
 );
 
 export const LOGOUT = Symbol();
@@ -36,8 +34,7 @@ export class UserProvider extends React.Component {
       })
         .then(handleResponse)
         .then(({ exp }) => {
-          if (new Date() < new Date(exp * 1000))
-            this.setState({ token, status: LOGIN });
+          if (new Date() < new Date(exp * 1000)) this.setState({ token, status: LOGIN });
         });
     }
   }
@@ -60,10 +57,6 @@ export class UserProvider extends React.Component {
   }
 
   render() {
-    return (
-      <UserContext.Provider value={this.state}>
-        {this.props.children}
-      </UserContext.Provider>
-    );
+    return <UserContext.Provider value={this.state}>{this.props.children}</UserContext.Provider>;
   }
 }

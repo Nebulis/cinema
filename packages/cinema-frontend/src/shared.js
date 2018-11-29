@@ -70,9 +70,7 @@ const BaseMenu = styled("ul")(
   })
 );
 
-const Menu = React.forwardRef((props, ref) => (
-  <BaseMenu innerRef={ref} {...props} />
-));
+const Menu = React.forwardRef((props, ref) => <BaseMenu innerRef={ref} {...props} />);
 
 const ControllerButton = styled("button")({
   backgroundColor: "transparent",

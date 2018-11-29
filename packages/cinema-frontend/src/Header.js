@@ -15,9 +15,7 @@ export const Header = () => {
       <h1 className="header">
         <Link to="/">Cinematheque</Link>
       </h1>
-      <Fetch endpoint="/api/movies?limit=0">
-        {({ data }) => <h6>{data ? data.count : 0} movies/tvshows</h6>}
-      </Fetch>
+      <Fetch endpoint="/api/movies?limit=0">{({ data }) => <h6>{data ? data.count : 0} movies/tvshows</h6>}</Fetch>
       <Link to="/stats">
         <i
           className="fas fa-chart-bar fa-3x"

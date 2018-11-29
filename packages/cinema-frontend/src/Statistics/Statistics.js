@@ -43,50 +43,30 @@ export const Statistics = withRouter(({ history }) => {
   const fetchByTypes = (types, genres) => {
     types.forEach(type =>
       getMovies(`types=${type}&limit=0`, user)
-        .then(data =>
-          setStats(
-            produce(
-              draft =>
-                void (draft.types.find(t => type === t.name).count = data.count)
-            )
-          )
-        )
+        .then(data => setStats(produce(draft => void (draft.types.find(t => type === t.name).count = data.count))))
         .then(() =>
           genres.forEach(genre => {
-            getMovies(`types=${type}&genres=${genre}&limit=0`, user).then(
-              data =>
-                setStats(
-                  produce(
-                    draft =>
-                      void (draft.types
-                        .find(t => type === t.name)
-                        .genres.find(g => genre === g.name).count = data.count)
-                  )
-                )
-            );
-            getMovies(
-              `types=${type}&genres=${genre}&seen=true&limit=0`,
-              user
-            ).then(data =>
+            getMovies(`types=${type}&genres=${genre}&limit=0`, user).then(data =>
               setStats(
                 produce(
                   draft =>
-                    void (draft.types
-                      .find(t => type === t.name)
-                      .genres.find(g => genre === g.name).seen = data.count)
+                    void (draft.types.find(t => type === t.name).genres.find(g => genre === g.name).count = data.count)
                 )
               )
             );
-            getMovies(
-              `types=${type}&genres=${genre}&seen=false&limit=0`,
-              user
-            ).then(data =>
+            getMovies(`types=${type}&genres=${genre}&seen=true&limit=0`, user).then(data =>
               setStats(
                 produce(
                   draft =>
-                    void (draft.types
-                      .find(t => type === t.name)
-                      .genres.find(g => genre === g.name).unseen = data.count)
+                    void (draft.types.find(t => type === t.name).genres.find(g => genre === g.name).seen = data.count)
+                )
+              )
+            );
+            getMovies(`types=${type}&genres=${genre}&seen=false&limit=0`, user).then(data =>
+              setStats(
+                produce(
+                  draft =>
+                    void (draft.types.find(t => type === t.name).genres.find(g => genre === g.name).unseen = data.count)
                 )
               )
             );
@@ -130,11 +110,8 @@ export const Statistics = withRouter(({ history }) => {
                 <Fragment key={index}>
                   <div>
                     {" "}
-                    {genre.count} {genre.name} ({" "}
-                    {genre.count
-                      ? ((genre.seen * 100) / genre.count).toFixed(2)
-                      : 0}
-                    % seen){" "}
+                    {genre.count} {genre.name} ( {genre.count ? ((genre.seen * 100) / genre.count).toFixed(2) : 0}%
+                    seen){" "}
                   </div>
                   <div className="movie-progress">
                     <div
@@ -152,12 +129,8 @@ export const Statistics = withRouter(({ history }) => {
                         className="progress-bar pending"
                         role="progressbar"
                         style={{
-                          width: `calc(20px + ${((genre.count -
-                            genre.unseen -
-                            genre.seen) *
-                            100) /
-                            orderBy(type.genres, ["count"], ["desc"])[0]
-                              .count}%)`
+                          width: `calc(20px + ${((genre.count - genre.unseen - genre.seen) * 100) /
+                            orderBy(type.genres, ["count"], ["desc"])[0].count}%)`
                         }}
                       >
                         {genre.count - genre.unseen - genre.seen}

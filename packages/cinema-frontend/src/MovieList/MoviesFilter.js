@@ -1,21 +1,13 @@
 import React, { useContext } from "react";
 import identity from "lodash/identity";
 import { MoviesContext } from "../Common/MoviesContext";
-import {
-  AsyncMultiDownshift,
-  AsyncMultiDownshiftwithReverse
-} from "../Common/AsyncMultiDownshift";
+import { AsyncMultiDownshift, AsyncMultiDownshiftwithReverse } from "../Common/AsyncMultiDownshift";
 import { ApplicationContext } from "../ApplicationContext";
 import { Tag } from "../Admin/Tag";
 
 const fromEvent = event => event.target.value;
 
-const forInput = (
-  { filters, onChange },
-  name,
-  transform = identity,
-  from = fromEvent
-) => {
+const forInput = ({ filters, onChange }, name, transform = identity, from = fromEvent) => {
   return {
     value: filters[name],
     onChange: value => onChange(name)(transform(from(value)))
@@ -83,9 +75,7 @@ export const MoviesFilter = () => {
     <form className="form-inline movies-filter mt-4 ml-3">
       <div className="form-group mr-2">
         <input
-          {...forInput({ filters, onChange }, "productionYear", value =>
-            parseInt(value, 10)
-          )}
+          {...forInput({ filters, onChange }, "productionYear", value => parseInt(value, 10))}
           type="number"
           max={2200}
           placeholder="YYYY"
@@ -94,20 +84,12 @@ export const MoviesFilter = () => {
         />
       </div>
       <div className="form-group mr-2">
-        <input
-          type="text"
-          {...forInput({ filters, onChange }, "title")}
-          placeholder="Title"
-          className="form-control"
-        />
+        <input type="text" {...forInput({ filters, onChange }, "title")} placeholder="Title" className="form-control" />
       </div>
       <div className="form-group mr-2" style={{ minWidth: "220px" }}>
         <AsyncMultiDownshiftwithReverse
           placeholder="Genre"
-          handleChange={
-            forInput({ filters, onChange }, "genres", identity, identity)
-              .onChange
-          }
+          handleChange={forInput({ filters, onChange }, "genres", identity, identity).onChange}
           items={genres}
           selectedItems={filters.genres}
         />
@@ -115,10 +97,7 @@ export const MoviesFilter = () => {
       <div className="form-group mr-2" style={{ width: "220px" }}>
         <AsyncMultiDownshift
           placeholder="Type"
-          handleChange={
-            forInput({ filters, onChange }, "types", identity, identity)
-              .onChange
-          }
+          handleChange={forInput({ filters, onChange }, "types", identity, identity).onChange}
           items={types}
           selectedItems={filters.types}
         />
@@ -132,9 +111,7 @@ export const MoviesFilter = () => {
             tag={tag}
             selected={filters.tags.find(filterTag => filterTag === tag._id)}
             onAdd={() => onChange("tags")([...filters.tags, tag._id])}
-            onDelete={() =>
-              onChange("tags")(filters.tags.filter(t => t !== tag._id))
-            }
+            onDelete={() => onChange("tags")(filters.tags.filter(t => t !== tag._id))}
           />
         ))}
       </div>

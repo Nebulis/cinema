@@ -7,9 +7,7 @@ function reducer(state = [], action) {
     case "ADD":
       return [...state, { ...action.payload, id: new Date().getTime() }];
     case "CLOSE":
-      return state.filter(
-        notification => notification.id !== action.payload.id
-      );
+      return state.filter(notification => notification.id !== action.payload.id);
     default:
       return state;
   }
