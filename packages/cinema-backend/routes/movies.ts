@@ -121,7 +121,28 @@ const buildQuery = ({
     query = query.and([{ finished: !!finished }]);
   }
   if (productionYear) {
-    query = query.and([{ productionYear }]);
+    query = query.and([
+      {
+        $or: [
+          {
+            $and: [
+              {
+                productionYear,
+                type: "Film"
+              }
+            ]
+          },
+          {
+            $and: [
+              {
+                "seasons.productionYear": productionYear,
+                type: "Série"
+              }
+            ]
+          }
+        ]
+      }
+    ]);
   }
   if (seen !== null && seen !== undefined) {
     // todo => handle seen for tv shows
