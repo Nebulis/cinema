@@ -11,7 +11,9 @@ import { useToggle } from "../Common/hooks";
 import "./Movie.css";
 import { ApplicationContext } from "../ApplicationContext";
 import { Tag } from "../Admin/Tag";
+import find from "lodash/find";
 import { NotificationContext } from "../Notifications/NotificationContext";
+import { createNotification, seasonTag } from "./Movie.util";
 
 export const MovieContext = React.createContext({});
 
@@ -29,58 +31,46 @@ const MovieTag = ({ tag, selected, onAdd, onDelete, lock }) =>
 export const Movie = withRouter(({ match, history }) => {
   // get contexts
   const user = useContext(UserContext);
-  const { dispatch: moviesDispatch } = useContext(MoviesContext);
+  const {
+    state: { movies },
+    dispatch: moviesDispatch
+  } = useContext(MoviesContext);
   const [seasons, setSeasons] = useState(1);
   const { tags } = useContext(ApplicationContext);
   const { dispatch } = useContext(NotificationContext);
   // create state
   const [drag, setDrag] = useState();
-  const [movie, setMovie] = useState();
-  const [lock, toggle] = useToggle(false);
+  const [lock, toggle] = useToggle(true);
 
   const fileRef = useRef();
 
   // create effects
-  useEffect(() => MovieAPI.getMovie(match.params.id, user).then(setMovie), [match.params.id]);
+  let movie = find(movies, ["_id", match.params.id]);
+  useEffect(
+    () => {
+      if (!movie) {
+        MovieAPI.getMovie(match.params.id, user).then(movie => {
+          moviesDispatch({ type: "ADD", payload: { movie } });
+        });
+      }
+    },
+    [match.params.id]
+  );
 
   // create actions
-  const seasonTag = seasonIndex => {
-    return `S${(seasonIndex + 1).toString().padStart(2, "0")}`;
-  };
-  const handleError = error => {
-    createNotification(error.message, "error");
-    throw error;
-  };
-  const createNotification = (content, type = "success") => {
-    dispatch({
-      type: "ADD",
-      payload: {
-        content,
-        type
-      }
-    });
-  };
   const updateMovie = (transform = value => value) => {
-    return MovieAPI.updateMovie(produce(movie, transform), user)
-      .then(mergeContext)
-      .catch(handleError);
+    return MovieAPI.updateMovie(produce(movie, transform), user).then(movie => {
+      moviesDispatch({ type: "UPDATE", payload: { id: movie._id, movie } });
+    });
   };
   const handleFiles = files => {
     if (files.length === 1) {
       MovieAPI.updateMoviePoster(movie, files[0], user)
-        .then(mergeContext)
-        .then(() => createNotification(`${movie.title} - Image uploaded`))
-        .catch(handleError);
+        .then(movie => {
+          moviesDispatch({ type: "UPDATE", payload: { id: movie._id, movie } });
+        })
+        .then(() => createNotification(dispatch, `${movie.title} - Image uploaded`));
     }
-  };
-
-  // helper
-  const mergeContext = (updatedMovie, transform = value => value) => {
-    setMovie(prevMovie => {
-      const transformedMovie = produce(updatedMovie || prevMovie, transform);
-      moviesDispatch({ type: "UPDATE", payload: { id: transformedMovie._id, movie: transformedMovie } });
-      return transformedMovie;
-    });
   };
 
   return (
@@ -145,12 +135,12 @@ export const Movie = withRouter(({ match, history }) => {
                       onAdd={() =>
                         updateMovie(movie => {
                           movie.tags.push(tag._id);
-                        }).then(() => createNotification(`${movie.title} - Tag ${tag.label} added`))
+                        }).then(() => createNotification(dispatch, `${movie.title} - Tag ${tag.label} added`))
                       }
                       onDelete={() =>
                         updateMovie(movie => {
                           movie.tags = movie.tags.filter(movieTag => movieTag !== tag._id);
-                        }).then(() => createNotification(`${movie.title} - Tag ${tag.label} deleted`))
+                        }).then(() => createNotification(dispatch, `${movie.title} - Tag ${tag.label} deleted`))
                       }
                     />
                   ))}
@@ -165,7 +155,7 @@ export const Movie = withRouter(({ match, history }) => {
                     onChange={title =>
                       updateMovie(movie => {
                         movie.title = title;
-                      }).then(() => createNotification(`${title} - Title updated`))
+                      }).then(() => createNotification(dispatch, `${title} - Title updated`))
                     }
                   />{" "}
                   -{" "}
@@ -178,7 +168,7 @@ export const Movie = withRouter(({ match, history }) => {
                     onChange={productionYear =>
                       updateMovie(movie => {
                         movie.productionYear = productionYear;
-                      }).then(() => createNotification(`${movie.title} - Production year updated`))
+                      }).then(() => createNotification(dispatch, `${movie.title} - Production year updated`))
                     }
                   />
                 </h1>
@@ -194,7 +184,7 @@ export const Movie = withRouter(({ match, history }) => {
                     onChange={summary =>
                       updateMovie(movie => {
                         movie.summary = summary;
-                      }).then(() => createNotification(`${movie.title} - Summary updated`))
+                      }).then(() => createNotification(dispatch, `${movie.title} - Summary updated`))
                     }
                   />
                 </div>
@@ -207,7 +197,7 @@ export const Movie = withRouter(({ match, history }) => {
                   onClick={() =>
                     updateMovie(movie => {
                       movie.seen = !movie.seen;
-                    }).then(() => createNotification(`${movie.title} - Seen updated`))
+                    }).then(() => createNotification(dispatch, `${movie.title} - Seen updated`))
                   }
                 />
               ) : (
@@ -224,7 +214,6 @@ export const Movie = withRouter(({ match, history }) => {
                           key={season._id}
                           season={season}
                           index={seasonIndex}
-                          onMovieChanged={mergeContext}
                           dragging={drag !== undefined}
                           onDragStart={() => setDrag(seasonIndex)}
                           onDragOver={() => {
@@ -238,7 +227,9 @@ export const Movie = withRouter(({ match, history }) => {
                             }
                           }}
                           onDragEnd={() => {
-                            updateMovie().then(() => createNotification(`${seasonTag(seasonIndex)} - Reordered`));
+                            updateMovie().then(() =>
+                              createNotification(dispatch, `${seasonTag(seasonIndex)} - Reordered`)
+                            );
                             setDrag();
                           }}
                         />
@@ -257,16 +248,21 @@ export const Movie = withRouter(({ match, history }) => {
                       <button
                         className=" ml-1 btn btn-primary"
                         onClick={async () => {
-                          const initialTimes = seasons || 1;
-                          let times = seasons || 1;
-                          while (times > 0) {
-                            await MovieAPI.addSeason(movie, user);
-                            times--;
+                          const times = seasons || 1;
+                          for (let i = 0; i < times; i++) {
+                            const newSeason = await MovieAPI.addSeason(movie, user);
+                            moviesDispatch({
+                              type: "UPDATE_WITH_TRANSFORM",
+                              payload: {
+                                id: movie._id,
+                                transform: draft => {
+                                  draft.seasons.push(newSeason);
+                                }
+                              }
+                            });
                           }
+                          createNotification(dispatch, `${movie.title} - Added ${times} seasons`);
                           setSeasons(1);
-                          MovieAPI.getMovie(movie._id, user)
-                            .then(mergeContext)
-                            .then(() => createNotification(`${movie.title} - Added ${initialTimes} seasons`));
                         }}
                       >
                         <i className="fas fa-plus" />

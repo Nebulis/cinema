@@ -13,11 +13,9 @@ router.post("/:id/seasons", (req, res, next) => {
       movie => movie || throwMe(new Error(`Movie ${req.params.id} not found`))
     )
     .then(movie => {
-      movie.seasons.push(new Season({}));
-      return movie.save();
-    })
-    .then(movie => {
-      res.json(movie);
+      const season = new Season();
+      movie.seasons.push(season);
+      return movie.save().then(_ => res.json(season));
     })
     .catch(next);
 });
@@ -40,10 +38,7 @@ router.put("/:movieId/seasons/:seasonId", (req, res, next) => {
       } else if (req.body.seen === true) {
         season.episodes.forEach(episode => (episode.seen = true));
       }
-      return movie.save();
-    })
-    .then(movie => {
-      res.json(movie);
+      return movie.save().then(_ => res.json(season));
     })
     .catch(next);
 });
@@ -59,8 +54,8 @@ router.delete("/:movieId/seasons/:seasonId", (req, res, next) => {
       movie.seasons.id(req.params.seasonId).remove();
       return movie.save();
     })
-    .then(movie => {
-      res.json(movie);
+    .then(_ => {
+      res.sendStatus(204);
     })
     .catch(next);
 });
@@ -73,12 +68,10 @@ router.post("/:movieId/seasons/:seasonId/episodes", (req, res, next) => {
         movie || throwMe(new Error(`Movie ${req.params.movieId} not found`))
     )
     .then(movie => {
+      const episode = new Episode();
       const season: ISeason = movie.seasons.id(req.params.seasonId);
-      season.episodes.push(new Episode({}));
-      return movie.save();
-    })
-    .then(movie => {
-      res.json(movie);
+      season.episodes.push(episode);
+      return movie.save().then(_ => res.json(episode));
     })
     .catch(next);
 });
@@ -98,10 +91,7 @@ router.put(
         episode.title = req.body.title;
         episode.summary = req.body.summary;
         episode.seen = req.body.seen;
-        return movie.save();
-      })
-      .then(movie => {
-        res.json(movie);
+        return movie.save().then(_ => res.json(episode));
       })
       .catch(next);
   }
@@ -123,8 +113,8 @@ router.delete(
           .remove();
         return movie.save();
       })
-      .then(movie => {
-        res.json(movie);
+      .then(_ => {
+        res.sendStatus(204);
       })
       .catch(next);
   }

@@ -31,10 +31,11 @@ const reducer = (state = initialState, { type, payload }) => {
       // pass undefined as delete and then use filter te remove the element
       return { ...state, movies: movies.filter(Boolean) };
     }
+    // next step => create real action ADD / DELETE / SEASONS / EPISODES
     case "UPDATE_WITH_TRANSFORM": {
       const index = findIndex(state.movies, ["_id", payload.id]);
       const movies = [...state.movies];
-      movies[index] = produce(payload.movie, payload.transform);
+      movies[index] = produce(movies[index], payload.transform);
       // pass undefined as delete and then use filter te remove the element
       return { ...state, movies: movies.filter(Boolean) };
     }

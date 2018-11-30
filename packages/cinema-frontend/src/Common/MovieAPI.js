@@ -1,8 +1,15 @@
+import { createNotification } from "../Movie/Movie.util";
+
 const headers = user => ({
   Accept: "application/json",
   "Content-Type": "application/json",
   Authorization: `Bearer ${user.token}`
 });
+
+export const handleError = error => {
+  createNotification(error.message, "error");
+  throw error;
+};
 
 const handleResponse = response => {
   if (response.ok) return response.json();
@@ -12,7 +19,9 @@ const handleResponse = response => {
 export const getMovie = (id, user) => {
   return fetch(`/api/movies/${id}`, {
     headers: headers(user)
-  }).then(handleResponse);
+  })
+    .then(handleResponse)
+    .catch(handleError);
 };
 
 let controller;
@@ -29,7 +38,8 @@ export const getMovies = abortable => (search, user) => {
     .then(response => {
       controller = null;
       return response;
-    });
+    })
+    .catch(handleError);
 };
 
 export const updateMovie = (movie, user) => {
@@ -37,7 +47,9 @@ export const updateMovie = (movie, user) => {
     method: "PUT",
     body: JSON.stringify(movie),
     headers: headers(user)
-  }).then(handleResponse);
+  })
+    .then(handleResponse)
+    .catch(handleError);
 };
 
 export const updateMoviePoster = (movie, file, user) => {
@@ -50,14 +62,18 @@ export const updateMoviePoster = (movie, file, user) => {
       Accept: "application/json",
       Authorization: `Bearer ${user.token}`
     }
-  }).then(handleResponse);
+  })
+    .then(handleResponse)
+    .catch(handleError);
 };
 
 export const deleteMovie = (movie, user) => {
   return fetch(`/api/movies/${movie._id}`, {
     method: "DELETE",
     headers: headers(user)
-  }).then(handleResponse);
+  })
+    .then(handleResponse)
+    .catch(handleError);
 };
 
 export const addSeason = (movie, user) => {
@@ -65,7 +81,9 @@ export const addSeason = (movie, user) => {
     method: "POST",
     body: JSON.stringify(movie),
     headers: headers(user)
-  }).then(handleResponse);
+  })
+    .then(handleResponse)
+    .catch(handleError);
 };
 
 export const updateSeason = (movie, season, user) => {
@@ -73,14 +91,20 @@ export const updateSeason = (movie, season, user) => {
     method: "PUT",
     body: JSON.stringify(season),
     headers: headers(user)
-  }).then(handleResponse);
+  })
+    .then(handleResponse)
+    .catch(handleError);
 };
 
 export const deleteSeason = (movie, season, user) => {
   return fetch(`/api/movies/${movie._id}/seasons/${season._id}`, {
     method: "DELETE",
     headers: headers(user)
-  }).then(handleResponse);
+  })
+    .then(response => {
+      if (!response.ok) throw new Error("Fetch fail");
+    })
+    .catch(handleError);
 };
 
 export const addEpisode = (movie, season, user) => {
@@ -88,7 +112,9 @@ export const addEpisode = (movie, season, user) => {
     method: "POST",
     body: JSON.stringify(season),
     headers: headers(user)
-  }).then(handleResponse);
+  })
+    .then(handleResponse)
+    .catch(handleError);
 };
 
 export const updateEpisode = (movie, season, episode, user) => {
@@ -103,5 +129,9 @@ export const deleteEpisode = (movie, season, episode, user) => {
   return fetch(`/api/movies/${movie._id}/seasons/${season._id}/episodes/${episode._id}`, {
     method: "DELETE",
     headers: headers(user)
-  }).then(handleResponse);
+  })
+    .then(response => {
+      if (!response.ok) throw new Error("Fetch fail");
+    })
+    .catch(handleError);
 };

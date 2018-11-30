@@ -11,22 +11,17 @@ import { useToggle } from "../../Common/hooks";
 import { MovieContext } from "../../Movie/Movie";
 import { NotificationContext } from "../../Notifications/NotificationContext";
 import "./Season.css";
+import { MoviesContext } from "../../Common/MoviesContext";
+import { createNotification, episodeTag, seasonTag } from "../Movie.util";
 
 export const SeasonContext = React.createContext({});
 
-export const Season = ({
-  season,
-  index,
-  onMovieChanged, // TODO this is a design flow ... it should be onSeasonChanged and update the season only
-  onDragStart,
-  onDragOver,
-  onDragEnd,
-  dragging
-}) => {
+export const Season = ({ season, index, onDragStart, onDragOver, onDragEnd, dragging }) => {
   // get contexts
   const user = useContext(UserContext);
   const { movie, lock } = useContext(MovieContext);
   const { dispatch } = useContext(NotificationContext);
+  const { dispatch: moviesDispatch } = useContext(MoviesContext);
 
   const [open, toggle] = useToggle();
   const [episodes, setEpisodes] = useState(1);
@@ -34,29 +29,22 @@ export const Season = ({
   const [drag, setDrag] = useState();
 
   // actions
-  const episodeTag = episodeIndex => {
-    return `${seasonTag()}E${(episodeIndex + 1).toString().padStart(2, "0")}`;
-  };
-  const seasonTag = () => {
-    return `S${(index + 1).toString().padStart(2, "0")}`;
-  };
-  const handleError = error => {
-    createNotification(error.message, "error");
-    throw error;
-  };
-  const createNotification = (content, type = "success") => {
-    dispatch({
-      type: "ADD",
+  const transformSeason = transform => {
+    moviesDispatch({
+      type: "UPDATE_WITH_TRANSFORM",
       payload: {
-        content,
-        type
+        id: movie._id,
+        transform
       }
     });
   };
+
   const updateSeason = (transform = value => value) => {
-    return MovieAPI.updateSeason(movie, produce(season, transform), user)
-      .then(onMovieChanged)
-      .catch(handleError);
+    return MovieAPI.updateSeason(movie, produce(season, transform), user).then(season =>
+      transformSeason(draft => {
+        draft.seasons[index] = season;
+      })
+    );
   };
 
   const seen = every(season.episodes, "seen") && season.episodes.length > 0;
@@ -93,7 +81,7 @@ export const Season = ({
               event.stopPropagation();
               updateSeason(season => {
                 season.seen = !seen;
-              }).then(() => createNotification(`${seasonTag()} - Seen updated`));
+              }).then(() => createNotification(dispatch, `${seasonTag(index)} - Seen updated`));
             }}
           >
             <MovieSeen seen={seen} partial={oneSeen} />
@@ -106,9 +94,12 @@ export const Season = ({
                 event.stopPropagation();
                 if (window.confirm("Delete season ?")) {
                   MovieAPI.deleteSeason(movie, season, user)
-                    .then(onMovieChanged)
-                    .then(() => createNotification(`${seasonTag()} - Deleted`))
-                    .catch(handleError);
+                    .then(() =>
+                      transformSeason(draft => {
+                        draft.seasons = draft.seasons.filter(s => s._id !== season._id);
+                      })
+                    )
+                    .then(() => createNotification(dispatch, `${seasonTag(index)} - Deleted`));
                 }
               }}
             />
@@ -124,7 +115,7 @@ export const Season = ({
             onChange={productionYear =>
               updateSeason(season => {
                 season.productionYear = productionYear;
-              }).then(() => createNotification(`${seasonTag()} - Production year updated`))
+              }).then(() => createNotification(dispatch, `${seasonTag(index)} - Production year updated`))
             }
           />
         </div>
@@ -140,7 +131,6 @@ export const Season = ({
                 key={episode._id}
                 episode={episode}
                 index={episodeIndex}
-                onEpisodeChanged={onMovieChanged}
                 dragging={drag !== undefined}
                 onDragStart={() => {
                   setDrag(episodeIndex);
@@ -156,7 +146,9 @@ export const Season = ({
                   }
                 }}
                 onDragEnd={() => {
-                  updateSeason().then(() => createNotification(`${episodeTag(index)} - Reordered`));
+                  updateSeason().then(() =>
+                    createNotification(dispatch, `${episodeTag(index, episodeIndex)} - Reordered`)
+                  );
                   setDrag();
                 }}
               />
@@ -186,16 +178,15 @@ export const Season = ({
               <button
                 className=" ml-1 btn btn-primary"
                 onClick={async () => {
-                  const initialTimes = episodes || 1;
-                  let times = episodes || 1;
-                  while (times > 0) {
-                    await MovieAPI.addEpisode(movie, season, user);
-                    times--;
+                  const times = episodes || 1;
+                  for (let i = 0; i < times; i++) {
+                    const newEpisode = await MovieAPI.addEpisode(movie, season, user);
+                    transformSeason(draft => {
+                      draft.seasons[index].episodes.push(newEpisode);
+                    });
                   }
+                  createNotification(dispatch, `${seasonTag(index)} - Added ${times} episodes`);
                   setEpisodes(1);
-                  MovieAPI.getMovie(movie._id, user)
-                    .then(onMovieChanged)
-                    .then(() => createNotification(`${seasonTag()} - Added ${initialTimes} episodes`));
                 }}
               >
                 <i className="fas fa-plus" />

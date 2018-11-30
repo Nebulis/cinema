@@ -77,7 +77,8 @@ export const List = () => {
       });
       // no movies ? then automatically fetch some (note: every time a filter is updated, movies are cleaned up)
       // the condition is needed in case of back navigation
-      if (movies.length === 0) {
+      if (count === 0) {
+        dispatch({ type: "INVALIDATE" }); // remove existing movies in case of backward navigation with initial load of movie
         debouncedLoadMore();
         setLoaded(false);
       }
