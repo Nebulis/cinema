@@ -30,12 +30,14 @@ export class ApplicationProvider extends React.Component {
     Promise.all([
       fetch("/api/movies/genre", options).then(handleResponse),
       fetch("/api/movies/type", options).then(handleResponse),
-      getTags(this.props)
-    ]).then(([genres, types, tags]) => {
+      getTags(this.props),
+      fetch("/api/movies/years", options).then(handleResponse)
+    ]).then(([genres, types, tags, years]) => {
       this.setState({
         genres,
         types,
         tags,
+        years,
         status: LOADED
       });
     });
@@ -44,6 +46,7 @@ export class ApplicationProvider extends React.Component {
     genres: [],
     types: [],
     tags: [],
+    years: [],
     status: LOADING,
     set: this.set
   };

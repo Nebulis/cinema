@@ -2,6 +2,7 @@ import AWS from "aws-sdk";
 import express from "express";
 import identity from "lodash/identity";
 import last from "lodash/last";
+import union from "lodash/union";
 import { DocumentQuery } from "mongoose";
 import multer from "multer";
 import uuid from "uuid/v4";
@@ -198,6 +199,16 @@ router.get("/", (req, res, next) => {
 router.get("/genre", (_, res, next) => {
   Movie.distinct("genre")
     .then(genres => res.json(genres.sort()))
+    .catch(next);
+});
+
+// get genres
+router.get("/years", (_, res, next) => {
+  Promise.all([
+    Movie.distinct("productionYear").then(identity),
+    Movie.distinct("seasons.productionYear").then(identity)
+  ])
+    .then(years => res.json(union(years[0], years[1]).sort()))
     .catch(next);
 });
 

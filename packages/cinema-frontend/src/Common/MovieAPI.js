@@ -6,6 +6,7 @@ const headers = user => ({
   Authorization: `Bearer ${user.token}`
 });
 
+// TODO ... doesn't work no access to dispatch :(
 export const handleError = error => {
   createNotification(error.message, "error");
   throw error;

@@ -18,6 +18,7 @@ const buildQuery = (filters, offset) => {
   const notGenres = filters.genres.filter(genre => !genre[1]).map(genre => genre[0]);
   return Object.keys(filters)
     .filter(key => key !== "genres") // handle genres manually)
+    .filter(key => key !== "productionYear" || (key === "productionYear" && filters[key] !== "-1"))
     .filter(
       key =>
         (!isArray(filters[key]) && filters[key] !== null && filters[key] !== "") ||

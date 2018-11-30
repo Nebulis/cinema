@@ -8,7 +8,7 @@ const initialState = {
   movies: [],
   count: 0,
   filters: {
-    productionYear: "",
+    productionYear: "-1",
     title: "",
     genres: [],
     types: [],
