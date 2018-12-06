@@ -82,11 +82,11 @@ export const MoviesFilter = () => {
     <form className="form-inline movies-filter mt-4 ml-3">
       <div className="form-group mr-2">
         <select className="form-control" {...forInput({ filters, onChange }, "productionYear")}>
-          <option value="-1" selected>
-            YYYY
-          </option>
+          <option value="-1">YYYY</option>
           {years.map(year => (
-            <option value={year}>{year}</option>
+            <option value={year} key={year}>
+              {year}
+            </option>
           ))}
         </select>
       </div>
