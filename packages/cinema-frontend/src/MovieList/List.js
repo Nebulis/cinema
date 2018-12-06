@@ -90,6 +90,7 @@ export const List = () => {
   useEffect(showMovie, [movie]);
 
   const isFirstRun = useRef(true);
+  // dont run this the first time landing in the page as it's run by the effect listening to filters
   useEffect(
     () => {
       if (isFirstRun.current) {
