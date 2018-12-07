@@ -72,6 +72,23 @@ export const Movie = withRouter(({ match, history }) => {
         .then(() => createNotification(dispatch, `${movie.title} - Image uploaded`));
     }
   };
+  const addSeasons = async () => {
+    const times = seasons || 1;
+    for (let i = 0; i < times; i++) {
+      const newSeason = await MovieAPI.addSeason(movie, user);
+      moviesDispatch({
+        type: "UPDATE_WITH_TRANSFORM",
+        payload: {
+          id: movie._id,
+          transform: draft => {
+            draft.seasons.push(newSeason);
+          }
+        }
+      });
+    }
+    createNotification(dispatch, `${movie.title} - Added ${times} seasons`);
+    setSeasons(1);
+  };
 
   return (
     <div className="container movie-container">
@@ -243,28 +260,14 @@ export const Movie = withRouter(({ match, history }) => {
                         className="form-control"
                         style={{ width: "80px" }}
                         onChange={event => setSeasons(parseInt(event.target.value, 10))}
+                        onKeyDown={event => {
+                          if (event.key === "Enter") {
+                            addSeasons();
+                          }
+                        }}
                         value={seasons}
                       />
-                      <button
-                        className=" ml-1 btn btn-primary"
-                        onClick={async () => {
-                          const times = seasons || 1;
-                          for (let i = 0; i < times; i++) {
-                            const newSeason = await MovieAPI.addSeason(movie, user);
-                            moviesDispatch({
-                              type: "UPDATE_WITH_TRANSFORM",
-                              payload: {
-                                id: movie._id,
-                                transform: draft => {
-                                  draft.seasons.push(newSeason);
-                                }
-                              }
-                            });
-                          }
-                          createNotification(dispatch, `${movie.title} - Added ${times} seasons`);
-                          setSeasons(1);
-                        }}
-                      >
+                      <button className=" ml-1 btn btn-primary" onClick={addSeasons}>
                         <i className="fas fa-plus" />
                         &nbsp;Add season
                       </button>

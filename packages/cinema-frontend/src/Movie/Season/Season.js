@@ -38,13 +38,23 @@ export const Season = ({ season, index, onDragStart, onDragOver, onDragEnd, drag
       }
     });
   };
-
   const updateSeason = (transform = value => value) => {
     return MovieAPI.updateSeason(movie, produce(season, transform), user).then(season =>
       transformSeason(draft => {
         draft.seasons[index] = season;
       })
     );
+  };
+  const addEpisodes = async () => {
+    const times = episodes || 1;
+    for (let i = 0; i < times; i++) {
+      const newEpisode = await MovieAPI.addEpisode(movie, season, user);
+      transformSeason(draft => {
+        draft.seasons[index].episodes.push(newEpisode);
+      });
+    }
+    createNotification(dispatch, `${seasonTag(index)} - Added ${times} episodes`);
+    setEpisodes(1);
   };
 
   const seen = every(season.episodes, "seen") && season.episodes.length > 0;
@@ -173,22 +183,14 @@ export const Season = ({ season, index, onDragStart, onDragOver, onDragEnd, drag
                 className="form-control"
                 style={{ width: "80px" }}
                 onChange={event => setEpisodes(parseInt(event.target.value, 10))}
+                onKeyDown={event => {
+                  if (event.key === "Enter") {
+                    addEpisodes();
+                  }
+                }}
                 value={episodes}
               />
-              <button
-                className=" ml-1 btn btn-primary"
-                onClick={async () => {
-                  const times = episodes || 1;
-                  for (let i = 0; i < times; i++) {
-                    const newEpisode = await MovieAPI.addEpisode(movie, season, user);
-                    transformSeason(draft => {
-                      draft.seasons[index].episodes.push(newEpisode);
-                    });
-                  }
-                  createNotification(dispatch, `${seasonTag(index)} - Added ${times} episodes`);
-                  setEpisodes(1);
-                }}
-              >
+              <button className=" ml-1 btn btn-primary" onClick={addEpisodes}>
                 <i className="fas fa-plus" />
                 &nbsp;Add episode
               </button>
