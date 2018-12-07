@@ -58,6 +58,23 @@ export const Movie = withRouter(({ match, history }) => {
   );
 
   // create actions
+
+  const transformMovie = transform => {
+    moviesDispatch({
+      type: "UPDATE_WITH_TRANSFORM",
+      payload: {
+        id: movie._id,
+        transform
+      }
+    });
+  };
+  const updateSeason = (season, seasonIndex, transform = value => value) => {
+    return MovieAPI.updateSeason(movie, produce(season, transform), user).then(season =>
+      transformMovie(draft => {
+        draft.seasons[seasonIndex] = season;
+      })
+    );
+  };
   const updateMovie = (transform = value => value) => {
     return MovieAPI.updateMovie(produce(movie, transform), user).then(movie => {
       moviesDispatch({ type: "UPDATE", payload: { id: movie._id, movie } });
@@ -76,14 +93,8 @@ export const Movie = withRouter(({ match, history }) => {
     const times = seasons || 1;
     for (let i = 0; i < times; i++) {
       const newSeason = await MovieAPI.addSeason(movie, user);
-      moviesDispatch({
-        type: "UPDATE_WITH_TRANSFORM",
-        payload: {
-          id: movie._id,
-          transform: draft => {
-            draft.seasons.push(newSeason);
-          }
-        }
+      transformMovie(draft => {
+        draft.seasons.push(newSeason);
       });
     }
     createNotification(dispatch, `${movie.title} - Added ${times} seasons`);
@@ -248,6 +259,18 @@ export const Movie = withRouter(({ match, history }) => {
                               createNotification(dispatch, `${seasonTag(seasonIndex)} - Reordered`)
                             );
                             setDrag();
+                          }}
+                          onProductionYearUpdate={async productionYear => {
+                            const promises = [];
+                            for (let i = seasonIndex; i < movie.seasons.length; i++) {
+                              promises.push(
+                                updateSeason(movie.seasons[i], i, draft => {
+                                  draft.productionYear = productionYear + (i - seasonIndex);
+                                })
+                              );
+                            }
+                            await Promise.all(promises);
+                            createNotification(dispatch, "Seasons production years updated");
                           }}
                         />
                       ))}

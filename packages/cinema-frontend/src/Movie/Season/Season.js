@@ -16,7 +16,7 @@ import { createNotification, episodeTag, seasonTag } from "../Movie.util";
 
 export const SeasonContext = React.createContext({});
 
-export const Season = ({ season, index, onDragStart, onDragOver, onDragEnd, dragging }) => {
+export const Season = ({ season, index, onDragStart, onDragOver, onDragEnd, dragging, onProductionYearUpdate }) => {
   // get contexts
   const user = useContext(UserContext);
   const { movie, lock } = useContext(MovieContext);
@@ -122,11 +122,7 @@ export const Season = ({ season, index, onDragStart, onDragOver, onDragEnd, drag
             type="number"
             value={season.productionYear}
             transform={value => parseInt(value, 10)}
-            onChange={productionYear =>
-              updateSeason(season => {
-                season.productionYear = productionYear;
-              }).then(() => createNotification(dispatch, `${seasonTag(index)} - Production year updated`))
-            }
+            onChange={productionYear => onProductionYearUpdate(productionYear)}
           />
         </div>
         <div className="season-header-arrow">

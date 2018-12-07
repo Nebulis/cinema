@@ -22,24 +22,24 @@ router.post("/:id/seasons", (req, res, next) => {
 
 // update season
 router.put("/:movieId/seasons/:seasonId", (req, res, next) => {
-  Movie.findById(req.params.movieId)
-    .then(
-      movie =>
-        movie || throwMe(new Error(`Movie ${req.params.seasonId} not found`))
+  Movie.update(
+    {
+      _id: req.params.movieId,
+      "seasons._id": req.params.seasonId
+    },
+    {
+      $set: {
+        "seasons.$.productionYear": req.body.productionYear
+      }
+    }
+  )
+    .then(() =>
+      Movie.findById(req.params.movieId).then(
+        movie =>
+          movie || throwMe(new Error(`Movie ${req.params.seasonId} not found`))
+      )
     )
-    .then(movie => {
-      const season = movie.seasons.id(req.params.seasonId);
-      season.productionYear = req.body.productionYear;
-      if (req.body.episodes) {
-        season.episodes = req.body.episodes;
-      }
-      if (req.body.seen === false) {
-        season.episodes.forEach(episode => (episode.seen = false));
-      } else if (req.body.seen === true) {
-        season.episodes.forEach(episode => (episode.seen = true));
-      }
-      return movie.save().then(_ => res.json(season));
-    })
+    .then(movie => res.json(movie.seasons.id(req.params.seasonId)))
     .catch(next);
 });
 
