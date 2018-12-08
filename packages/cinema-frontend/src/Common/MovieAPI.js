@@ -123,7 +123,9 @@ export const updateEpisode = (movie, season, episode, user) => {
     method: "PUT",
     body: JSON.stringify(episode),
     headers: headers(user)
-  }).then(handleResponse);
+  })
+    .then(handleResponse)
+    .catch(handleError);
 };
 
 export const deleteEpisode = (movie, season, episode, user) => {

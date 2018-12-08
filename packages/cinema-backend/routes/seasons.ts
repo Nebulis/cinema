@@ -1,4 +1,5 @@
 import express from "express";
+import mongoose from "mongoose";
 import { Episode } from "../models/episode";
 import { Movie } from "../models/movie";
 import { ISeason, Season } from "../models/season";
@@ -22,7 +23,7 @@ router.post("/:id/seasons", (req, res, next) => {
 
 // update season
 router.put("/:movieId/seasons/:seasonId", (req, res, next) => {
-  Movie.update(
+  Movie.updateOne(
     {
       _id: req.params.movieId,
       "seasons._id": req.params.seasonId
@@ -36,7 +37,7 @@ router.put("/:movieId/seasons/:seasonId", (req, res, next) => {
     .then(() =>
       Movie.findById(req.params.movieId).then(
         movie =>
-          movie || throwMe(new Error(`Movie ${req.params.seasonId} not found`))
+          movie || throwMe(new Error(`Movie ${req.params.movieId} not found`))
       )
     )
     .then(movie => res.json(movie.seasons.id(req.params.seasonId)))
@@ -48,7 +49,7 @@ router.delete("/:movieId/seasons/:seasonId", (req, res, next) => {
   Movie.findById(req.params.movieId)
     .then(
       movie =>
-        movie || throwMe(new Error(`Movie ${req.params.seasonId} not found`))
+        movie || throwMe(new Error(`Movie ${req.params.movieId} not found`))
     )
     .then(movie => {
       movie.seasons.id(req.params.seasonId).remove();
@@ -80,19 +81,46 @@ router.post("/:movieId/seasons/:seasonId/episodes", (req, res, next) => {
 router.put(
   "/:movieId/seasons/:seasonId/episodes/:episodeId",
   (req, res, next) => {
-    Movie.findById(req.params.movieId)
-      .then(
-        movie =>
-          movie || throwMe(new Error(`Movie ${req.params.seasonId} not found`))
+    Movie.findOneAndUpdate(
+      {
+        _id: req.params.movieId
+      },
+      {
+        $set: {
+          "seasons.$[s].episodes.$[e].seen": req.body.seen,
+          "seasons.$[s].episodes.$[e].summary": req.body.summary,
+          "seasons.$[s].episodes.$[e].title": req.body.title
+        }
+      },
+      {
+        // @ts-ignore
+        arrayFilters: [
+          {
+            // use ObjectId otherwise it doesn't work ....
+            "e._id": mongoose.Types.ObjectId(req.params.episodeId)
+          },
+          {
+            // use ObjectId otherwise it doesn't work ....
+            "s._id": mongoose.Types.ObjectId(req.params.seasonId)
+          }
+        ]
+      }
+    )
+      .then(() =>
+        Movie.findById(req.params.movieId)
+          .then(
+            movie =>
+              movie ||
+              throwMe(new Error(`Movie ${req.params.movieId} not found`))
+          )
+          .then(movie =>
+            res.json(
+              movie.seasons
+                .id(req.params.seasonId)
+                .episodes.id(req.params.episodeId)
+            )
+          )
       )
-      .then(movie => {
-        const season = movie.seasons.id(req.params.seasonId);
-        const episode = season.episodes.id(req.params.episodeId);
-        episode.title = req.body.title;
-        episode.summary = req.body.summary;
-        episode.seen = req.body.seen;
-        return movie.save().then(_ => res.json(episode));
-      })
       .catch(next);
   }
 );

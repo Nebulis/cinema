@@ -45,6 +45,18 @@ export const Season = ({ season, index, onDragStart, onDragOver, onDragEnd, drag
       })
     );
   };
+  const updateEpisode = (episode, episodeIndex, transform = value => value) => {
+    const transformedEpisode = produce(episode, transform); // optimistic update
+    transformSeason(draft => {
+      draft.seasons[index].episodes[episodeIndex] = transformedEpisode;
+    });
+    return MovieAPI.updateEpisode(movie, season, transformedEpisode, user).catch(_ => {
+      //revert on error
+      transformSeason(draft => {
+        draft.seasons[index].episodes[episodeIndex] = episode;
+      });
+    });
+  };
   const addEpisodes = async () => {
     const times = episodes || 1;
     for (let i = 0; i < times; i++) {
@@ -86,12 +98,19 @@ export const Season = ({ season, index, onDragStart, onDragOver, onDragEnd, drag
         <div>
           <div
             className="season-header-view"
-            onClick={event => {
+            onClick={async event => {
               event.preventDefault();
               event.stopPropagation();
-              updateSeason(season => {
-                season.seen = !seen;
-              }).then(() => createNotification(dispatch, `${seasonTag(index)} - Seen updated`));
+              const promises = [];
+              for (let i = 0; i < season.episodes.length; i++) {
+                promises.push(
+                  updateEpisode(season.episodes[i], i, draft => {
+                    draft.seen = !seen;
+                  })
+                );
+              }
+              await Promise.all(promises);
+              createNotification(dispatch, `${seasonTag(index)} - ${seen ? "unseen" : "seen"}`);
             }}
           >
             <MovieSeen seen={seen} partial={oneSeen} />
@@ -156,6 +175,26 @@ export const Season = ({ season, index, onDragStart, onDragOver, onDragEnd, drag
                     createNotification(dispatch, `${episodeTag(index, episodeIndex)} - Reordered`)
                   );
                   setDrag();
+                }}
+                onSeen={async seen => {
+                  const promises = [];
+                  if (!seen) {
+                    promises.push(
+                      updateEpisode(season.episodes[episodeIndex], episodeIndex, draft => {
+                        draft.seen = seen;
+                      })
+                    );
+                  } else {
+                    for (let i = 0; i <= episodeIndex; i++) {
+                      promises.push(
+                        updateEpisode(season.episodes[i], i, draft => {
+                          draft.seen = seen;
+                        })
+                      );
+                    }
+                  }
+                  await Promise.all(promises);
+                  createNotification(dispatch, `Episodes set to ${seen ? "seen" : "unseen"}`);
                 }}
               />
             ))}

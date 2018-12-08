@@ -7,9 +7,9 @@ import { MovieContext } from "../Movie";
 import { SeasonContext } from "./Season";
 import { NotificationContext } from "../../Notifications/NotificationContext";
 import { MoviesContext } from "../../Common/MoviesContext";
-import { createNotification, episodeTag, seasonTag } from "../Movie.util";
+import { createNotification, episodeTag } from "../Movie.util";
 
-export const Episode = ({ episode, index, onDragStart, onDragOver, onDragEnd, dragging }) => {
+export const Episode = ({ episode, index, onDragStart, onDragOver, onDragEnd, dragging, onSeen }) => {
   // get contexts
   const user = useContext(UserContext);
   const { movie, lock } = useContext(MovieContext);
@@ -29,13 +29,6 @@ export const Episode = ({ episode, index, onDragStart, onDragOver, onDragEnd, dr
         id: movie._id,
         transform
       }
-    });
-  };
-  const updateSeason = transform => {
-    return MovieAPI.updateSeason(movie, produce(season, transform), user).then(season => {
-      transformEpisode(draft => {
-        draft.seasons[seasonIndex] = season;
-      });
     });
   };
   const updateEpisode = transform => {
@@ -103,17 +96,7 @@ export const Episode = ({ episode, index, onDragStart, onDragOver, onDragEnd, dr
             fontWeight: episode.seen ? "bold" : "",
             cursor: "pointer"
           }}
-          onClick={() =>
-            updateSeason(season => {
-              if (!season.episodes[index].seen) {
-                for (let i = 0; i <= index; i++) {
-                  season.episodes[i].seen = true;
-                }
-              } else {
-                season.episodes[index].seen = false;
-              }
-            }).then(() => createNotification(dispatch, `${seasonTag(seasonIndex)} - Seen updated`))
-          }
+          onClick={() => onSeen(!episode.seen)}
         >
           {index + 1}
         </div>
