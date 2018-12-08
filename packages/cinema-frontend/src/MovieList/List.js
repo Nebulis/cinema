@@ -52,12 +52,13 @@ export const List = () => {
   const loadMore = _ => {
     setLoaded(false);
     getMovies(buildQuery(filters, offset), user).then(movies => {
-      // invalidate if there is a new search
       if (offset === 0) {
-        dispatch({ type: "INVALIDATE" });
+        // use a different action on new search otherwise there are some issues due to asynchronous action
+        dispatch({ type: "SET_MOVIES", payload: { movies: movies.data, count: movies.count } });
+      } else {
+        dispatch({ type: "ADD_ALL", payload: { movies: movies.data, count: movies.count } });
       }
       setLoaded(true);
-      dispatch({ type: "ADD_ALL", payload: { movies: movies.data, count: movies.count } });
     });
   };
   const showMovie = () => {
@@ -77,11 +78,12 @@ export const List = () => {
         trailing: true
       });
       // no movies ? then automatically fetch some (note: every time a filter is updated, movies are cleaned up)
-      // the condition is needed in case of back navigation
       if (count === 0) {
-        dispatch({ type: "INVALIDATE" }); // remove existing movies in case of backward navigation with initial load of movie
-        debouncedLoadMore();
+        // the condition is needed in case of back navigation
         setLoaded(false);
+        setOffset(0);
+        dispatch({ type: "SET_MOVIES", payload: {} }); // remove existing movies in case of backward navigation with initial load of movie
+        debouncedLoadMore();
       }
       return () => debouncedLoadMore.cancel();
     },
