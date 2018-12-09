@@ -7,9 +7,9 @@ import { MovieContext } from "../Movie";
 import { SeasonContext } from "./Season";
 import { NotificationContext } from "../../Notifications/NotificationContext";
 import { MoviesContext } from "../../Common/MoviesContext";
-import { createNotification, episodeTag, seasonTag } from "../Movie.util";
+import { createNotification, episodeTag, handleError } from "../Movie.util";
 
-export const Episode = ({ episode, index, onDragStart, onDragOver, onDragEnd, dragging }) => {
+export const Episode = ({ episode, index, onDragStart, onDragOver, onDragEnd, dragging, onSeen }) => {
   // get contexts
   const user = useContext(UserContext);
   const { movie, lock } = useContext(MovieContext);
@@ -31,23 +31,17 @@ export const Episode = ({ episode, index, onDragStart, onDragOver, onDragEnd, dr
       }
     });
   };
-  const updateSeason = transform => {
-    return MovieAPI.updateSeason(movie, produce(season, transform), user).then(season => {
-      transformEpisode(draft => {
-        draft.seasons[seasonIndex] = season;
-      });
-    });
-  };
   const updateEpisode = transform => {
     const transformedEpisode = produce(episode, transform); // optimistic update
     transformEpisode(draft => {
       draft.seasons[seasonIndex].episodes[index] = transformedEpisode;
     });
-    return MovieAPI.updateEpisode(movie, season, transformedEpisode, user).catch(_ => {
+    return MovieAPI.updateEpisode(movie, season, transformedEpisode, user).catch(error => {
       //revert on error
       transformEpisode(draft => {
         draft.seasons[seasonIndex].episodes[index] = episode;
       });
+      handleError(dispatch)(error);
     });
   };
 
@@ -91,7 +85,8 @@ export const Episode = ({ episode, index, onDragStart, onDragOver, onDragEnd, dr
                       );
                     })
                   )
-                  .then(() => createNotification(dispatch, `${episodeTag(seasonIndex, index)} - Deleted`));
+                  .then(() => createNotification(dispatch, `${episodeTag(seasonIndex, index)} - Deleted`))
+                  .catch(handleError(dispatch));
               }
             }}
           />
@@ -103,17 +98,7 @@ export const Episode = ({ episode, index, onDragStart, onDragOver, onDragEnd, dr
             fontWeight: episode.seen ? "bold" : "",
             cursor: "pointer"
           }}
-          onClick={() =>
-            updateSeason(season => {
-              if (!season.episodes[index].seen) {
-                for (let i = 0; i <= index; i++) {
-                  season.episodes[i].seen = true;
-                }
-              } else {
-                season.episodes[index].seen = false;
-              }
-            }).then(() => createNotification(dispatch, `${seasonTag(seasonIndex)} - Seen updated`))
-          }
+          onClick={() => onSeen(!episode.seen)}
         >
           {index + 1}
         </div>
