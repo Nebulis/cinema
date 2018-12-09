@@ -6,7 +6,7 @@ import { MovieSeen } from "../Common/MovieSeen";
 import { MoviesContext } from "../Common/MoviesContext";
 import { produce } from "immer";
 import { Season } from "./Season/Season";
-import { EditableInput, EditableTextarea } from "../Common/EditableField";
+import { EditableInput, EditableTextarea, EditableMultiSelect } from "../Common/EditableField";
 import { useToggle } from "../Common/hooks";
 import "./Movie.css";
 import { ApplicationContext } from "../ApplicationContext";
@@ -36,7 +36,7 @@ export const Movie = withRouter(({ match, history }) => {
     dispatch: moviesDispatch
   } = useContext(MoviesContext);
   const [seasons, setSeasons] = useState(1);
-  const { tags } = useContext(ApplicationContext);
+  const { tags, genres } = useContext(ApplicationContext);
   const { dispatch } = useContext(NotificationContext);
   // create state
   const [drag, setDrag] = useState();
@@ -207,7 +207,19 @@ export const Movie = withRouter(({ match, history }) => {
                     }
                   />
                 </h1>
-                <h6 className="text-center single-movie-subtitle">{movie.genre.join(",")}</h6>
+                <div className="text-center single-movie-subtitle mb-2">
+                  <EditableMultiSelect
+                    lock={lock}
+                    value={movie.genre}
+                    placeholder="Genre"
+                    items={genres}
+                    onChange={genres =>
+                      updateMovie(movie => {
+                        movie.genre = genres;
+                      }).then(() => createNotification(dispatch, `${movie.title} - Genre updated`))
+                    }
+                  />
+                </div>
                 <div>
                   <EditableTextarea
                     split={true}
