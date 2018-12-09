@@ -9,7 +9,9 @@
 
 .movie-tag {
   cursor: pointer;
+  margin: 2px 4px 2px 0;
 }
+
 .movie-tag:not(.selected) {
   opacity: 0.4;
 }

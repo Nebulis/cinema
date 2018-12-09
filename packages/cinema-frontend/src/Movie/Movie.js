@@ -19,13 +19,13 @@ export const MovieContext = React.createContext({});
 
 const MovieTag = ({ tag, selected, onAdd, onDelete, lock }) =>
   !lock ? (
-    <span onClick={selected ? onDelete : onAdd} className="mt-1">
-      <Tag {...tag} className={`movie-tag mr-1 ${selected ? "selected" : ""}`} />
-    </span>
+    <div onClick={selected ? onDelete : onAdd} className={`movie-tag ${selected ? "selected" : ""}`}>
+      <Tag {...tag} className={`d-inline-block`} />
+    </div>
   ) : selected ? (
-    <span className="mt-1">
-      <Tag {...tag} className={`mr-1 selected`} />
-    </span>
+    <div className="movie-tag selected">
+      <Tag {...tag} className={`d-inline-block`} />
+    </div>
   ) : null;
 
 export const Movie = withRouter(({ match, history }) => {
@@ -161,7 +161,7 @@ export const Movie = withRouter(({ match, history }) => {
                     alt="movie poster"
                   />
                 </span>
-                <div className="d-flex flex-wrap">
+                <div className="d-flex flex-wrap mt-1 mb-1">
                   {tags.map(tag => (
                     <MovieTag
                       key={tag._id}
