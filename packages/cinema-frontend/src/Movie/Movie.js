@@ -13,7 +13,7 @@ import { ApplicationContext } from "../ApplicationContext";
 import { Tag } from "../Admin/Tag";
 import find from "lodash/find";
 import { NotificationContext } from "../Notifications/NotificationContext";
-import { createNotification, seasonTag } from "./Movie.util";
+import { createNotification, handleError, seasonTag } from "./Movie.util";
 
 export const MovieContext = React.createContext({});
 
@@ -49,9 +49,11 @@ export const Movie = withRouter(({ match, history }) => {
   useEffect(
     () => {
       if (!movie) {
-        MovieAPI.getMovie(match.params.id, user).then(movie => {
-          moviesDispatch({ type: "ADD", payload: { movie } });
-        });
+        MovieAPI.getMovie(match.params.id, user)
+          .then(movie => {
+            moviesDispatch({ type: "ADD", payload: { movie } });
+          })
+          .catch(handleError(dispatch));
       }
     },
     [match.params.id]
@@ -69,16 +71,20 @@ export const Movie = withRouter(({ match, history }) => {
     });
   };
   const updateSeason = (season, seasonIndex, transform = value => value) => {
-    return MovieAPI.updateSeason(movie, produce(season, transform), user).then(season =>
-      transformMovie(draft => {
-        draft.seasons[seasonIndex] = season;
-      })
-    );
+    return MovieAPI.updateSeason(movie, produce(season, transform), user)
+      .then(season =>
+        transformMovie(draft => {
+          draft.seasons[seasonIndex] = season;
+        })
+      )
+      .catch(handleError(dispatch));
   };
   const updateMovie = (transform = value => value) => {
-    return MovieAPI.updateMovie(produce(movie, transform), user).then(movie => {
-      moviesDispatch({ type: "UPDATE", payload: { id: movie._id, movie } });
-    });
+    return MovieAPI.updateMovie(produce(movie, transform), user)
+      .then(movie => {
+        moviesDispatch({ type: "UPDATE", payload: { id: movie._id, movie } });
+      })
+      .catch(handleError(dispatch));
   };
   const handleFiles = files => {
     if (files.length === 1) {
@@ -86,13 +92,14 @@ export const Movie = withRouter(({ match, history }) => {
         .then(movie => {
           moviesDispatch({ type: "UPDATE", payload: { id: movie._id, movie } });
         })
-        .then(() => createNotification(dispatch, `${movie.title} - Image uploaded`));
+        .then(() => createNotification(dispatch, `${movie.title} - Image uploaded`))
+        .catch(handleError(dispatch));
     }
   };
   const addSeasons = async () => {
     const times = seasons || 1;
     for (let i = 0; i < times; i++) {
-      const newSeason = await MovieAPI.addSeason(movie, user);
+      const newSeason = await MovieAPI.addSeason(movie, user).catch(handleError(dispatch));
       transformMovie(draft => {
         draft.seasons.push(newSeason);
       });

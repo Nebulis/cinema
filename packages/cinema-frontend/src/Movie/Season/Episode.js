@@ -7,7 +7,7 @@ import { MovieContext } from "../Movie";
 import { SeasonContext } from "./Season";
 import { NotificationContext } from "../../Notifications/NotificationContext";
 import { MoviesContext } from "../../Common/MoviesContext";
-import { createNotification, episodeTag } from "../Movie.util";
+import { createNotification, episodeTag, handleError } from "../Movie.util";
 
 export const Episode = ({ episode, index, onDragStart, onDragOver, onDragEnd, dragging, onSeen }) => {
   // get contexts
@@ -36,11 +36,12 @@ export const Episode = ({ episode, index, onDragStart, onDragOver, onDragEnd, dr
     transformEpisode(draft => {
       draft.seasons[seasonIndex].episodes[index] = transformedEpisode;
     });
-    return MovieAPI.updateEpisode(movie, season, transformedEpisode, user).catch(_ => {
+    return MovieAPI.updateEpisode(movie, season, transformedEpisode, user).catch(error => {
       //revert on error
       transformEpisode(draft => {
         draft.seasons[seasonIndex].episodes[index] = episode;
       });
+      handleError(dispatch)(error);
     });
   };
 
@@ -84,7 +85,8 @@ export const Episode = ({ episode, index, onDragStart, onDragOver, onDragEnd, dr
                       );
                     })
                   )
-                  .then(() => createNotification(dispatch, `${episodeTag(seasonIndex, index)} - Deleted`));
+                  .then(() => createNotification(dispatch, `${episodeTag(seasonIndex, index)} - Deleted`))
+                  .catch(handleError(dispatch));
               }
             }}
           />

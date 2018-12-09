@@ -12,7 +12,7 @@ import { MovieContext } from "../../Movie/Movie";
 import { NotificationContext } from "../../Notifications/NotificationContext";
 import "./Season.css";
 import { MoviesContext } from "../../Common/MoviesContext";
-import { createNotification, episodeTag, seasonTag } from "../Movie.util";
+import { createNotification, episodeTag, handleError, seasonTag } from "../Movie.util";
 
 export const SeasonContext = React.createContext({});
 
@@ -39,28 +39,31 @@ export const Season = ({ season, index, onDragStart, onDragOver, onDragEnd, drag
     });
   };
   const updateSeason = (transform = value => value) => {
-    return MovieAPI.updateSeason(movie, produce(season, transform), user).then(season =>
-      transformSeason(draft => {
-        draft.seasons[index] = season;
-      })
-    );
+    return MovieAPI.updateSeason(movie, produce(season, transform), user)
+      .then(season =>
+        transformSeason(draft => {
+          draft.seasons[index] = season;
+        })
+      )
+      .catch(handleError(dispatch));
   };
   const updateEpisode = (episode, episodeIndex, transform = value => value) => {
     const transformedEpisode = produce(episode, transform); // optimistic update
     transformSeason(draft => {
       draft.seasons[index].episodes[episodeIndex] = transformedEpisode;
     });
-    return MovieAPI.updateEpisode(movie, season, transformedEpisode, user).catch(_ => {
+    return MovieAPI.updateEpisode(movie, season, transformedEpisode, user).catch(error => {
       //revert on error
       transformSeason(draft => {
         draft.seasons[index].episodes[episodeIndex] = episode;
       });
+      handleError(dispatch)(error);
     });
   };
   const addEpisodes = async () => {
     const times = episodes || 1;
     for (let i = 0; i < times; i++) {
-      const newEpisode = await MovieAPI.addEpisode(movie, season, user);
+      const newEpisode = await MovieAPI.addEpisode(movie, season, user).catch(handleError(dispatch));
       transformSeason(draft => {
         draft.seasons[index].episodes.push(newEpisode);
       });
@@ -128,7 +131,8 @@ export const Season = ({ season, index, onDragStart, onDragOver, onDragEnd, drag
                         draft.seasons = draft.seasons.filter(s => s._id !== season._id);
                       })
                     )
-                    .then(() => createNotification(dispatch, `${seasonTag(index)} - Deleted`));
+                    .then(() => createNotification(dispatch, `${seasonTag(index)} - Deleted`))
+                    .catch(handleError(dispatch));
                 }
               }}
             />
