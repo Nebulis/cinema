@@ -25,7 +25,7 @@ export const MoviesFilter = () => {
     state: { filters },
     dispatch
   } = useContext(MoviesContext);
-  const { genres, types, tags } = useContext(ApplicationContext);
+  const { genres, types, tags, years } = useContext(ApplicationContext);
   const { seen, finished } = filters;
 
   const onChange = name => value => {
@@ -81,14 +81,14 @@ export const MoviesFilter = () => {
   return (
     <form className="form-inline movies-filter mt-4 ml-3">
       <div className="form-group mr-2">
-        <input
-          {...forInput({ filters, onChange }, "productionYear", value => parseInt(value, 10))}
-          type="number"
-          max={2200}
-          placeholder="YYYY"
-          className="form-control"
-          style={{ width: "90px" }}
-        />
+        <select className="form-control" {...forInput({ filters, onChange }, "productionYear")}>
+          <option value="-1">YYYY</option>
+          {years.map(year => (
+            <option value={year} key={year}>
+              {year}
+            </option>
+          ))}
+        </select>
       </div>
       <div className="form-group mr-2">
         <input type="text" {...forInput({ filters, onChange }, "title")} placeholder="Title" className="form-control" />

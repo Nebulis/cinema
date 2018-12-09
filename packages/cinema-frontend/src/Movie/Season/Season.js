@@ -12,11 +12,11 @@ import { MovieContext } from "../../Movie/Movie";
 import { NotificationContext } from "../../Notifications/NotificationContext";
 import "./Season.css";
 import { MoviesContext } from "../../Common/MoviesContext";
-import { createNotification, episodeTag, seasonTag } from "../Movie.util";
+import { createNotification, episodeTag, handleError, seasonTag } from "../Movie.util";
 
 export const SeasonContext = React.createContext({});
 
-export const Season = ({ season, index, onDragStart, onDragOver, onDragEnd, dragging }) => {
+export const Season = ({ season, index, onDragStart, onDragOver, onDragEnd, dragging, onProductionYearUpdate }) => {
   // get contexts
   const user = useContext(UserContext);
   const { movie, lock } = useContext(MovieContext);
@@ -38,13 +38,38 @@ export const Season = ({ season, index, onDragStart, onDragOver, onDragEnd, drag
       }
     });
   };
-
   const updateSeason = (transform = value => value) => {
-    return MovieAPI.updateSeason(movie, produce(season, transform), user).then(season =>
+    return MovieAPI.updateSeason(movie, produce(season, transform), user)
+      .then(season =>
+        transformSeason(draft => {
+          draft.seasons[index] = season;
+        })
+      )
+      .catch(handleError(dispatch));
+  };
+  const updateEpisode = (episode, episodeIndex, transform = value => value) => {
+    const transformedEpisode = produce(episode, transform); // optimistic update
+    transformSeason(draft => {
+      draft.seasons[index].episodes[episodeIndex] = transformedEpisode;
+    });
+    return MovieAPI.updateEpisode(movie, season, transformedEpisode, user).catch(error => {
+      //revert on error
       transformSeason(draft => {
-        draft.seasons[index] = season;
-      })
-    );
+        draft.seasons[index].episodes[episodeIndex] = episode;
+      });
+      handleError(dispatch)(error);
+    });
+  };
+  const addEpisodes = async () => {
+    const times = episodes || 1;
+    for (let i = 0; i < times; i++) {
+      const newEpisode = await MovieAPI.addEpisode(movie, season, user).catch(handleError(dispatch));
+      transformSeason(draft => {
+        draft.seasons[index].episodes.push(newEpisode);
+      });
+    }
+    createNotification(dispatch, `${seasonTag(index)} - Added ${times} episodes`);
+    setEpisodes(1);
   };
 
   const seen = every(season.episodes, "seen") && season.episodes.length > 0;
@@ -76,12 +101,19 @@ export const Season = ({ season, index, onDragStart, onDragOver, onDragEnd, drag
         <div>
           <div
             className="season-header-view"
-            onClick={event => {
+            onClick={async event => {
               event.preventDefault();
               event.stopPropagation();
-              updateSeason(season => {
-                season.seen = !seen;
-              }).then(() => createNotification(dispatch, `${seasonTag(index)} - Seen updated`));
+              const promises = [];
+              for (let i = 0; i < season.episodes.length; i++) {
+                promises.push(
+                  updateEpisode(season.episodes[i], i, draft => {
+                    draft.seen = !seen;
+                  })
+                );
+              }
+              await Promise.all(promises);
+              createNotification(dispatch, `${seasonTag(index)} - ${seen ? "unseen" : "seen"}`);
             }}
           >
             <MovieSeen seen={seen} partial={oneSeen} />
@@ -99,7 +131,8 @@ export const Season = ({ season, index, onDragStart, onDragOver, onDragEnd, drag
                         draft.seasons = draft.seasons.filter(s => s._id !== season._id);
                       })
                     )
-                    .then(() => createNotification(dispatch, `${seasonTag(index)} - Deleted`));
+                    .then(() => createNotification(dispatch, `${seasonTag(index)} - Deleted`))
+                    .catch(handleError(dispatch));
                 }
               }}
             />
@@ -112,11 +145,7 @@ export const Season = ({ season, index, onDragStart, onDragOver, onDragEnd, drag
             type="number"
             value={season.productionYear}
             transform={value => parseInt(value, 10)}
-            onChange={productionYear =>
-              updateSeason(season => {
-                season.productionYear = productionYear;
-              }).then(() => createNotification(dispatch, `${seasonTag(index)} - Production year updated`))
-            }
+            onChange={productionYear => onProductionYearUpdate(productionYear)}
           />
         </div>
         <div className="season-header-arrow">
@@ -151,6 +180,26 @@ export const Season = ({ season, index, onDragStart, onDragOver, onDragEnd, drag
                   );
                   setDrag();
                 }}
+                onSeen={async seen => {
+                  const promises = [];
+                  if (!seen) {
+                    promises.push(
+                      updateEpisode(season.episodes[episodeIndex], episodeIndex, draft => {
+                        draft.seen = seen;
+                      })
+                    );
+                  } else {
+                    for (let i = 0; i <= episodeIndex; i++) {
+                      promises.push(
+                        updateEpisode(season.episodes[i], i, draft => {
+                          draft.seen = seen;
+                        })
+                      );
+                    }
+                  }
+                  await Promise.all(promises);
+                  createNotification(dispatch, `Episodes set to ${seen ? "seen" : "unseen"}`);
+                }}
               />
             ))}
         </SeasonContext.Provider>
@@ -173,22 +222,14 @@ export const Season = ({ season, index, onDragStart, onDragOver, onDragEnd, drag
                 className="form-control"
                 style={{ width: "80px" }}
                 onChange={event => setEpisodes(parseInt(event.target.value, 10))}
+                onKeyDown={event => {
+                  if (event.key === "Enter") {
+                    addEpisodes();
+                  }
+                }}
                 value={episodes}
               />
-              <button
-                className=" ml-1 btn btn-primary"
-                onClick={async () => {
-                  const times = episodes || 1;
-                  for (let i = 0; i < times; i++) {
-                    const newEpisode = await MovieAPI.addEpisode(movie, season, user);
-                    transformSeason(draft => {
-                      draft.seasons[index].episodes.push(newEpisode);
-                    });
-                  }
-                  createNotification(dispatch, `${seasonTag(index)} - Added ${times} episodes`);
-                  setEpisodes(1);
-                }}
-              >
+              <button className=" ml-1 btn btn-primary" onClick={addEpisodes}>
                 <i className="fas fa-plus" />
                 &nbsp;Add episode
               </button>
