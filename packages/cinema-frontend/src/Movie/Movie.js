@@ -150,16 +150,17 @@ export const Movie = withRouter(({ match, history }) => {
                   style={{ display: "none" }}
                   onChange={event => handleFiles(event.target.files)}
                 />
-                <img
-                  src={movie.fileUrl ? movie.fileUrl.replace("http:", "https:") : "/no-image.png"}
-                  style={{
-                    height: "300px",
-                    width: "225px",
-                    cursor: lock ? "auto" : "pointer"
-                  }}
-                  alt="movie poster"
-                  onClick={() => !lock && fileRef.current.click()}
-                />
+                <span className={`${!lock ? "editable-field" : ""}`} onClick={() => !lock && fileRef.current.click()}>
+                  <img
+                    src={movie.fileUrl ? movie.fileUrl.replace("http:", "https:") : "/no-image.png"}
+                    style={{
+                      height: "300px",
+                      width: "250px",
+                      cursor: lock ? "auto" : "pointer"
+                    }}
+                    alt="movie poster"
+                  />
+                </span>
                 <div className="d-flex flex-wrap">
                   {tags.map(tag => (
                     <MovieTag

@@ -99,8 +99,9 @@ export const Season = ({ season, index, onDragStart, onDragOver, onDragEnd, drag
     >
       <div className="season-header" onClick={toggle}>
         <div>
-          <div
-            className="season-header-view"
+          <MovieSeen
+            seen={seen}
+            partial={oneSeen}
             onClick={async event => {
               event.preventDefault();
               event.stopPropagation();
@@ -115,9 +116,9 @@ export const Season = ({ season, index, onDragStart, onDragOver, onDragEnd, drag
               await Promise.all(promises);
               createNotification(dispatch, `${seasonTag(index)} - ${seen ? "unseen" : "seen"}`);
             }}
-          >
-            <MovieSeen seen={seen} partial={oneSeen} />
-          </div>
+          />
+        </div>
+        <div>
           {!lock && (
             <i
               className="fas fa-times delete-season"

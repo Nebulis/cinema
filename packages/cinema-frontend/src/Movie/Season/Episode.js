@@ -69,7 +69,7 @@ export const Episode = ({ episode, index, onDragStart, onDragOver, onDragEnd, dr
       }}
       style={style}
     >
-      <div className=" col-md-12 col-xl-2 align-items-center d-flex p-0">
+      <div className=" col-md-12 col-xl-2 align-items-center d-flex p-0 mb-1 mt-1">
         {!lock && (
           <i
             className="fas fa-times delete-episode"
@@ -116,7 +116,7 @@ export const Episode = ({ episode, index, onDragStart, onDragOver, onDragEnd, dr
           />
         </div>
       </div>
-      <div className="col-md-12 col-xl-10 align-items-center d-flex">
+      <div className="col-md-12 col-xl-10 align-items-center d-flex mb-1 mt-1">
         <EditableTextarea
           lock={lock}
           style={{ width: "100%" }}

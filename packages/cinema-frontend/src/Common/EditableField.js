@@ -1,6 +1,7 @@
 import React, { Fragment, useState, useRef } from "react";
 import identity from "lodash/identity";
 import { AsyncMultiDownshift } from "./AsyncMultiDownshift";
+import "./EditableField.css";
 
 const disableBubbleClick = {
   onClick: event => {
@@ -65,7 +66,7 @@ const EditableField = props => {
       ) : (
         <Fragment>
           {props.renderValue({
-            className: props.className,
+            className: `${props.className || ""} ${!lock ? "editable-field" : ""}`,
             value,
             onClick: event => {
               if (!lock) {
@@ -131,7 +132,7 @@ export const EditableTextarea = props => (
       />
     )}
     renderValue={valueProps => (
-      <span onClick={valueProps.onClick} className={valueProps.className}>
+      <span onClick={valueProps.onClick} className={`${valueProps.className} w-100`}>
         {props.split ? (
           valueProps.value.split("\n").map((item, key) => (
             <Fragment key={key}>
@@ -151,7 +152,12 @@ export const EditableMultiSelect = props => (
   <EditableField
     {...props}
     renderFormField={fieldProps => (
-      <div className="form-inline d-inline-block">
+      <div
+        className="form-inline d-inline-block"
+        style={{
+          minWidth: "220px"
+        }}
+      >
         <AsyncMultiDownshift
           placeholder={fieldProps.placeholder}
           handleChange={fieldProps.onChange}
