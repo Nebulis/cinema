@@ -90,10 +90,14 @@ export const Movie = withRouter(({ match, history }) => {
     if (files.length === 1) {
       MovieAPI.updateMoviePoster(movie, files[0], user)
         .then(movie => {
+          fileRef.current.value = "";
           moviesDispatch({ type: "UPDATE", payload: { id: movie._id, movie } });
         })
         .then(() => createNotification(dispatch, `${movie.title} - Image uploaded`))
-        .catch(handleError(dispatch));
+        .catch(error => {
+          fileRef.current.value = "";
+          handleError(dispatch)(error);
+        });
     }
   };
   const addSeasons = async () => {
