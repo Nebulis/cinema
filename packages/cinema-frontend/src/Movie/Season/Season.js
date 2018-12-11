@@ -107,11 +107,14 @@ export const Season = ({ season, index, onDragStart, onDragOver, onDragEnd, drag
               event.stopPropagation();
               const promises = [];
               for (let i = 0; i < season.episodes.length; i++) {
-                promises.push(
-                  updateEpisode(season.episodes[i], i, draft => {
-                    draft.seen = !seen;
-                  })
-                );
+                // only update episodes for which seen value is different
+                if (season.episodes[i].seen !== !seen) {
+                  promises.push(
+                    updateEpisode(season.episodes[i], i, draft => {
+                      draft.seen = !seen;
+                    })
+                  );
+                }
               }
               await Promise.all(promises);
               createNotification(dispatch, `${seasonTag(index)} - ${seen ? "unseen" : "seen"}`);
@@ -186,16 +189,19 @@ export const Season = ({ season, index, onDragStart, onDragOver, onDragEnd, drag
                   if (!seen) {
                     promises.push(
                       updateEpisode(season.episodes[episodeIndex], episodeIndex, draft => {
-                        draft.seen = seen;
+                        draft.seen = false;
                       })
                     );
                   } else {
                     for (let i = 0; i <= episodeIndex; i++) {
-                      promises.push(
-                        updateEpisode(season.episodes[i], i, draft => {
-                          draft.seen = seen;
-                        })
-                      );
+                      // only update episodes that are not seen
+                      if (!season.episodes[i].seen) {
+                        promises.push(
+                          updateEpisode(season.episodes[i], i, draft => {
+                            draft.seen = true;
+                          })
+                        );
+                      }
                     }
                   }
                   await Promise.all(promises);
