@@ -21,7 +21,7 @@
     "@types/uuid": "3.4.4",
     "@types/winston": "2.4.4",
     "allocine-api": "0.1.9",
-    "aws-sdk": "2.373.0",
+    "aws-sdk": "2.374.0",
     "body-parser": "1.18.3",
     "cookie-parser": "1.4.3",
     "express": "4.16.4",
