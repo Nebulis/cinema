@@ -1,5 +1,22 @@
 import React, { Fragment, useState, useRef } from "react";
 import identity from "lodash/identity";
+import { AsyncMultiDownshift } from "./AsyncMultiDownshift";
+import "./EditableField.css";
+
+const disableBubbleClick = {
+  onClick: event => {
+    event.preventDefault();
+    event.stopPropagation();
+  }
+};
+
+const disableDragAndDrop = {
+  draggable: true,
+  onDragStart: event => {
+    event.preventDefault();
+    event.stopPropagation();
+  }
+};
 
 const EditableField = props => {
   const [value, setValue] = useState(props.value || "");
@@ -22,7 +39,8 @@ const EditableField = props => {
           {props.renderFormField({
             ...props,
             value,
-            onChange: event => setValue(transform(event.target.value)),
+            // in case of downshift, event is directly the value
+            onChange: event => setValue(transform(event.target ? event.target.value : event)),
             submit: () => {
               if (value) {
                 props.onChange(value);
@@ -32,12 +50,7 @@ const EditableField = props => {
           })}
           <button
             className="btn btn-primary"
-            draggable={true}
-            onDragStart={event => {
-              // disable drag and drop for this element
-              event.preventDefault();
-              event.stopPropagation();
-            }}
+            {...disableDragAndDrop}
             onClick={event => {
               event.preventDefault();
               event.stopPropagation();
@@ -53,7 +66,7 @@ const EditableField = props => {
       ) : (
         <Fragment>
           {props.renderValue({
-            className: props.className,
+            className: `${props.className || ""} ${!lock ? "editable-field" : ""}`,
             value,
             onClick: event => {
               if (!lock) {
@@ -84,17 +97,9 @@ export const EditableInput = props => (
               fieldProps.submit();
             }
           }}
-          draggable={true}
-          onDragStart={event => {
-            // disable drag and drop for this element
-            event.preventDefault();
-            event.stopPropagation();
-          }}
           onChange={fieldProps.onChange}
-          onClick={event => {
-            event.preventDefault();
-            event.stopPropagation();
-          }}
+          {...disableDragAndDrop}
+          {...disableBubbleClick}
         />
       </div>
     )}
@@ -121,21 +126,13 @@ export const EditableTextarea = props => (
             fieldProps.submit();
           }
         }}
-        draggable={true}
-        onDragStart={event => {
-          // disable drag and drop for this element
-          event.preventDefault();
-          event.stopPropagation();
-        }}
         onChange={fieldProps.onChange}
-        onClick={event => {
-          event.preventDefault();
-          event.stopPropagation();
-        }}
+        {...disableDragAndDrop}
+        {...disableBubbleClick}
       />
     )}
     renderValue={valueProps => (
-      <span onClick={valueProps.onClick} className={valueProps.className}>
+      <span onClick={valueProps.onClick} className={`${valueProps.className} w-100`}>
         {props.split ? (
           valueProps.value.split("\n").map((item, key) => (
             <Fragment key={key}>
@@ -146,6 +143,33 @@ export const EditableTextarea = props => (
         ) : (
           <Fragment>{valueProps.value}</Fragment>
         )}
+      </span>
+    )}
+  />
+);
+
+export const EditableMultiSelect = props => (
+  <EditableField
+    {...props}
+    renderFormField={fieldProps => (
+      <div
+        className="form-inline d-inline-block"
+        style={{
+          minWidth: "220px"
+        }}
+      >
+        <AsyncMultiDownshift
+          placeholder={fieldProps.placeholder}
+          handleChange={fieldProps.onChange}
+          items={fieldProps.items}
+          selectedItems={fieldProps.value}
+          className="form-group"
+        />
+      </div>
+    )}
+    renderValue={valueProps => (
+      <span onClick={valueProps.onClick} className={valueProps.className}>
+        {valueProps.value.join(",")}
       </span>
     )}
   />

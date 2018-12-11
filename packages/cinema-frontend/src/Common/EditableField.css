@@ -1,0 +1,7 @@
+.editable-field {
+  border: 2px dashed var(--movie-primary-darker);
+  padding: 3px;
+  border-radius: 2px;
+  cursor: pointer;
+  display: inline-block;
+}

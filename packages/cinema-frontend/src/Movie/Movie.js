@@ -6,26 +6,26 @@ import { MovieSeen } from "../Common/MovieSeen";
 import { MoviesContext } from "../Common/MoviesContext";
 import { produce } from "immer";
 import { Season } from "./Season/Season";
-import { EditableInput, EditableTextarea } from "../Common/EditableField";
+import { EditableInput, EditableTextarea, EditableMultiSelect } from "../Common/EditableField";
 import { useToggle } from "../Common/hooks";
 import "./Movie.css";
 import { ApplicationContext } from "../ApplicationContext";
 import { Tag } from "../Admin/Tag";
 import find from "lodash/find";
 import { NotificationContext } from "../Notifications/NotificationContext";
-import { createNotification, seasonTag } from "./Movie.util";
+import { createNotification, handleError, seasonTag } from "./Movie.util";
 
 export const MovieContext = React.createContext({});
 
 const MovieTag = ({ tag, selected, onAdd, onDelete, lock }) =>
   !lock ? (
-    <span onClick={selected ? onDelete : onAdd} className="mt-1">
-      <Tag {...tag} className={`movie-tag mr-1 ${selected ? "selected" : ""}`} />
-    </span>
+    <div onClick={selected ? onDelete : onAdd} className={`movie-tag ${selected ? "selected" : ""}`}>
+      <Tag {...tag} className={`d-inline-block`} />
+    </div>
   ) : selected ? (
-    <span className="mt-1">
-      <Tag {...tag} className={`mr-1 selected`} />
-    </span>
+    <div className="movie-tag selected">
+      <Tag {...tag} className={`d-inline-block`} />
+    </div>
   ) : null;
 
 export const Movie = withRouter(({ match, history }) => {
@@ -36,7 +36,7 @@ export const Movie = withRouter(({ match, history }) => {
     dispatch: moviesDispatch
   } = useContext(MoviesContext);
   const [seasons, setSeasons] = useState(1);
-  const { tags } = useContext(ApplicationContext);
+  const { tags, genres } = useContext(ApplicationContext);
   const { dispatch } = useContext(NotificationContext);
   // create state
   const [drag, setDrag] = useState();
@@ -49,28 +49,67 @@ export const Movie = withRouter(({ match, history }) => {
   useEffect(
     () => {
       if (!movie) {
-        MovieAPI.getMovie(match.params.id, user).then(movie => {
-          moviesDispatch({ type: "ADD", payload: { movie } });
-        });
+        MovieAPI.getMovie(match.params.id, user)
+          .then(movie => {
+            moviesDispatch({ type: "ADD", payload: { movie } });
+          })
+          .catch(handleError(dispatch));
       }
     },
     [match.params.id]
   );
 
   // create actions
-  const updateMovie = (transform = value => value) => {
-    return MovieAPI.updateMovie(produce(movie, transform), user).then(movie => {
-      moviesDispatch({ type: "UPDATE", payload: { id: movie._id, movie } });
+
+  const transformMovie = transform => {
+    moviesDispatch({
+      type: "UPDATE_WITH_TRANSFORM",
+      payload: {
+        id: movie._id,
+        transform
+      }
     });
+  };
+  const updateSeason = (season, seasonIndex, transform = value => value) => {
+    return MovieAPI.updateSeason(movie, produce(season, transform), user)
+      .then(season =>
+        transformMovie(draft => {
+          draft.seasons[seasonIndex] = season;
+        })
+      )
+      .catch(handleError(dispatch));
+  };
+  const updateMovie = (transform = value => value) => {
+    return MovieAPI.updateMovie(produce(movie, transform), user)
+      .then(movie => {
+        moviesDispatch({ type: "UPDATE", payload: { id: movie._id, movie } });
+      })
+      .catch(handleError(dispatch));
   };
   const handleFiles = files => {
     if (files.length === 1) {
       MovieAPI.updateMoviePoster(movie, files[0], user)
         .then(movie => {
+          fileRef.current.value = "";
           moviesDispatch({ type: "UPDATE", payload: { id: movie._id, movie } });
         })
-        .then(() => createNotification(dispatch, `${movie.title} - Image uploaded`));
+        .then(() => createNotification(dispatch, `${movie.title} - Image uploaded`))
+        .catch(error => {
+          fileRef.current.value = "";
+          handleError(dispatch)(error);
+        });
     }
+  };
+  const addSeasons = async () => {
+    const times = seasons || 1;
+    for (let i = 0; i < times; i++) {
+      const newSeason = await MovieAPI.addSeason(movie, user).catch(handleError(dispatch));
+      transformMovie(draft => {
+        draft.seasons.push(newSeason);
+      });
+    }
+    createNotification(dispatch, `${movie.title} - Added ${times} seasons`);
+    setSeasons(1);
   };
 
   return (
@@ -115,17 +154,18 @@ export const Movie = withRouter(({ match, history }) => {
                   style={{ display: "none" }}
                   onChange={event => handleFiles(event.target.files)}
                 />
-                <img
-                  src={movie.fileUrl ? movie.fileUrl.replace("http:", "https:") : "/no-image.png"}
-                  style={{
-                    height: "300px",
-                    width: "225px",
-                    cursor: lock ? "auto" : "pointer"
-                  }}
-                  alt="movie poster"
-                  onClick={() => !lock && fileRef.current.click()}
-                />
-                <div className="d-flex flex-wrap">
+                <span className={`${!lock ? "editable-field" : ""}`} onClick={() => !lock && fileRef.current.click()}>
+                  <img
+                    src={movie.fileUrl ? movie.fileUrl.replace("http:", "https:") : "/no-image.png"}
+                    style={{
+                      height: "300px",
+                      width: "250px",
+                      cursor: lock ? "auto" : "pointer"
+                    }}
+                    alt="movie poster"
+                  />
+                </span>
+                <div className="d-flex flex-wrap mt-1 mb-1">
                   {tags.map(tag => (
                     <MovieTag
                       key={tag._id}
@@ -172,7 +212,19 @@ export const Movie = withRouter(({ match, history }) => {
                     }
                   />
                 </h1>
-                <h6 className="text-center single-movie-subtitle">{movie.genre.join(",")}</h6>
+                <div className="text-center single-movie-subtitle mb-2">
+                  <EditableMultiSelect
+                    lock={lock}
+                    value={movie.genre}
+                    placeholder="Genre"
+                    items={genres}
+                    onChange={genres =>
+                      updateMovie(movie => {
+                        movie.genre = genres;
+                      }).then(() => createNotification(dispatch, `${movie.title} - Genre updated`))
+                    }
+                  />
+                </div>
                 <div>
                   <EditableTextarea
                     split={true}
@@ -232,6 +284,18 @@ export const Movie = withRouter(({ match, history }) => {
                             );
                             setDrag();
                           }}
+                          onProductionYearUpdate={async productionYear => {
+                            const promises = [];
+                            for (let i = seasonIndex; i < movie.seasons.length; i++) {
+                              promises.push(
+                                updateSeason(movie.seasons[i], i, draft => {
+                                  draft.productionYear = productionYear + (i - seasonIndex);
+                                })
+                              );
+                            }
+                            await Promise.all(promises);
+                            createNotification(dispatch, "Seasons production years updated");
+                          }}
                         />
                       ))}
                     </div>
@@ -243,28 +307,14 @@ export const Movie = withRouter(({ match, history }) => {
                         className="form-control"
                         style={{ width: "80px" }}
                         onChange={event => setSeasons(parseInt(event.target.value, 10))}
+                        onKeyDown={event => {
+                          if (event.key === "Enter") {
+                            addSeasons();
+                          }
+                        }}
                         value={seasons}
                       />
-                      <button
-                        className=" ml-1 btn btn-primary"
-                        onClick={async () => {
-                          const times = seasons || 1;
-                          for (let i = 0; i < times; i++) {
-                            const newSeason = await MovieAPI.addSeason(movie, user);
-                            moviesDispatch({
-                              type: "UPDATE_WITH_TRANSFORM",
-                              payload: {
-                                id: movie._id,
-                                transform: draft => {
-                                  draft.seasons.push(newSeason);
-                                }
-                              }
-                            });
-                          }
-                          createNotification(dispatch, `${movie.title} - Added ${times} seasons`);
-                          setSeasons(1);
-                        }}
-                      >
+                      <button className=" ml-1 btn btn-primary" onClick={addSeasons}>
                         <i className="fas fa-plus" />
                         &nbsp;Add season
                       </button>

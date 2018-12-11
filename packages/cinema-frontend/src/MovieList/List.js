@@ -18,6 +18,7 @@ const buildQuery = (filters, offset) => {
   const notGenres = filters.genres.filter(genre => !genre[1]).map(genre => genre[0]);
   return Object.keys(filters)
     .filter(key => key !== "genres") // handle genres manually)
+    .filter(key => key !== "productionYear" || (key === "productionYear" && filters[key] !== "-1"))
     .filter(
       key =>
         (!isArray(filters[key]) && filters[key] !== null && filters[key] !== "") ||
@@ -41,7 +42,7 @@ export const List = () => {
   const user = useContext(UserContext);
 
   // create state
-  const [offset, setOffset] = useState(movies.length / filters.limit);
+  const [offset, setOffset] = useState(movies.length ? movies.length / filters.limit - 1 : 0);
   const [movie, setMovie] = useState(newMovie());
   const [key, setKey] = useState(0);
   // set to true otherwise when navigating back to the page, the loader is displayed
@@ -51,12 +52,13 @@ export const List = () => {
   const loadMore = _ => {
     setLoaded(false);
     getMovies(buildQuery(filters, offset), user).then(movies => {
-      // invalidate if there is a new search
       if (offset === 0) {
-        dispatch({ type: "INVALIDATE" });
+        // use a different action on new search otherwise there are some issues due to asynchronous action
+        dispatch({ type: "SET_MOVIES", payload: { movies: movies.data, count: movies.count } });
+      } else {
+        dispatch({ type: "ADD_ALL", payload: { movies: movies.data, count: movies.count } });
       }
       setLoaded(true);
-      dispatch({ type: "ADD_ALL", payload: { movies: movies.data, count: movies.count } });
     });
   };
   const showMovie = () => {
@@ -76,11 +78,12 @@ export const List = () => {
         trailing: true
       });
       // no movies ? then automatically fetch some (note: every time a filter is updated, movies are cleaned up)
-      // the condition is needed in case of back navigation
       if (count === 0) {
-        dispatch({ type: "INVALIDATE" }); // remove existing movies in case of backward navigation with initial load of movie
-        debouncedLoadMore();
+        // the condition is needed in case of back navigation
         setLoaded(false);
+        setOffset(0);
+        dispatch({ type: "SET_MOVIES", payload: {} }); // remove existing movies in case of backward navigation with initial load of movie
+        debouncedLoadMore();
       }
       return () => debouncedLoadMore.cancel();
     },
@@ -89,6 +92,7 @@ export const List = () => {
   useEffect(showMovie, [movie]);
 
   const isFirstRun = useRef(true);
+  // dont run this the first time landing in the page as it's run by the effect listening to filters
   useEffect(
     () => {
       if (isFirstRun.current) {

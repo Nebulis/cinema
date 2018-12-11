@@ -8,7 +8,7 @@ const initialState = {
   movies: [],
   count: 0,
   filters: {
-    productionYear: "",
+    productionYear: "-1",
     title: "",
     genres: [],
     types: [],
@@ -41,8 +41,8 @@ const reducer = (state = initialState, { type, payload }) => {
     }
     case "ADD_ALL":
       return { ...state, movies: [...state.movies, ...payload.movies], count: payload.count };
-    case "INVALIDATE":
-      return { ...state, movies: [], count: 0 };
+    case "SET_MOVIES":
+      return { ...state, movies: payload.movies || [], count: payload.count || 0 };
     case "RESET_FILTERS":
       return { ...state, filters: { ...initialState.filters } };
     case "FILTERS_CHANGED":
