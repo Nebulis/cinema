@@ -3,13 +3,14 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
+    "@emotion/core": "10.0.4",
+    "@emotion/styled": "10.0.4",
+    "babel-plugin-emotion": "10.0.4",
     "downshift": "3.1.6",
-    "emotion": "9.2.12",
     "immer": "1.8.0",
     "lodash": "4.17.11",
     "react": "^16.7.0-alpha.0",
     "react-dom": "^16.7.0-alpha.0",
-    "react-emotion": "9.2.12",
     "react-router-dom": "4.3.1"
   },
   "scripts": {
@@ -116,6 +117,9 @@
   "babel": {
     "presets": [
       "react-app"
+    ],
+    "plugins": [
+      "emotion"
     ]
   },
   "prettier": {

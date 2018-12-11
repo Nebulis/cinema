@@ -1,6 +1,8 @@
 import React from "react";
 import Downshift from "downshift";
-import { ArrowIcon, ControllerButton, css, Item, Menu } from "../shared";
+import { ArrowIcon, ControllerButton, Item, Menu } from "../shared";
+/** @jsx jsx */
+import { jsx } from "@emotion/core";
 
 export class SingleDownshift extends React.Component {
   render() {
@@ -26,7 +28,7 @@ export class SingleDownshift extends React.Component {
             }}
           >
             <div
-              {...css({
+              css={{
                 cursor: "pointer",
                 position: "relative",
                 padding: ".375rem .75rem",
@@ -34,21 +36,21 @@ export class SingleDownshift extends React.Component {
                 border: "1px solid #ced4da",
                 borderRadius: ".25rem",
                 backgroundColor: "white"
-              })}
+              }}
               onClick={() => {
                 toggleMenu();
               }}
             >
               <div
-                {...css({
+                css={{
                   display: "flex",
                   flexWrap: "wrap",
                   alignItems: "center"
-                })}
+                }}
               >
                 {selectedItem ? (
                   <div
-                    {...css({
+                    css={{
                       margin: "0 2px",
                       paddingLeft: 8,
                       paddingRight: 8,
@@ -56,24 +58,24 @@ export class SingleDownshift extends React.Component {
                       wordWrap: "none",
                       backgroundColor: "#ccc",
                       borderRadius: 2
-                    })}
+                    }}
                   >
                     <div
-                      {...css({
+                      css={{
                         display: "grid",
                         gridGap: 6,
                         gridAutoFlow: "column",
                         alignItems: "center"
-                      })}
+                      }}
                     >
                       <span>{selectedItem}</span>
                     </div>
                   </div>
                 ) : (
                   <span
-                    {...css({
-                      color: "#6c757d;"
-                    })}
+                    css={{
+                      color: "#6c757d"
+                    }}
                   >
                     {placeholder}
                   </span>

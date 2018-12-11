@@ -1,8 +1,10 @@
 import { MultiDownshift } from "./MultiDownshift";
-import { ArrowIcon, ControllerButton, css, Item, Menu } from "../shared";
-import React, { Component } from "react";
+import { ArrowIcon, ControllerButton, Item, Menu } from "../shared";
+import { Component } from "react";
 import identity from "lodash/identity";
 import { MultiDownshiftWithReverse } from "./MultiDownshiftWithReverse";
+/** @jsx jsx */
+import { jsx } from "@emotion/core";
 
 const BaseMultiDownshift = BaseComponent =>
   class extends Component {
@@ -33,7 +35,7 @@ const BaseMultiDownshift = BaseComponent =>
               }}
             >
               <div
-                {...css({
+                css={{
                   cursor: "pointer",
                   position: "relative",
                   padding: ".375rem .75rem",
@@ -41,23 +43,23 @@ const BaseMultiDownshift = BaseComponent =>
                   border: "1px solid #ced4da",
                   borderRadius: ".25rem",
                   backgroundColor: "white"
-                })}
+                }}
                 onClick={() => {
                   toggleMenu();
                 }}
               >
                 <div
-                  {...css({
+                  css={{
                     display: "flex",
                     flexWrap: "wrap",
                     alignItems: "center"
-                  })}
+                  }}
                 >
                   {selectedItems.length > 0 ? (
                     selectedItems.map((item, index) => (
                       <div
                         key={index}
-                        {...css({
+                        css={{
                           margin: "0 2px",
                           paddingLeft: 8,
                           paddingRight: 8,
@@ -65,7 +67,7 @@ const BaseMultiDownshift = BaseComponent =>
                           wordWrap: "none",
                           backgroundColor: displayBackground(item),
                           borderRadius: 2
-                        })}
+                        }}
                         onClick={event => {
                           event.preventDefault();
                           event.stopPropagation();
@@ -73,24 +75,24 @@ const BaseMultiDownshift = BaseComponent =>
                         }}
                       >
                         <div
-                          {...css({
+                          css={{
                             display: "grid",
                             gridGap: 6,
                             gridAutoFlow: "column",
                             alignItems: "center"
-                          })}
+                          }}
                         >
                           <span>{displayItem(item)}</span>
                           <button
                             {...getRemoveButtonProps({ item })}
-                            {...css({
+                            css={{
                               cursor: "pointer",
                               lineHeight: 0.8,
                               border: "none",
                               backgroundColor: "transparent",
                               padding: "0",
                               fontSize: "16px"
-                            })}
+                            }}
                             type="button"
                           >
                             𝘅
@@ -100,9 +102,9 @@ const BaseMultiDownshift = BaseComponent =>
                     ))
                   ) : (
                     <span
-                      {...css({
-                        color: "#6c757d;"
-                      })}
+                      css={{
+                        color: "#6c757d"
+                      }}
                     >
                       {placeholder}
                     </span>
