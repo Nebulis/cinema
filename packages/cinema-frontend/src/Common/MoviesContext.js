@@ -3,6 +3,32 @@ import findIndex from "lodash/findIndex";
 import { produce } from "immer";
 
 export const MoviesContext = React.createContext();
+export const SORTS = [
+  {
+    id: "1",
+    label: "Titre ascendant",
+    field: "title",
+    value: "1"
+  },
+  {
+    id: "2",
+    label: "Titre descendant",
+    field: "title",
+    value: "-1"
+  },
+  {
+    id: "3",
+    label: "Date de sortie ascendant",
+    field: "productionYear",
+    value: "1"
+  },
+  {
+    id: "4",
+    label: "Date de sortie descendant",
+    field: "productionYear",
+    value: "-1"
+  }
+];
 
 const initialState = {
   movies: [],
@@ -15,7 +41,8 @@ const initialState = {
     tags: [],
     seen: null, // null = dont care, true = have seen, false = have not seen
     finished: null, // null = dont care, true = finished
-    limit: 30
+    limit: 30,
+    sort: SORTS[0]
   }
 };
 
