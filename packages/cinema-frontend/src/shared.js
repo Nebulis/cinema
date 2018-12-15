@@ -1,12 +1,7 @@
 import React from "react";
-import { css as emoCSS } from "emotion";
-import styled from "react-emotion";
+import styled from "@emotion/styled";
 
-// TODO copy paste from downshift example :)
-
-const css = (...args) => ({ className: emoCSS(...args) });
-
-const Item = styled("li")(
+const Item = styled.li(
   {
     position: "relative",
     cursor: "pointer",
@@ -43,7 +38,7 @@ const Item = styled("li")(
   }
 );
 
-const BaseMenu = styled("ul")(
+const BaseMenu = styled.ul(
   {
     padding: 0,
     marginTop: 0,
@@ -70,9 +65,9 @@ const BaseMenu = styled("ul")(
   })
 );
 
-const Menu = React.forwardRef((props, ref) => <BaseMenu innerRef={ref} {...props} />);
+const Menu = React.forwardRef((props, ref) => <BaseMenu ref={ref} {...props} />);
 
-const ControllerButton = styled("button")({
+const ControllerButton = styled.button({
   backgroundColor: "transparent",
   border: "none",
   position: "absolute",
@@ -102,4 +97,4 @@ function ArrowIcon({ isOpen }) {
     </svg>
   );
 }
-export { Menu, ControllerButton, Item, ArrowIcon, css };
+export { Menu, ControllerButton, Item, ArrowIcon };

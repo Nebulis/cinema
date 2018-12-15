@@ -17,7 +17,8 @@ const buildQuery = (filters, offset) => {
   const genres = filters.genres.filter(genre => genre[1]).map(genre => genre[0]);
   const notGenres = filters.genres.filter(genre => !genre[1]).map(genre => genre[0]);
   return Object.keys(filters)
-    .filter(key => key !== "genres") // handle genres manually)
+    .filter(key => key !== "genres") // handle genres manually
+    .filter(key => key !== "sort") // handle sort manually
     .filter(key => key !== "productionYear" || (key === "productionYear" && filters[key] !== "-1"))
     .filter(
       key =>
@@ -30,6 +31,7 @@ const buildQuery = (filters, offset) => {
       notGenres.length > 0 ? `notGenres=${notGenres.join(",")}` : "",
       `offset=${offset}`
     )
+    .concat(`sortField=${filters.sort.field}`, `sortOrder=${filters.sort.value}`)
     .filter(Boolean) // remove empty strings
     .join("&");
 };
