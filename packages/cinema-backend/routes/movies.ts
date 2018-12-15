@@ -22,6 +22,8 @@ interface IListQueryParams {
   seen: string; // transform to boolean
   finished: string; // transform to boolean
   productionYear: string;
+  sortField: string;
+  sortOrder: string;
   limit?: string;
   offset?: string;
 }
@@ -201,7 +203,7 @@ router.get("/", (req, res, next) => {
   const returnNoResult = limit === "0";
   Promise.all([
     buildQuery(req.query)
-      .sort("title season")
+      .sort({ [req.query.sortField]: req.query.sortOrder })
       .skip(parseInt(limit, 10) * parseInt(offset, 10))
       .limit(returnNoResult ? -1 : parseInt(limit, 10)) // return -1 if we dont want values, otherwise use the limit
       .select({ filedata: 0 })
