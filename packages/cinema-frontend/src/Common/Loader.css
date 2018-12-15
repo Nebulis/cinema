@@ -1,0 +1,12 @@
+.loader {
+  height: 100%;
+  width: 100%;
+  position: absolute;
+  top: 0;
+  left: 0;
+  background-color: var(--movie-secondary);
+  opacity: 0.6;
+  color: var(--movie-primary);
+  align-items: center;
+  justify-content: center;
+}

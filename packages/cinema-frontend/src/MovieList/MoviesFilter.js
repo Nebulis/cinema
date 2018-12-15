@@ -1,6 +1,6 @@
 import React, { useContext } from "react";
 import identity from "lodash/identity";
-import { MoviesContext } from "../Common/MoviesContext";
+import { MoviesContext, SORTS } from "../Common/MoviesContext";
 import { AsyncMultiDownshift, AsyncMultiDownshiftwithReverse } from "../Common/AsyncMultiDownshift";
 import { ApplicationContext } from "../ApplicationContext";
 import { Tag } from "../Admin/Tag";
@@ -121,6 +121,19 @@ export const MoviesFilter = () => {
             onDelete={() => onChange("tags")(filters.tags.filter(t => t !== tag._id))}
           />
         ))}
+      </div>
+      <div>
+        <select
+          className="form-control"
+          value={filters.sort.id}
+          onChange={event => onChange("sort")(SORTS.find(sort => sort.id === event.target.value))}
+        >
+          {SORTS.map(sort => (
+            <option value={sort.id} key={sort.id}>
+              {sort.label}
+            </option>
+          ))}
+        </select>
       </div>
     </form>
   );
