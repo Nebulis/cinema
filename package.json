@@ -1,6 +1,6 @@
 {
   "devDependencies": {
-    "lerna": "3.5.1"
+    "lerna": "3.8.0"
   },
   "engines": {
     "node": "10.12.0"
