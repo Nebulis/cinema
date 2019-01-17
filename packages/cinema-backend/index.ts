@@ -13,6 +13,10 @@ import { router as seasons } from "./routes/seasons";
 import { router as states } from "./routes/states";
 import { router as tags } from "./routes/tags";
 
+
+// prevent app to sleep :)
+import http from 'http';
+
 connect(
   `mongodb://${process.env.MONGO_USER}:${process.env.MONGO_PASSWD}@${
     process.env.MONGO_HOSTNAME
@@ -50,10 +54,8 @@ app.get("/", (_, res) => {
 app.get("/ping", (_, res) => {
   res.send({ message: "pong" });
 });
-// prevent app to sleep :)
-const http = require("http");
-setInterval(function() {
-  http.get("https://cinema-backend.herokuapp.com/ping");
+setInterval(() => {
+  http.get("http://cinema-backend.herokuapp.com/ping");
 }, 1000 * 60 * 5); // 5 mins
 
 const secret = "shhhhhhared-secret";
