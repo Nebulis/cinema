@@ -2,6 +2,7 @@ import bodyParser from "body-parser";
 import cookieParser from "cookie-parser";
 import express from "express";
 import expressJwt from "express-jwt";
+import http from "http"; // prevent app to sleep :)
 import jwt from "jsonwebtoken";
 import { connect } from "mongoose";
 import morgan from "morgan";
@@ -12,10 +13,6 @@ import { router as movies } from "./routes/movies";
 import { router as seasons } from "./routes/seasons";
 import { router as states } from "./routes/states";
 import { router as tags } from "./routes/tags";
-
-
-// prevent app to sleep :)
-import http from 'http';
 
 connect(
   `mongodb://${process.env.MONGO_USER}:${process.env.MONGO_PASSWD}@${
