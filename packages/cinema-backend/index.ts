@@ -47,6 +47,14 @@ app.use(cookieParser());
 app.get("/", (_, res) => {
   res.send({ welcome: "Hello World" });
 });
+app.get("/ping", (_, res) => {
+  res.send({ message: "pong" });
+});
+// prevent app to sleep :)
+const http = require("http");
+setInterval(function() {
+  http.get("https://cinema-backend.herokuapp.com/ping");
+}, 1000 * 60 * 5); // 5 mins
 
 const secret = "shhhhhhared-secret";
 app.use("/api", expressJwt({ secret }).unless({ path: ["/login"] }));
