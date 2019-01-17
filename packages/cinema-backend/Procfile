@@ -1,1 +1,1 @@
-worker: cd packages/cinema-backend/ && npx ts-node index
+web: cd packages/cinema-backend/ && npx ts-node index
