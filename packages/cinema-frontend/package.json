@@ -7,7 +7,7 @@
     "@emotion/styled": "10.0.4",
     "babel-plugin-emotion": "10.0.4",
     "downshift": "3.1.7",
-    "immer": "1.8.2",
+    "immer": "2.1.0",
     "lodash": "4.17.11",
     "react": "^16.8.0-alpha.1",
     "react-dom": "^16.8.0-alpha.1",
