@@ -36,6 +36,10 @@ const buildQuery = (filters, offset) => {
     .join("&");
 };
 
+const computeOffset = (movies, limit) => {
+  return Math.ceil(movies / limit) - 1;
+};
+
 export const List = () => {
   // load contexts
   const { status } = useContext(ApplicationContext);
@@ -44,7 +48,7 @@ export const List = () => {
   const user = useContext(UserContext);
 
   // create state
-  const [offset, setOffset] = useState(movies.length ? movies.length / filters.limit - 1 : 0);
+  const [offset, setOffset] = useState(movies.length ? computeOffset(movies.length, filters.limit) : 0);
   const [movie, setMovie] = useState(newMovie());
   const [key, setKey] = useState(0);
   // set to true otherwise when navigating back to the page, the loader is displayed
