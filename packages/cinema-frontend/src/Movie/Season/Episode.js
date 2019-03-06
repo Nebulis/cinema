@@ -8,6 +8,7 @@ import { SeasonContext } from "./Season";
 import { NotificationContext } from "../../Notifications/NotificationContext";
 import { MoviesContext } from "../../Common/MoviesContext";
 import { createNotification, episodeTag, handleError } from "../Movie.util";
+import { useToggle } from "../../Common/hooks";
 
 export const Episode = ({ episode, index, onDragStart, onDragOver, onDragEnd, dragging, onSeen }) => {
   // get contexts
@@ -18,7 +19,7 @@ export const Episode = ({ episode, index, onDragStart, onDragOver, onDragEnd, dr
   const { dispatch: moviesDispatch } = useContext(MoviesContext);
 
   // local state
-  const [ellipsis, setEllipsis] = useState("ellipsis");
+  const [ellipsis, toggleEllipsis] = useToggle(true);
   const [style, setStyle] = useState({});
 
   // actions
@@ -123,15 +124,15 @@ export const Episode = ({ episode, index, onDragStart, onDragOver, onDragEnd, dr
           rows={4}
           value={episode.summary}
           placeholder="Summary"
-          className={`${ellipsis} d-block episode-summary w-100 text-left`}
+          className={`${ellipsis ? "ellipsis" : ""} d-block episode-summary w-100 text-left`}
           onChange={summary =>
             updateEpisode(episode => {
               episode.summary = summary;
             }).then(() => createNotification(dispatch, `${episodeTag(seasonIndex, index)} - Summary updated`))
           }
         />
-        {ellipsis && (
-          <span style={{ cursor: "pointer" }} onClick={() => setEllipsis("")}>
+        {lock && (
+          <span style={{ cursor: "pointer" }} onClick={() => toggleEllipsis()}>
             <i className="fas fa-question-circle" />
           </span>
         )}
