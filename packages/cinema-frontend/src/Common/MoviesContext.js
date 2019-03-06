@@ -50,13 +50,14 @@ const reducer = (state = initialState, { type, payload }) => {
   console.log(state, type, payload);
   switch (type) {
     case "ADD":
-      return { ...state, movies: [payload.movie, ...state.movies] };
+      return { ...state, movies: [payload.movie, ...state.movies], count: state.count + 1 };
     case "UPDATE": {
       const index = findIndex(state.movies, ["_id", payload.id]);
       const movies = [...state.movies];
+      const count = payload.movie ? state.count : state.count - 1; // delete movie ? decrease counter
       movies[index] = payload.movie;
       // pass undefined as delete and then use filter te remove the element
-      return { ...state, movies: movies.filter(Boolean) };
+      return { ...state, movies: movies.filter(Boolean), count };
     }
     // next step => create real action ADD / DELETE / SEASONS / EPISODES
     case "UPDATE_WITH_TRANSFORM": {
