@@ -15,3 +15,13 @@
 .movie-tag:not(.selected) {
   opacity: 0.4;
 }
+
+.delete-poster {
+  color: var(--danger);
+  position: absolute;
+  font-size: 2em;
+  top: 0;
+  left: 4px;
+  cursor: pointer;
+  z-index: 1;
+}

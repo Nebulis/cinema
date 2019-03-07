@@ -171,10 +171,26 @@ export const Movie = withRouter(({ match, history }) => {
                       style={{
                         height: "300px",
                         width: "225px",
-                        cursor: lock ? "auto" : "pointer"
+                        cursor: lock ? "auto" : "pointer",
+                        opacity: lock ? 1 : 0.3
                       }}
                       alt="movie poster"
                     />
+                    {!lock && movie.fileUrl && (
+                      <i
+                        className="fas fa-times delete-poster"
+                        title="Delete movie poster"
+                        onClick={event => {
+                          event.preventDefault();
+                          event.stopPropagation();
+                          if (window.confirm("Delete poster ?")) {
+                            updateMovie(movie => {
+                              movie.fileUrl = "";
+                            }).then(() => createNotification(dispatch, `${movie.title} - Poster deleted`));
+                          }
+                        }}
+                      />
+                    )}
                   </span>
                 </div>
                 <div className="d-flex flex-wrap mt-1 mb-1">
@@ -327,7 +343,7 @@ export const Movie = withRouter(({ match, history }) => {
                         value={seasons}
                       />
                       <button className=" ml-1 btn btn-primary" onClick={addSeasons}>
-                        <i className="fas fa-plus" />
+                        <i className="fas fa-plus" title="Add seasons" />
                         &nbsp;Add season
                       </button>
                     </div>

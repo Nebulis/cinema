@@ -74,6 +74,7 @@ export const Episode = ({ episode, index, onDragStart, onDragOver, onDragEnd, dr
         {!lock && (
           <i
             className="fas fa-times delete-episode"
+            title={`Delete episode ${index + 1}`}
             onClick={event => {
               event.preventDefault();
               event.stopPropagation();
@@ -133,7 +134,7 @@ export const Episode = ({ episode, index, onDragStart, onDragOver, onDragEnd, dr
         />
         {lock && (
           <span style={{ cursor: "pointer" }} onClick={() => toggleEllipsis()}>
-            <i className="fas fa-question-circle" />
+            <i className="fas fa-question-circle" title={ellipsis ? "Display summary" : "Hide summary"} />
           </span>
         )}
       </div>

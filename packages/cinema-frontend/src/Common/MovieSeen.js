@@ -8,5 +8,6 @@ export const MovieSeen = ({ seen, onClick, partial = false }) => (
       cursor: "pointer"
     }}
     onClick={onClick}
+    title={seen ? "Mark as not seen" : "Mark as seen"}
   />
 );

@@ -202,6 +202,7 @@ class MovieFormWithContext extends React.Component {
                     </div>
                     <div className="form-group col-1 text-center">
                       <i
+                        title="Search in allocine"
                         className="fab fa-angular fa-2x"
                         style={{
                           cursor: "pointer",
@@ -219,7 +220,11 @@ class MovieFormWithContext extends React.Component {
                           <Fragment>
                             <div onClick={toggle} style={{ cursor: "pointer" }}>
                               {this.state.allocine.movies.length} movies
-                              {open ? <i className="fas fa-chevron-up" /> : <i className="fas fa-chevron-down" />}
+                              {open ? (
+                                <i className="fas fa-chevron-up" title="Hide" />
+                              ) : (
+                                <i className="fas fa-chevron-down" title="Show" />
+                              )}
                             </div>
                             <div
                               className="row"
@@ -238,7 +243,10 @@ class MovieFormWithContext extends React.Component {
                                   onClick={() => this.synchronizeMovieAllocine(movie.code)}
                                 >
                                   {movie.code === this.state.movie.idAllocine ? (
-                                    <i className="fas fa-check-circle selected-movie-icon fa-2x" />
+                                    <i
+                                      className="fas fa-check-circle selected-movie-icon fa-2x"
+                                      title="Movie selected"
+                                    />
                                   ) : null}
                                   <div>
                                     {movie.title} -{" "}
@@ -266,7 +274,11 @@ class MovieFormWithContext extends React.Component {
                           <Fragment>
                             <div onClick={toggle} style={{ cursor: "pointer" }}>
                               {this.state.allocine.tvshows.length} tv shows
-                              {open ? <i className="fas fa-chevron-up" /> : <i className="fas fa-chevron-down" />}
+                              {open ? (
+                                <i className="fas fa-chevron-up" title="Hide" />
+                              ) : (
+                                <i className="fas fa-chevron-down" title="Show" />
+                              )}
                             </div>
                             <div
                               className="row"
@@ -285,7 +297,10 @@ class MovieFormWithContext extends React.Component {
                                   onClick={() => this.synchronizeTvShowAllocine(tvshow.code)}
                                 >
                                   {tvshow.code === this.state.movie.idAllocine ? (
-                                    <i className="fas fa-check-circle selected-movie-icon fa-2x" />
+                                    <i
+                                      className="fas fa-check-circle selected-movie-icon fa-2x"
+                                      title="Tv show selected"
+                                    />
                                   ) : null}
                                   <div>
                                     {tvshow.title} - {tvshow.yearStart}

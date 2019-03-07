@@ -124,6 +124,7 @@ export const Season = ({ season, index, onDragStart, onDragOver, onDragEnd, drag
         <div>
           {!lock && (
             <i
+              title={`Delete season ${index + 1}`}
               className="fas fa-times delete-season"
               onClick={event => {
                 event.preventDefault();
@@ -153,7 +154,7 @@ export const Season = ({ season, index, onDragStart, onDragOver, onDragEnd, drag
           />
         </div>
         <div className="season-header-arrow">
-          {open ? <i className="fas fa-chevron-up" /> : <i className="fas fa-chevron-down" />}
+          {open ? <i className="fas fa-chevron-up" title="Hide" /> : <i className="fas fa-chevron-down" title="Show" />}
         </div>
       </div>
       <div className="episodes">
@@ -237,7 +238,7 @@ export const Season = ({ season, index, onDragStart, onDragOver, onDragEnd, drag
                 value={episodes}
               />
               <button className=" ml-1 btn btn-primary" onClick={addEpisodes}>
-                <i className="fas fa-plus" />
+                <i className="fas fa-plus" title="Add episode" />
                 &nbsp;Add episode
               </button>
             </div>

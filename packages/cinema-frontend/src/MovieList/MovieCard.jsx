@@ -39,6 +39,7 @@ export const MovieCard = ({ movie, onEdit, onChange, onDelete }) => {
                 color: movie.finished ? "var(--danger)" : "black"
               }}
               onClick={update("finished", !movie.finished)}
+              title={movie.finished ? "Mark tv show as in progress" : "Mark tv show as finished"}
             />
           )}
           {movie.type === "Film" ? (
@@ -55,7 +56,7 @@ export const MovieCard = ({ movie, onEdit, onChange, onDelete }) => {
               }
             />
           )}
-          <i className="fas fa-pencil-alt" onClick={onEdit} style={{ cursor: "pointer" }} />
+          <i title="Edit" className="fas fa-pencil-alt" onClick={onEdit} style={{ cursor: "pointer" }} />
           <i
             className="fas fa-trash"
             onClick={() => {
@@ -64,6 +65,7 @@ export const MovieCard = ({ movie, onEdit, onChange, onDelete }) => {
               }
             }}
             style={{ cursor: "pointer" }}
+            title="Delete"
           />
         </div>
         <div className="poster text-center">
