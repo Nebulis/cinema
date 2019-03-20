@@ -31,9 +31,10 @@
   version "1.2.0"
   resolved "https://registry.yarnpkg.com/@types/events/-/events-1.2.0.tgz#81a6731ce4df43619e5c8c945383b3e62a89ea86"
 
-"@types/express-jwt@0.0.40":
-  version "0.0.40"
-  resolved "https://registry.yarnpkg.com/@types/express-jwt/-/express-jwt-0.0.40.tgz#07df88f324f329df6599e84a052eec6ccba7b764"
+"@types/express-jwt@0.0.41":
+  version "0.0.41"
+  resolved "https://registry.yarnpkg.com/@types/express-jwt/-/express-jwt-0.0.41.tgz#4066960d8c3ce91e94b41c82c15b691314b3996d"
+  integrity sha512-Ob6fScCuEGaV0nqpqE3AEsxOjGNyF4Yksx9cqyjgwxuX3rW43J05EooE4CRHcyT/dO/VTKHmK0qn9X0z3A9GIg==
   dependencies:
     "@types/express" "*"
     "@types/express-unless" "*"
