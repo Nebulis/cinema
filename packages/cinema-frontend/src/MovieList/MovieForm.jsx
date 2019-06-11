@@ -114,7 +114,7 @@ class MovieFormWithContext extends React.Component {
                 movie.release && movie.release.releaseDate
                   ? new Date(movie.release.releaseDate).getFullYear()
                   : movie.productionYear,
-              summary: movie.synopsis,
+              summary: movie.synopsisShort || movie.synopsis,
               fileUrl: movie.poster ? movie.poster.href : ""
             }
           })
@@ -145,7 +145,7 @@ class MovieFormWithContext extends React.Component {
               genre: tvseries.genre.map(m => m.$).sort(),
               type: "Série",
               productionYear: tvseries.yearStart,
-              summary: tvseries.synopsis,
+              summary: tvseries.synopsisShort || tvseries.synopsis,
               fileUrl: tvseries.poster ? tvseries.poster.href : ""
             }
           })
