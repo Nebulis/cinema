@@ -37,7 +37,7 @@ export class ApplicationProvider extends React.Component {
         genres,
         types,
         tags,
-        years,
+        years: years.reverse(),
         status: LOADED
       });
     });
