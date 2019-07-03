@@ -7,6 +7,7 @@ import { Header } from "./Header";
 import { Statistics } from "./Statistics/Statistics";
 import { TagList } from "./Admin/TagList";
 import { NotificationsList } from "./Notifications/NotificationsList";
+import { Finder } from "./Finder";
 
 class App extends Component {
   render() {
@@ -20,6 +21,7 @@ class App extends Component {
             <Route exact path="/movie/:id" component={Movie} />
             <Route exact path="/stats" component={Statistics} />
             <Route exact path="/admin" component={TagList} />
+            <Route exact path="/finder" component={Finder} />
           </Fragment>
         </Router>
       </Fragment>

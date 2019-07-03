@@ -10,6 +10,7 @@ export class SingleDownshift extends React.Component {
     return (
       <Downshift onChange={onChange} selectedItem={selectedItem}>
         {({
+          getToggleButtonProps,
           getInputProps,
           getItemProps,
           getLabelProps,
@@ -81,7 +82,15 @@ export class SingleDownshift extends React.Component {
                   </span>
                 )}
               </div>
-              <ControllerButton>
+              <ControllerButton
+                {...getToggleButtonProps({
+                  // prevents the menu from immediately toggling
+                  // closed (due to our custom click handler above).
+                  onClick(event) {
+                    event.stopPropagation();
+                  }
+                })}
+              >
                 <ArrowIcon isOpen={isOpen} />
               </ControllerButton>
             </div>
