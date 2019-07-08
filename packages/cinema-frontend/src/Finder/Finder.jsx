@@ -24,11 +24,16 @@ const movieReducer = (state, action) => {
     case "FETCH_MOVIES_REQUESTED":
       return { ...state, status: action.type };
     case "FETCH_MOVIES_SUCCEEDED":
-      return { ...state, status: action.type, movies: [...state.movies, ...action.payload], page: state.page + 1 };
+      return {
+        ...state,
+        status: action.type,
+        movies: [...state.movies, ...action.payload.results],
+        bookmark: action.payload.bookmark
+      };
     case "RESET_PAGE":
-      return { ...state, page: 0 };
+      return { ...state, bookmark: "" };
     case "RESET_MOVIES":
-      return { ...state, movies: [] };
+      return { ...state, bookmark: "", movies: [] };
     case "ADD_MOVIE_SUCCEEDED":
       return {
         ...state,
@@ -47,35 +52,44 @@ const movieReducer = (state, action) => {
   }
 };
 
+const getAllocineProductionYear = allocineMovie =>
+  allocineMovie.release && allocineMovie.release.releaseDate
+    ? new Date(allocineMovie.release.releaseDate).getFullYear()
+    : allocineMovie.productionYear;
+
 export const Finder = () => {
   const user = useContext(UserContext);
   const [year, setYear] = useState(new Date().getFullYear());
   const [month, setMonth] = useState(months.find(m => m.value === String(new Date().getMonth() + 1)).label);
-  const [movieState, movieDispatch] = useReducer(movieReducer, { movies: [], page: 0, offset: 20 });
+  const [movieState, movieDispatch] = useReducer(movieReducer, { movies: [], bookmark: "" });
   const [movieToAdd, setMovieToAdd] = useState({ idAllocine: 0 });
   const showMovie = () => {
     // eslint-disable-next-line no-undef
     $("#movie-creator-updator").modal("show");
   };
-  const fetchMovies = () => {
-    movieDispatch({ type: "FETCH_MOVIES_REQUESTED" });
-    fetch(
-      `/api/allocine/find?month=${months.find(m => m.label === month).value}&year=${year}&page=${
-        movieState.page
-      }&offset=${movieState.offset}`,
-      {
-        headers: {
-          Accept: "application/json",
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${user.token}`
-        }
+  useEffect(
+    () => {
+      if (movieState.status === "FETCH_MOVIES_REQUESTED") {
+        fetch(
+          `/api/allocine/find?month=${months.find(m => m.label === month).value}&year=${year}&&bookmark=${
+            movieState.bookmark
+          }`,
+          {
+            headers: {
+              Accept: "application/json",
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${user.token}`
+            }
+          }
+        )
+          .then(response => response.json())
+          .then(movies => {
+            movieDispatch({ type: "FETCH_MOVIES_SUCCEEDED", payload: movies });
+          });
       }
-    )
-      .then(response => response.json())
-      .then(movies => {
-        movieDispatch({ type: "FETCH_MOVIES_SUCCEEDED", payload: movies });
-      });
-  };
+    },
+    [movieState.status]
+  );
   useEffect(showMovie, [movieToAdd]);
 
   return (
@@ -114,17 +128,31 @@ export const Finder = () => {
             event.preventDefault();
             event.stopPropagation();
             movieDispatch({ type: "RESET_MOVIES" });
-            fetchMovies();
+            movieDispatch({ type: "FETCH_MOVIES_REQUESTED" });
           }}
         >
           Goooo
         </button>
       </form>
-      <div className="movies">
+      <div className="movies mb-4">
         {movieState.movies.map(movie => {
           return (
             <div className="card movie-card" key={movie.allocine.code}>
-              <div className="card-body">
+              <div
+                className="card-body"
+                onClick={() => {
+                  if (movie.cinema) return;
+                  setMovieToAdd({
+                    idAllocine: movie.allocine.code,
+                    title: movie.allocine.title,
+                    genre: movie.allocine.genre.map(m => m.$).sort(),
+                    type: "Film",
+                    productionYear: getAllocineProductionYear(movie.allocine),
+                    summary: movie.allocine.synopsisShort || movie.allocine.synopsis,
+                    fileUrl: movie.allocine.poster ? movie.allocine.poster.href : ""
+                  });
+                }}
+              >
                 <h5 className="card-title">
                   <div className="ellipsis" title={movie.allocine.title}>
                     {movie.allocine.title}
@@ -132,36 +160,23 @@ export const Finder = () => {
                 </h5>
                 <h6
                   className="card-subtitle mb-2 text-muted ellipsis"
-                  title={`${movie.allocine.productionYear} - ${movie.allocine.genre.map(g => g.$).join(",")}`}
+                  title={`${getAllocineProductionYear(movie.allocine)} - ${movie.allocine.genre
+                    .map(g => g.$)
+                    .join(",")}`}
                 >
-                  {`${movie.allocine.productionYear} - ${movie.allocine.genre.map(g => g.$).join(",")}`}
+                  {`${getAllocineProductionYear(movie.allocine)} - ${movie.allocine.genre.map(g => g.$).join(",")}`}
                 </h6>
                 <div className="movie-card-actions" style={{ position: "absolute", top: 2, right: 4 }}>
                   <i
                     title="Add"
                     className="fas fa-link"
                     style={{ cursor: "pointer", color: movie.cinema ? "#fecc00" : "inherit" }}
-                    onClick={() => {
-                      if (movie.cinema) return;
-                      setMovieToAdd({
-                        idAllocine: movie.allocine.code,
-                        title: movie.allocine.title,
-                        genre: movie.allocine.genre.map(m => m.$).sort(),
-                        type: "Film",
-                        productionYear:
-                          movie.allocine.release && movie.allocine.release.releaseDate
-                            ? new Date(movie.allocine.release.releaseDate).getFullYear()
-                            : movie.allocine.productionYear,
-                        summary: movie.allocine.synopsisShort || movie.allocine.synopsis,
-                        fileUrl: movie.allocine.poster ? movie.allocine.poster.href : ""
-                      });
-                    }}
                   />
                 </div>
                 <div className="poster text-center">
                   <img
                     src={
-                      movie.allocine.poster.href
+                      movie.allocine.poster && movie.allocine.poster.href
                         ? movie.allocine.poster.href.replace("http:", "https:")
                         : "/no-image.png"
                     }
@@ -178,10 +193,9 @@ export const Finder = () => {
           <i className="fas fa-spinner fa-spin fa-2x" />
         </h2>
       )}
-      {movieState.movies.length === movieState.offset * movieState.page &&
-      movieState.status === "FETCH_MOVIES_SUCCEEDED" ? (
+      {movieState.bookmark && movieState.status === "FETCH_MOVIES_SUCCEEDED" ? (
         <div className="text-center m-3">
-          <button onClick={() => fetchMovies()} className="btn btn-primary btn-lg">
+          <button onClick={() => movieDispatch({ type: "FETCH_MOVIES_REQUESTED" })} className="btn btn-primary btn-lg">
             Load more
           </button>
         </div>

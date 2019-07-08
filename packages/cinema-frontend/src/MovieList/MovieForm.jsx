@@ -169,7 +169,7 @@ class MovieFormWithContext extends React.Component {
     return (
       <Fragment>
         {this.props.application.status === LOADING ? (
-          <div>Loading...</div>
+          <></>
         ) : (
           <div
             className="movie-modal modal fade movie-form"

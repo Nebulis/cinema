@@ -1,6 +1,7 @@
 import allocine from "allocine-api";
 import cheerio from "cheerio";
 import express from "express";
+import zipWith from "lodash/zipWith";
 import fetch from "node-fetch";
 import { logger } from "../logger";
 import { Movie } from "../models/movie";
@@ -107,14 +108,20 @@ const getAllocineMovie = (id: string) => {
   });
 };
 
+// let's assume that
+// - if release date matches provided year
+// - and if it's ~ 5 years (from production date)
+// then it's the correct year, because allocine dates are weird
+const hasBeenReleaseThisYear = (allocineMovie: any, year: string) =>
+  new Date(allocineMovie.release.releaseDate).getFullYear() === Number(year) &&
+  Math.abs(allocineMovie.productionYear - Number(year)) < 5;
+
 router.get("/find", async (req, res) => {
   if (!req.query.year || !req.query.month) {
     res.sendStatus(400);
     return;
   }
-  const page = Number(req.query.page) || 0;
-  const offset = Number(req.query.offset) || 20;
-  const movieIds = await fetch(
+  const movieIds: string[] = await fetch(
     `http://www.allocine.fr/film/agenda/mois/mois-${
       req.query.year
     }-${req.query.month.padStart(2, "0")}`
@@ -136,21 +143,37 @@ router.get("/find", async (req, res) => {
           }
           return null;
         })
-        .filter(Boolean); // remove null values
+        .filter((value: any): value is string => !!value); // remove null values
     });
   try {
-    const results = [];
-    for (const id of movieIds.slice(page * offset, page * offset + offset)) {
-      const [allocineMovie, cinemaMovie] = await Promise.all([
-        getAllocineMovie(id!),
-        Movie.findOne({
-          idAllocine: Number(id)
-        }).select({ filedata: 0 })
-      ]);
-
-      results.push({ allocine: allocineMovie, cinema: cinemaMovie });
+    const allocineMovies = [];
+    const localMoviesPromises = [];
+    let index = req.query.bookmark
+      ? movieIds.findIndex(id => id === req.query.bookmark)
+      : 0;
+    while (allocineMovies.length < 20 && index < movieIds.length) {
+      const id = movieIds[index];
+      const allocineMovie = await getAllocineMovie(id);
+      index++;
+      if (hasBeenReleaseThisYear(allocineMovie, req.query.year)) {
+        allocineMovies.push(allocineMovie);
+        localMoviesPromises.push(
+          Movie.findOne({
+            idAllocine: Number(id)
+          })
+            .select({ filedata: 0 })
+            .then(x => x)
+        ); // transform into promise ...)
+      }
     }
-    res.json(results);
+    const localMovies = await Promise.all(localMoviesPromises);
+    res.json({
+      bookmark: movieIds[index],
+      results: zipWith(allocineMovies, localMovies, (allocineMovie, movie) => ({
+        allocine: allocineMovie,
+        cinema: movie
+      }))
+    });
   } catch (error) {
     res.status(500).json(error);
   }
