@@ -60,6 +60,7 @@ const getAllocineProductionYear = allocineMovie =>
 export const Finder = () => {
   const user = useContext(UserContext);
   const [year, setYear] = useState(new Date().getFullYear());
+  const [displayLinked, setDisplayLinked] = useState(false);
   const [month, setMonth] = useState(months.find(m => m.value === String(new Date().getMonth() + 1)).label);
   const [movieState, movieDispatch] = useReducer(movieReducer, { movies: [], bookmark: "" });
   const [movieToAdd, setMovieToAdd] = useState({ idAllocine: 0 });
@@ -124,6 +125,7 @@ export const Finder = () => {
           />
         </div>
         <button
+          className="mr-2"
           onClick={event => {
             event.preventDefault();
             event.stopPropagation();
@@ -133,60 +135,70 @@ export const Finder = () => {
         >
           Goooo
         </button>
+        <div className="form-group">
+          <i
+            className={`fas fa-link`}
+            style={{ cursor: "pointer", color: displayLinked ? "#fecc00" : "inherit" }}
+            onClick={() => setDisplayLinked(!displayLinked)}
+            title="Hide linked movies"
+          />
+        </div>
       </form>
       <div className="movies mb-4">
-        {movieState.movies.map(movie => {
-          return (
-            <div className="card movie-card" key={movie.allocine.code}>
-              <div
-                className="card-body"
-                onClick={() => {
-                  if (movie.cinema) return;
-                  setMovieToAdd({
-                    idAllocine: movie.allocine.code,
-                    title: movie.allocine.title,
-                    genre: movie.allocine.genre.map(m => m.$).sort(),
-                    type: "Film",
-                    productionYear: getAllocineProductionYear(movie.allocine),
-                    summary: movie.allocine.synopsisShort || movie.allocine.synopsis,
-                    fileUrl: movie.allocine.poster ? movie.allocine.poster.href : ""
-                  });
-                }}
-              >
-                <h5 className="card-title">
-                  <div className="ellipsis" title={movie.allocine.title}>
-                    {movie.allocine.title}
-                  </div>
-                </h5>
-                <h6
-                  className="card-subtitle mb-2 text-muted ellipsis"
-                  title={`${getAllocineProductionYear(movie.allocine)} - ${movie.allocine.genre
-                    .map(g => g.$)
-                    .join(",")}`}
+        {movieState.movies
+          .filter(movie => displayLinked || !movie.cinema)
+          .map(movie => {
+            return (
+              <div className="card movie-card" key={movie.allocine.code}>
+                <div
+                  className="card-body"
+                  onClick={() => {
+                    if (movie.cinema) return;
+                    setMovieToAdd({
+                      idAllocine: movie.allocine.code,
+                      title: movie.allocine.title,
+                      genre: movie.allocine.genre.map(m => m.$).sort(),
+                      type: "Film",
+                      productionYear: getAllocineProductionYear(movie.allocine),
+                      summary: movie.allocine.synopsisShort || movie.allocine.synopsis,
+                      fileUrl: movie.allocine.poster ? movie.allocine.poster.href : ""
+                    });
+                  }}
                 >
-                  {`${getAllocineProductionYear(movie.allocine)} - ${movie.allocine.genre.map(g => g.$).join(",")}`}
-                </h6>
-                <div className="movie-card-actions" style={{ position: "absolute", top: 2, right: 4 }}>
-                  <i
-                    title="Add"
-                    className="fas fa-link"
-                    style={{ cursor: "pointer", color: movie.cinema ? "#fecc00" : "inherit" }}
-                  />
-                </div>
-                <div className="poster text-center">
-                  <img
-                    src={
-                      movie.allocine.poster && movie.allocine.poster.href
-                        ? movie.allocine.poster.href.replace("http:", "https:")
-                        : "/no-image.png"
-                    }
-                    alt="movie poster"
-                  />
+                  <h5 className="card-title">
+                    <div className="ellipsis" title={movie.allocine.title}>
+                      {movie.allocine.title}
+                    </div>
+                  </h5>
+                  <h6
+                    className="card-subtitle mb-2 text-muted ellipsis"
+                    title={`${getAllocineProductionYear(movie.allocine)} - ${movie.allocine.genre
+                      .map(g => g.$)
+                      .join(",")}`}
+                  >
+                    {`${getAllocineProductionYear(movie.allocine)} - ${movie.allocine.genre.map(g => g.$).join(",")}`}
+                  </h6>
+                  <div className="movie-card-actions" style={{ position: "absolute", top: 2, right: 4 }}>
+                    <i
+                      title="Add"
+                      className="fas fa-link"
+                      style={{ cursor: "pointer", color: movie.cinema ? "#fecc00" : "inherit" }}
+                    />
+                  </div>
+                  <div className="poster text-center">
+                    <img
+                      src={
+                        movie.allocine.poster && movie.allocine.poster.href
+                          ? movie.allocine.poster.href.replace("http:", "https:")
+                          : "/no-image.png"
+                      }
+                      alt="movie poster"
+                    />
+                  </div>
                 </div>
               </div>
-            </div>
-          );
-        })}
+            );
+          })}
       </div>
       {movieState.status === "FETCH_MOVIES_REQUESTED" && (
         <h2 className="text-center mt-2">
