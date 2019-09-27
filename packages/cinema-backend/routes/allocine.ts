@@ -6,6 +6,7 @@ import fetch from "node-fetch";
 import { logger } from "../logger";
 import { Movie } from "../models/movie";
 
+// tslint:disable:no-console
 export const router = express.Router();
 /*
  * GET
@@ -90,30 +91,56 @@ router.get("/serie/:id", (req, res) => {
   );
 });
 
-const getAllocineMovie = (id: string) => {
-  return new Promise((resolve, reject) => {
-    allocine.api(
-      "movie",
-      {
-        code: id
-      },
-      (error: any, result: any) => {
-        if (error) {
-          reject(error);
-          return;
-        }
-        resolve(result.movie);
-      }
-    );
-  });
+const getAllocineMovie = async (id: string) => {
+  console.log("Fetch movie with id", id);
+  console.time(`fetch${id}`);
+  return fetch(`http://www.allocine.fr/film/fichefilm_gen_cfilm=${id}.html`)
+    .then(response => response.text())
+    .then(async body => {
+      console.timeEnd(`fetch${id}`);
+      console.time("parse");
+      const $ = cheerio.load(body);
+      const root = $.root();
+      const productionYear = root
+        .find(".movie-card-overview .meta-body-item .date")
+        .text()
+        .split(" ");
+      const poster = root.find(".thumbnail-img").attr("src");
+      const title = root
+        .find(".titlebar-title")
+        .first()
+        .text();
+      const genre = root
+        .find(".meta-body-item span:contains(Genre)")
+        .siblings()
+        .map(function() {
+          // @ts-ignore
+          return $(this).text();
+        })
+        .get();
+      const synopsis = root
+        .find("#synopsis-details .content-txt")
+        .text()
+        .trim();
+      console.timeEnd("parse");
+
+      return {
+        code: id,
+        genre: genre.map(g => ({ $: g })),
+        poster: {
+          href: poster
+        },
+        productionYear: productionYear && parseInt(productionYear[2], 10),
+        synopsis,
+        title
+      };
+    });
 };
 
 // let's assume that
-// - if release date matches provided year
-// - and if it's ~ 5 years (from production date)
+// - if it's ~ 5 years (from production date)
 // then it's the correct year, because allocine dates are weird
 const hasBeenReleaseThisYear = (allocineMovie: any, year: string) =>
-  new Date(allocineMovie.release.releaseDate).getFullYear() === Number(year) &&
   Math.abs(allocineMovie.productionYear - Number(year)) < 5;
 
 router.get("/find", async (req, res) => {
@@ -151,9 +178,11 @@ router.get("/find", async (req, res) => {
     let index = req.query.bookmark
       ? movieIds.findIndex(id => id === req.query.bookmark)
       : 0;
-    while (allocineMovies.length < 20 && index < movieIds.length) {
+    while (allocineMovies.length < 15 && index < movieIds.length) {
       const id = movieIds[index];
-      const allocineMovie = await getAllocineMovie(id);
+      const allocineMovie = await getAllocineMovie(id).catch(error =>
+        console.error(error)
+      );
       index++;
       if (hasBeenReleaseThisYear(allocineMovie, req.query.year)) {
         allocineMovies.push(allocineMovie);
