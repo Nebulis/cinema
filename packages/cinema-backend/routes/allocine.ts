@@ -144,6 +144,7 @@ const hasBeenReleaseThisYear = (allocineMovie: any, year: string) =>
   Math.abs(allocineMovie.productionYear - Number(year)) < 5;
 
 router.get("/find", async (req, res) => {
+  console.log(`Find movies for ${req.query.month}/${req.query.year}`);
   if (!req.query.year || !req.query.month) {
     res.sendStatus(400);
     return;
@@ -172,6 +173,7 @@ router.get("/find", async (req, res) => {
         })
         .filter((value: any): value is string => !!value); // remove null values
     });
+  console.log(`Found ${movieIds.length} movies`, movieIds);
   try {
     const allocineMovies = [];
     const localMoviesPromises = [];
