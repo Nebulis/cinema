@@ -8,50 +8,90 @@ import { Movie } from "../models/movie";
 
 // tslint:disable:no-console
 export const router = express.Router();
+
+const extractData = (body: string) => {
+  const $ = cheerio.load(body);
+  const root = $.root();
+  return root
+    .find(".totalwidth.noborder.purehtml tr")
+    .map(function() {
+      // @ts-ignore
+      const thisElement = $(this);
+      const cols = thisElement.find("td");
+      if (cols.length === 1) {
+        return null;
+      }
+      const image = cols
+        .first()
+        .find("img")
+        .attr("src")
+        .replace("75_106", "300_424");
+
+      const link = cols
+        .first()
+        .find("a")
+        .attr("href");
+
+      const titleAndYear = cols
+        .last()
+        .find("div div")
+        .first()
+        .text()
+        .split("\n");
+      const title = titleAndYear[2];
+      const year = titleAndYear[5] || titleAndYear[6];
+      return { title, year, image, link };
+    })
+    .get();
+};
 /*
  * GET
  */
-router.get("/", (req, res, next) => {
-  const options = {
-    count: 30,
-    q: req.query.title
-  };
+router.get("/", (req, res, _next) => {
   if (req.query.type === "Film") {
-    allocine.api(
-      "search",
-      {
-        ...options,
-        filter: "movie"
-      },
-      (error, results) => {
-        if (error) {
-          logger.error(error);
-          return next(error);
-        } else if (results.error) {
-          logger.error(results.error);
-          return next(new Error(results.error.$));
-        }
-        res.json(results.feed.movie || {});
-      }
-    );
+    return fetch(`http://www.allocine.fr/recherche/1/?q=${req.query.title}`)
+      .then(response => response.text())
+      .then(async body => {
+        return extractData(body);
+      })
+      .then(movies => {
+        res.json(
+          movies.map(movie => {
+            const id = movie.link.match(
+              /\/film\/fichefilm_gen_cfilm=(.*).html/
+            );
+            return {
+              ...movie,
+              code: id ? id[1] : ""
+            };
+          })
+        );
+      })
+      .catch(error => {
+        console.error(error);
+      });
   } else {
-    allocine.api(
-      "search",
-      {
-        ...options,
-        filter: "tvseries"
-      },
-      (error, results) => {
-        if (error) {
-          logger.error(error);
-          return next(error);
-        } else if (results.error) {
-          logger.error(results.error);
-          return next(new Error(results.error.$));
-        }
-        res.json(results.feed.tvseries || {});
-      }
-    );
+    return fetch(`http://www.allocine.fr/recherche/6/?q=${req.query.title}`)
+      .then(response => response.text())
+      .then(async body => {
+        return extractData(body);
+      })
+      .then(movies => {
+        res.json(
+          movies.map(movie => {
+            const id = movie.link.match(
+              /\/series\/ficheserie_gen_cserie=(.*).html/
+            );
+            return {
+              ...movie,
+              code: id ? id[1] : ""
+            };
+          })
+        );
+      })
+      .catch(error => {
+        console.error(error);
+      });
   }
 });
 
@@ -59,19 +99,72 @@ router.get("/", (req, res, next) => {
  * GET
  */
 router.get("/movie/:id", (req, res) => {
-  allocine.api(
-    "movie",
-    {
-      code: req.params.id
-    },
-    (error, result) => {
-      if (error) {
-        logger.error(error);
-        return;
-      }
-      res.json(result);
-    }
-  );
+  return fetch(
+    `http://www.allocine.fr/film/fichefilm_gen_cfilm=${req.params.id}.html`
+  )
+    .then(response => response.text())
+    .then(async body => {
+      const $ = cheerio.load(body);
+      const root = $.root();
+      const title = root
+        .find(".titlebar-title")
+        .first()
+        .text();
+      const year = root
+        .find(".date")
+        .text()
+        .split(" ")[2];
+      const synopsis = root
+        .find(".content-txt")
+        .first()
+        .text()
+        .trim();
+
+      const image = root
+        .find(".thumbnail-img")
+        .attr("src")
+        .replace("215_290", "300_424");
+
+      const genres = root
+        .find(".meta-body-item")
+        .map(function() {
+          // @ts-ignore
+          const thisElement = $(this);
+          const genresSection = thisElement.find("span").first();
+          if (
+            genresSection.text() === "Genres" ||
+            genresSection.text() === "Genre"
+          ) {
+            return thisElement
+              .find("span:not(:first-child)")
+              .map(function() {
+                // @ts-ignore
+                return $(this).text();
+              })
+              .get();
+          }
+          return null;
+        })
+        .get();
+      // year, image, link
+      return {
+        code: req.params.id,
+        genres,
+        image,
+        link: `http://www.allocine.fr/film/fichefilm_gen_cfilm=${
+          req.params.id
+        }.html`,
+        synopsis,
+        title,
+        year
+      };
+    })
+    .then(movie => {
+      res.json(movie);
+    })
+    .catch(error => {
+      console.error(error);
+    });
 });
 
 router.get("/serie/:id", (req, res) => {

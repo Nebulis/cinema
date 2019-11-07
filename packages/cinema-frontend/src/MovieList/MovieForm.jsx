@@ -102,20 +102,17 @@ class MovieFormWithContext extends React.Component {
         headers: headers(this.props.user)
       })
         .then(handleResponse)
-        .then(({ movie }) =>
+        .then(movie =>
           this.setState({
             movie: {
               ...this.state.movie,
               idAllocine,
               title: movie.title,
-              genre: movie.genre.map(m => m.$).sort(),
+              genre: movie.genres.sort(),
               type: "Film",
-              productionYear:
-                movie.release && movie.release.releaseDate
-                  ? new Date(movie.release.releaseDate).getFullYear()
-                  : movie.productionYear,
-              summary: movie.synopsisShort || movie.synopsis,
-              fileUrl: movie.poster ? movie.poster.href : ""
+              productionYear: movie.year,
+              summary: movie.synopsis,
+              fileUrl: movie.image
             }
           })
         );
@@ -249,14 +246,11 @@ class MovieFormWithContext extends React.Component {
                                     />
                                   ) : null}
                                   <div>
-                                    {movie.title} -{" "}
-                                    {movie.release && movie.release.releaseDate
-                                      ? new Date(movie.release.releaseDate).getFullYear()
-                                      : movie.productionYear}
+                                    {movie.title} - {movie.year}
                                   </div>
                                   <div>
-                                    {movie.poster ? (
-                                      <img src={movie.poster.href} alt="movie poster" style={{ width: "100%" }} />
+                                    {movie.image ? (
+                                      <img src={movie.image} alt="movie poster" style={{ width: "100%" }} />
                                     ) : null}
                                   </div>
                                 </div>
@@ -303,11 +297,11 @@ class MovieFormWithContext extends React.Component {
                                     />
                                   ) : null}
                                   <div>
-                                    {tvshow.title} - {tvshow.yearStart}
+                                    {tvshow.title} - {tvshow.year}
                                   </div>
                                   <div>
-                                    {tvshow.poster ? (
-                                      <img src={tvshow.poster.href} alt="tvshow poster" style={{ width: "100%" }} />
+                                    {tvshow.image ? (
+                                      <img src={tvshow.image} alt="tvshow poster" style={{ width: "100%" }} />
                                     ) : null}
                                   </div>
                                 </div>
