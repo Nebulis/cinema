@@ -133,17 +133,17 @@ class MovieFormWithContext extends React.Component {
         headers: headers(this.props.user)
       })
         .then(handleResponse)
-        .then(({ tvseries }) =>
+        .then(tvseries =>
           this.setState({
             movie: {
               ...this.state.movie,
               idAllocine,
               title: tvseries.title,
-              genre: tvseries.genre.map(m => m.$).sort(),
+              genre: tvseries.genres.sort(),
               type: "Série",
-              productionYear: tvseries.yearStart,
-              summary: tvseries.synopsisShort || tvseries.synopsis,
-              fileUrl: tvseries.poster ? tvseries.poster.href : ""
+              productionYear: tvseries.year,
+              summary: tvseries.synopsis,
+              fileUrl: tvseries.image
             }
           })
         );

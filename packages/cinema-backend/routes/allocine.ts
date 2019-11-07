@@ -1,9 +1,7 @@
-import allocine from "allocine-api";
 import cheerio from "cheerio";
 import express from "express";
 import zipWith from "lodash/zipWith";
 import fetch from "node-fetch";
-import { logger } from "../logger";
 import { Movie } from "../models/movie";
 
 // tslint:disable:no-console
@@ -168,20 +166,58 @@ router.get("/movie/:id", (req, res) => {
 });
 
 router.get("/serie/:id", (req, res) => {
-  allocine.api(
-    "tvseries",
-    {
-      code: req.params.id
-    },
-    (error, result) => {
-      if (error) {
-        logger.error(error);
-        return;
-      }
+  return fetch(
+    `http://www.allocine.fr/series/ficheserie_gen_cserie=${req.params.id}.html`
+  )
+    .then(response => response.text())
+    .then(async body => {
+      const $ = cheerio.load(body);
+      const root = $.root();
+      const title = root
+        .find(".titlebar-title")
+        .first()
+        .text();
+      const year = root
+        .find(".meta-body-info")
+        .text()
+        .split("-")[0]
+        .trim();
+      const synopsis = root
+        .find(".content-txt")
+        .first()
+        .text()
+        .trim();
 
-      res.json(result);
-    }
-  );
+      const image = root
+        .find(".thumbnail-img")
+        .attr("src")
+        .replace("215_290", "300_424");
+
+      const genres = root
+        .find(".meta-body-info")
+        .text()
+        .split("/")[2]
+        .split(",")
+        .map(g => g.trim());
+      // year, image, link
+      return {
+        code: req.params.id,
+        genres,
+        image,
+        link: `http://www.allocine.fr/series/ficheserie_gen_cserie=${
+          req.params.id
+        }.html`,
+        synopsis,
+        title,
+        year
+      };
+    })
+    .then(movie => {
+      res.json(movie);
+    })
+    .catch(error => {
+      console.error(error);
+    });
 });
 
 const getAllocineMovie = async (id: string) => {
