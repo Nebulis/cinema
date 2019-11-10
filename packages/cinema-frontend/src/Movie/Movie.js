@@ -318,6 +318,9 @@ export const Movie = withRouter(({ match, history }) => {
                               promises.push(
                                 updateSeason(movie.seasons[i], i, draft => {
                                   draft.productionYear = productionYear + (i - seasonIndex);
+                                  // remove episodes so that we update only the production year
+                                  // backend expect no episodes to update specific field
+                                  draft.episodes = null;
                                 })
                               );
                             }

@@ -23,25 +23,41 @@ router.post("/:id/seasons", (req, res, next) => {
 
 // update season
 router.put("/:movieId/seasons/:seasonId", (req, res, next) => {
-  Movie.updateOne(
-    {
-      _id: req.params.movieId,
-      "seasons._id": req.params.seasonId
-    },
-    {
-      $set: {
-        "seasons.$.productionYear": req.body.productionYear
-      }
-    }
-  )
-    .then(() =>
-      Movie.findById(req.params.movieId).then(
+  // if episodes is provided, update the array directly. Should only be used to update all episodes at once and is
+  // currently used to reorder episodes
+  if (req.body.episodes) {
+    Movie.findById(req.params.movieId)
+      .then(
         movie =>
-          movie || throwMe(new Error(`Movie ${req.params.movieId} not found`))
+          movie || throwMe(new Error(`Movie ${req.params.seasonId} not found`))
       )
+      .then(movie => {
+        const season = movie.seasons.id(req.params.seasonId);
+        season.episodes = req.body.episodes;
+        return season.save().then(_ => res.json(season));
+      })
+      .catch(next);
+  } else {
+    Movie.updateOne(
+      {
+        _id: req.params.movieId,
+        "seasons._id": req.params.seasonId
+      },
+      {
+        $set: {
+          "seasons.$.productionYear": req.body.productionYear
+        }
+      }
     )
-    .then(movie => res.json(movie.seasons.id(req.params.seasonId)))
-    .catch(next);
+      .then(() =>
+        Movie.findById(req.params.movieId).then(
+          movie =>
+            movie || throwMe(new Error(`Movie ${req.params.movieId} not found`))
+        )
+      )
+      .then(movie => res.json(movie.seasons.id(req.params.seasonId)))
+      .catch(next);
+  }
 });
 
 // delete season
