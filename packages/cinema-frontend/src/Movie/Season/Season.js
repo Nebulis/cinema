@@ -185,28 +185,12 @@ export const Season = ({ season, index, onDragStart, onDragOver, onDragEnd, drag
                   );
                   setDrag();
                 }}
-                onSeen={async seen => {
-                  const promises = [];
-                  if (!seen) {
-                    promises.push(
-                      updateEpisode(season.episodes[episodeIndex], episodeIndex, draft => {
-                        draft.seen = false;
-                      })
-                    );
-                  } else {
-                    for (let i = 0; i <= episodeIndex; i++) {
-                      // only update episodes that are not seen
-                      if (!season.episodes[i].seen) {
-                        promises.push(
-                          updateEpisode(season.episodes[i], i, draft => {
-                            draft.seen = true;
-                          })
-                        );
-                      }
-                    }
-                  }
-                  await Promise.all(promises);
-                  createNotification(dispatch, `Episodes set to ${seen ? "seen" : "unseen"}`);
+                onSeen={() => {
+                  updateEpisode(season.episodes[episodeIndex], episodeIndex, draft => {
+                    draft.seen = !draft.seen;
+                  }).then(() => {
+                    createNotification(dispatch, `Episode ${episodeIndex + 1} set to ${seen ? "seen" : "unseen"}`);
+                  });
                 }}
               />
             ))}
