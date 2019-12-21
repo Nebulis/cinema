@@ -47,6 +47,6 @@
     "ts-node-dev": "1.0.0-pre.32",
     "tslint": "5.11.0",
     "tslint-config-prettier": "1.17.0",
-    "tslint-plugin-prettier": "2.0.1"
+    "tslint-plugin-prettier": "2.1.0"
   }
 }
