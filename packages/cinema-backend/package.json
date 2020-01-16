@@ -42,7 +42,7 @@
   },
   "devDependencies": {
     "dotenv": "6.2.0",
-    "googleapis": "39.2.0",
+    "googleapis": "47.0.0",
     "prettier": "1.15.3",
     "ts-node-dev": "1.0.0-pre.32",
     "tslint": "5.11.0",
