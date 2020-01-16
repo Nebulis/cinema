@@ -4423,10 +4423,10 @@ ignore@^4.0.6:
   version "4.0.6"
   resolved "https://registry.yarnpkg.com/ignore/-/ignore-4.0.6.tgz#750e3db5862087b4737ebac8207ffd1ef27b25fc"
 
-immer@1.8.2:
-  version "1.8.2"
-  resolved "https://registry.yarnpkg.com/immer/-/immer-1.8.2.tgz#111e9c9e6832c833868f3f6481758a421f63f403"
-  integrity sha512-uP9EI4hmRTlZ+d4YYmd7JMlxf8I3KPHnvWfLNjpOv/cQNRV/dKHL8L3cZ7z6OCuRQnK59Uu5LJr/KxViqAiEQQ==
+immer@5.3.0:
+  version "5.3.0"
+  resolved "https://registry.yarnpkg.com/immer/-/immer-5.3.0.tgz#4fd8328def4d2962f7082775764aa96063902850"
+  integrity sha512-kx1vWMcIxGGg/3j4gTckWVc0buyxI4CC5usMDWE/7LXPK6Poxz1ivf0opC9Ma+G6/dN85F5y2SQ2xBFvdreh8Q==
 
 import-cwd@^2.0.0:
   version "2.1.0"
