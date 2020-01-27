@@ -111,6 +111,8 @@ router.get("/movie/:id", (req, res) => {
       const year = root
         .find(".date")
         .text()
+        .trim()
+        .replace(/\n/g, "")
         .split(" ")[2];
       const synopsis = root
         .find(".content-txt")
@@ -180,11 +182,13 @@ router.get("/serie/:id", (req, res) => {
       const yearTmp = root
         .find(".meta-body-info")
         .text()
+        .split("/")[0]
         .trim()
-        .replace("\n", ""); // there is \n after first date sometimes ...
+        .replace(/\n/g, ""); // there is \n after first date sometimes ...
       const year = yearTmp.startsWith("Depuis")
         ? yearTmp.split(" ")[1] // if depuis a, return a
         : yearTmp.split("-")[0].trim(); // if a-b, return a
+
       const synopsis = root
         .find(".content-txt")
         .first()
