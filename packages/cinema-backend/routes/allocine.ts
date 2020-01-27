@@ -177,11 +177,14 @@ router.get("/serie/:id", (req, res) => {
         .find(".titlebar-title")
         .first()
         .text();
-      const year = root
+      const yearTmp = root
         .find(".meta-body-info")
         .text()
-        .split("-")[0]
-        .trim();
+        .trim()
+        .replace("\n", ""); // there is \n after first date sometimes ...
+      const year = yearTmp.startsWith("Depuis")
+        ? yearTmp.split(" ")[1] // if depuis a, return a
+        : yearTmp.split("-")[0].trim(); // if a-b, return a
       const synopsis = root
         .find(".content-txt")
         .first()
@@ -193,12 +196,12 @@ router.get("/serie/:id", (req, res) => {
         .attr("src")
         .replace("215_290", "300_424");
 
-      const genres = root
+      const tmp = root
         .find(".meta-body-info")
         .text()
-        .split("/")[2]
-        .split(",")
-        .map(g => g.trim());
+        .trim()
+        .split("/");
+      const genres = tmp[tmp.length - 1].split(",").map(g => g.trim());
       // year, image, link
       return {
         code: req.params.id,
