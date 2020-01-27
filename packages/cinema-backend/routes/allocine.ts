@@ -125,27 +125,12 @@ router.get("/movie/:id", (req, res) => {
         .attr("src")
         .replace("215_290", "300_424");
 
-      const genres = root
-        .find(".meta-body-item")
-        .map(function() {
-          // @ts-ignore
-          const thisElement = $(this);
-          const genresSection = thisElement.find("span").first();
-          if (
-            genresSection.text() === "Genres" ||
-            genresSection.text() === "Genre"
-          ) {
-            return thisElement
-              .find("span:not(:first-child)")
-              .map(function() {
-                // @ts-ignore
-                return $(this).text();
-              })
-              .get();
-          }
-          return null;
-        })
-        .get();
+      const tmp = root
+        .find(".meta-body-info")
+        .text()
+        .trim()
+        .split("/");
+      const genres = tmp[tmp.length - 1].split(",").map(g => g.trim());
       // year, image, link
       return {
         code: req.params.id,
