@@ -223,22 +223,23 @@ const getAllocineMovie = async (id: string) => {
       const $ = cheerio.load(body);
       const root = $.root();
       const productionYear = root
-        .find(".movie-card-overview .meta-body-item .date")
+        .find(".meta-body-item .date")
         .text()
-        .split(" ");
+        .trim()
+        .replace(/\n/g, "")
+        .split(" ")[2];
       const poster = root.find(".thumbnail-img").attr("src");
       const title = root
         .find(".titlebar-title")
         .first()
         .text();
-      const genre = root
-        .find(".meta-body-item span:contains(Genre)")
-        .siblings()
-        .map(function() {
-          // @ts-ignore
-          return $(this).text();
-        })
-        .get();
+      const tmp = root
+        .find(".meta-body-info")
+        .text()
+        .replace(/\n/g, "")
+        .split("/");
+      const genres = tmp[tmp.length - 1].split(",").map(g => g.trim());
+      console.log(genres);
       const synopsis = root
         .find("#synopsis-details .content-txt")
         .text()
@@ -247,11 +248,11 @@ const getAllocineMovie = async (id: string) => {
 
       return {
         code: id,
-        genre: genre.map(g => ({ $: g })),
+        genre: genres.map(g => ({ $: g })),
         poster: {
           href: poster
         },
-        productionYear: productionYear && parseInt(productionYear[2], 10),
+        productionYear: productionYear && parseInt(productionYear, 10),
         synopsis,
         title
       };
@@ -301,7 +302,7 @@ router.get("/find", async (req, res) => {
     let index = req.query.bookmark
       ? movieIds.findIndex(id => id === req.query.bookmark)
       : 0;
-    while (allocineMovies.length < 15 && index < movieIds.length) {
+    while (allocineMovies.length < 5 && index < movieIds.length) {
       const id = movieIds[index];
       const allocineMovie = await getAllocineMovie(id).catch(error =>
         console.error(error)

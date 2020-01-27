@@ -16,9 +16,9 @@ export const Header = () => {
         <Link to="/">Cinematheque</Link>
       </h1>
       <Fetch endpoint="/api/movies?limit=0">{({ data }) => <h6>{data ? data.count : 0} movies/tvshows</h6>}</Fetch>
-      <Link to="/stats">
+      <Link to="/admin">
         <i
-          className="fas fa-chart-bar fa-3x"
+          className="fas fa-cog fa-3x"
           style={{
             top: "22px",
             right: "22px",
@@ -26,7 +26,7 @@ export const Header = () => {
             color: "#F1F7EE",
             cursor: "pointer"
           }}
-          title="Show statistics"
+          title="Admin"
         />
       </Link>
     </div>

@@ -4,10 +4,8 @@ import "./App.css";
 import { List } from "./MovieList/List";
 import { Movie } from "./Movie/Movie";
 import { Header } from "./Header";
-import { Statistics } from "./Statistics/Statistics";
-import { TagList } from "./Admin/TagList";
 import { NotificationsList } from "./Notifications/NotificationsList";
-import { Finder } from "./Finder";
+import { Admin } from "./Admin/Admin";
 
 class App extends Component {
   render() {
@@ -19,9 +17,7 @@ class App extends Component {
             <NotificationsList />
             <Route exact path="/" component={List} />
             <Route exact path="/movie/:id" component={Movie} />
-            <Route exact path="/stats" component={Statistics} />
-            <Route exact path="/admin" component={TagList} />
-            <Route exact path="/finder" component={Finder} />
+            <Route exact path="/admin" component={Admin} />
           </Fragment>
         </Router>
       </Fragment>

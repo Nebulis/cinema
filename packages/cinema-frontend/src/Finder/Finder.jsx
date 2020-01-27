@@ -91,7 +91,14 @@ export const Finder = () => {
     },
     [movieState.status]
   );
-  useEffect(showMovie, [movieToAdd]);
+  useEffect(
+    () => {
+      if (movieToAdd.idAllocine !== 0) {
+        showMovie();
+      }
+    },
+    [movieToAdd]
+  );
 
   return (
     <>

@@ -40,8 +40,6 @@ export class App extends Component<{}, IAppState> {
               Learn React
             </a>
           </header>
-
-          <div>Hello</div>
         </div>
       </UserContext.Provider>
     );

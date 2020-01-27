@@ -1,0 +1,22 @@
+.admin-tabs {
+  margin-top: 1rem;
+  display: flex;
+  justify-content: center;
+}
+.admin-tabs div {
+  background-color: var(--movie-secondary);
+  color: var(--movie-primary);
+  text-align: center;
+  width: 200px;
+  padding: 0.5rem;
+  border-radius: 10px;
+  margin-left: 2rem;
+  margin-right: 2rem;
+  cursor: pointer;
+  font-weight: bold;
+}
+.admin-tabs div.selected {
+  color: var(--movie-secondary);
+  background-color: var(--movie-accent);
+  border: 2px solid var(--movie-secondary);
+}
