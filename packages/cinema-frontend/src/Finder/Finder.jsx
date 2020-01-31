@@ -1,8 +1,10 @@
-import React, { useState, useReducer, useEffect, useContext } from "react";
+import React, { useContext, useEffect, useReducer, useState } from "react";
 import { SingleDownshift } from "../Common/SingleDownshift";
 import range from "lodash/range";
 import { MovieForm } from "../MovieList/MovieForm";
 import { UserContext } from "../Login/UserContext";
+import { NotificationContext } from "../Notifications/NotificationContext";
+import { createNotification } from "../Movie/Movie.util";
 
 const months = [
   { label: "Janvier", value: "1" },
@@ -38,7 +40,7 @@ const movieReducer = (state, action) => {
       return {
         ...state,
         movies: state.movies.map(movie => {
-          if (movie.allocine.code === action.payload.idAllocine) {
+          if (`${movie.allocine.code}` === `${action.payload.idAllocine}`) {
             return {
               ...movie,
               cinema: action.payload
@@ -59,6 +61,7 @@ const getAllocineProductionYear = allocineMovie =>
 
 export const Finder = () => {
   const user = useContext(UserContext);
+  const { dispatch } = useContext(NotificationContext);
   const [year, setYear] = useState(new Date().getFullYear());
   const [displayLinked, setDisplayLinked] = useState(false);
   const [month, setMonth] = useState(months.find(m => m.value === String(new Date().getMonth() + 1)).label);
@@ -106,7 +109,10 @@ export const Finder = () => {
         // force reinitialisation of movie form
         key={movieToAdd.idAllocine}
         movie={movieToAdd}
-        onAdd={movie => movieDispatch({ type: "ADD_MOVIE_SUCCEEDED", payload: movie })}
+        onAdd={movie => {
+          movieDispatch({ type: "ADD_MOVIE_SUCCEEDED", payload: movie });
+          createNotification(dispatch, `Added ${movie.title}`);
+        }}
       />
       <form className="form-inline mt-4 ml-3">
         <div className="form-group mr-3" style={{ minWidth: "150px" }}>
