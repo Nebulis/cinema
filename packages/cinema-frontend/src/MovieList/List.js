@@ -93,7 +93,7 @@ export const List = () => {
       }
       return () => debouncedLoadMore.cancel();
     },
-    [filters]
+    [filters, offset]
   );
   useEffect(showMovie, [movie]);
 
