@@ -128,7 +128,7 @@ export const Finder = () => {
         </div>
         <div className="form-group mr-3" style={{ minWidth: "150px" }}>
           <SingleDownshift
-            items={range(new Date().getFullYear() + 3, 2010, -1)}
+            items={range(new Date().getFullYear() + 3, 1999, -1)}
             placeholder="Year"
             onChange={value => {
               setYear(value);
