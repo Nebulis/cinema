@@ -266,68 +266,153 @@ const hasBeenReleaseThisYear = (allocineMovie: any, year: string) =>
   Math.abs(allocineMovie.productionYear - Number(year)) < 5;
 
 router.get("/find", async (req, res) => {
-  console.log(`Find movies for ${req.query.month}/${req.query.year}`);
-  if (!req.query.year || !req.query.month) {
-    res.sendStatus(400);
-    return;
-  }
-  const movieIds: string[] = await fetch(
-    `http://www.allocine.fr/film/agenda/mois/mois-${
-      req.query.year
-    }-${req.query.month.padStart(2, "0")}`
-  )
-    .then(response => response.text())
-    .then(async body => {
-      const $ = cheerio.load(body);
-      // find all links
-      return $(".month-movies-link")
-        .map(function() {
-          // @ts-ignore
-          return $(this).attr("href");
-        })
-        .get() // cheerio need this
-        .map((link: string) => {
-          const match = link.match(/\/film\/fichefilm_gen_cfilm=(.*).html/);
-          if (match && match[1]) {
-            return match[1];
-          }
-          return null;
-        })
-        .filter((value: any): value is string => !!value); // remove null values
-    });
-  console.log(`Found ${movieIds.length} movies`, movieIds);
-  try {
-    const allocineMovies = [];
-    const localMoviesPromises = [];
-    let index = req.query.bookmark
-      ? movieIds.findIndex(id => id === req.query.bookmark)
-      : 0;
-    while (allocineMovies.length < 5 && index < movieIds.length) {
-      const id = movieIds[index];
-      const allocineMovie = await getAllocineMovie(id).catch(error =>
-        console.error(error)
-      );
-      index++;
-      if (hasBeenReleaseThisYear(allocineMovie, req.query.year)) {
-        allocineMovies.push(allocineMovie);
-        localMoviesPromises.push(
-          Movie.findOne({
-            idAllocine: Number(id)
+  if (req.query.type === "movie") {
+    console.log(`Find movies for ${req.query.month}/${req.query.year}`);
+    if (!req.query.year || !req.query.month) {
+      res.sendStatus(400);
+      return;
+    }
+    const movieIds: string[] = await fetch(
+      `http://www.allocine.fr/film/agenda/mois/mois-${
+        req.query.year
+      }-${req.query.month.padStart(2, "0")}`
+    )
+      .then(response => response.text())
+      .then(async body => {
+        const $ = cheerio.load(body);
+        // find all links
+        return $(".month-movies-link")
+          .map(function() {
+            // @ts-ignore
+            return $(this).attr("href");
           })
-            .select({ filedata: 0 })
-            .then(x => x)
-        ); // transform into promise ...)
+          .get() // cheerio need this
+          .map((link: string) => {
+            const match = link.match(/\/film\/fichefilm_gen_cfilm=(.*).html/);
+            if (match && match[1]) {
+              return match[1];
+            }
+            return null;
+          })
+          .filter((value: any): value is string => !!value); // remove null values
+      });
+    console.log(`Found ${movieIds.length} movies`, movieIds);
+    try {
+      const allocineMovies = [];
+      const localMoviesPromises = [];
+      let index = req.query.bookmark
+        ? movieIds.findIndex(id => id === req.query.bookmark)
+        : 0;
+      while (allocineMovies.length < 5 && index < movieIds.length) {
+        const id = movieIds[index];
+        const allocineMovie = await getAllocineMovie(id).catch(error =>
+          console.error(error)
+        );
+        index++;
+        if (hasBeenReleaseThisYear(allocineMovie, req.query.year)) {
+          allocineMovies.push(allocineMovie);
+          localMoviesPromises.push(
+            Movie.findOne({
+              idAllocine: Number(id)
+            })
+              .select({ filedata: 0 })
+              .then(x => x)
+          ); // transform into promise ...)
+        }
       }
+      const localMovies = await Promise.all(localMoviesPromises);
+      res.json({
+        bookmark: movieIds[index],
+        results: zipWith(
+          allocineMovies,
+          localMovies,
+          (allocineMovie, movie) => ({
+            allocine: allocineMovie,
+            cinema: movie
+          })
+        )
+      });
+    } catch (error) {
+      res.status(500).json(error);
+    }
+  } else {
+    console.log(
+      `Find tvshows for ${req.query.year} with genre ${req.query.genre}`
+    );
+    if (!req.query.year || !req.query.genre) {
+      res.sendStatus(400);
+      return;
+    }
+    const bookmark = Number(req.query.bookmark) || 1;
+    let hasNext = true;
+    const allocineMovies = await fetch(
+      `http://www.allocine.fr/series-tv/genre-13025/decennie-${req.query.year.replace(
+        /.$/,
+        "0"
+      )}/annee-${req.query.year}/?page=${bookmark}`
+    )
+      .then(response => response.text())
+      .then(async body => {
+        const $ = cheerio.load(body);
+        const root = $.root();
+        hasNext = root.find(".button-right.button-disabled").length === 0;
+        return root
+          .find(".entity-card-list")
+          .map(function() {
+            // @ts-ignore
+            const thisElement = $(this);
+            const title = thisElement.find(".meta-title-link").text();
+            const link =
+              thisElement.find(".meta-title-link").attr("href") || "";
+            const match = link.match(
+              /\/series\/ficheserie_gen_cserie=(.*).html/
+            );
+            const poster =
+              thisElement.find(".thumbnail-img").attr("data-src") ||
+              thisElement.find(".thumbnail-img").attr("src");
+            const synopsis = thisElement
+              .find(".content-txt")
+              .text()
+              .trim()
+              .replace(/\n/g, "");
+            const meta = thisElement
+              .find(".meta-body-info")
+              .text()
+              .split("/");
+            const genres = meta[meta.length - 1]
+              .split(",")
+              .map(genre => genre.trim().replace(/\n/g, ""));
+
+            return {
+              code: match && match[1],
+              genre: genres.map(g => ({ $: g })),
+              poster: { href: poster },
+              productionYear: req.query.year,
+              synopsis,
+              title
+            };
+          })
+          .get();
+      });
+
+    const localMoviesPromises = [];
+    for (const allocineMovie of allocineMovies) {
+      localMoviesPromises.push(
+        Movie.findOne({
+          idAllocine: Number(allocineMovie.code)
+        })
+          .select({ filedata: 0 })
+          .then(x => x)
+      );
     }
     const localMovies = await Promise.all(localMoviesPromises);
+
     res.json({
-      bookmark: movieIds[index],
+      bookmark: hasNext ? bookmark + 1 : undefined,
       results: zipWith(allocineMovies, localMovies, (allocineMovie, movie) => ({
         allocine: allocineMovie,
         cinema: movie
       }))
     });
-  } catch (error) {
-    res.status(500).json(error);
   }
 });

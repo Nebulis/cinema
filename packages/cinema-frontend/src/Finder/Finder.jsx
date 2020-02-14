@@ -5,6 +5,7 @@ import { MovieForm } from "../MovieList/MovieForm";
 import { UserContext } from "../Login/UserContext";
 import { NotificationContext } from "../Notifications/NotificationContext";
 import { createNotification } from "../Movie/Movie.util";
+import { ApplicationContext } from "../ApplicationContext";
 
 const months = [
   { label: "Janvier", value: "1" },
@@ -19,6 +20,38 @@ const months = [
   { label: "Octobre", value: "10" },
   { label: "Novembre", value: "11" },
   { label: "Décembre", value: "12" }
+];
+
+const genres = [
+  "Action",
+  "Animation",
+  "Arts Martiaux",
+  "Aventure",
+  "Biopic",
+  "Comédie",
+  "Comédie dramatique",
+  "Comédie musicale",
+  "Divers",
+  "Documentaire",
+  "Drama",
+  "Drame",
+  "Epouvante-horreur",
+  "Espionnage",
+  "Famille",
+  "Fantastique",
+  "Guerre",
+  "Historique",
+  "Judiciaire",
+  "Médical",
+  "Musical",
+  "Policier",
+  "Romance",
+  "Science fiction",
+  "Soap",
+  "Sport event",
+  "Thriller",
+  "Websérie",
+  "Western"
 ];
 
 const movieReducer = (state, action) => {
@@ -62,6 +95,9 @@ const getAllocineProductionYear = allocineMovie =>
 export const Finder = () => {
   const user = useContext(UserContext);
   const { dispatch } = useContext(NotificationContext);
+  const { types } = useContext(ApplicationContext);
+  const [type, setType] = useState(types[0]);
+  const [genre, setGenre] = useState(genres[0]);
   const [year, setYear] = useState(new Date().getFullYear());
   const [displayLinked, setDisplayLinked] = useState(false);
   const [month, setMonth] = useState(months.find(m => m.value === String(new Date().getMonth() + 1)).label);
@@ -73,11 +109,11 @@ export const Finder = () => {
   };
   useEffect(
     () => {
-      if (movieState.status === "FETCH_MOVIES_REQUESTED") {
+      if (movieState.status === "FETCH_MOVIES_REQUESTED" && type === "Film") {
         fetch(
           `/api/allocine/find?month=${months.find(m => m.label === month).value}&year=${year}&&bookmark=${
             movieState.bookmark
-          }`,
+          }&type=movie`,
           {
             headers: {
               Accept: "application/json",
@@ -86,6 +122,18 @@ export const Finder = () => {
             }
           }
         )
+          .then(response => response.json())
+          .then(movies => {
+            movieDispatch({ type: "FETCH_MOVIES_SUCCEEDED", payload: movies });
+          });
+      } else if (movieState.status === "FETCH_MOVIES_REQUESTED" && type === "Série") {
+        fetch(`/api/allocine/find?genre=${genre}&year=${year}&&bookmark=${movieState.bookmark}&type=tvshow`, {
+          headers: {
+            Accept: "application/json",
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${user.token}`
+          }
+        })
           .then(response => response.json())
           .then(movies => {
             movieDispatch({ type: "FETCH_MOVIES_SUCCEEDED", payload: movies });
@@ -117,15 +165,41 @@ export const Finder = () => {
       <form className="form-inline mt-4 ml-3">
         <div className="form-group mr-3" style={{ minWidth: "150px" }}>
           <SingleDownshift
-            items={months.map(month => month.label)}
-            placeholder="Month"
+            placeholder="Type"
             onChange={value => {
-              setMonth(value);
+              setType(value);
               movieDispatch({ type: "RESET_PAGE" });
             }}
-            selectedItem={month}
+            items={types}
+            selectedItem={type}
           />
         </div>
+        {type === "Film" && (
+          <div className="form-group mr-3" style={{ minWidth: "150px" }}>
+            <SingleDownshift
+              items={months.map(month => month.label)}
+              placeholder="Month"
+              onChange={value => {
+                setMonth(value);
+                movieDispatch({ type: "RESET_PAGE" });
+              }}
+              selectedItem={month}
+            />
+          </div>
+        )}
+        {type === "Série" && (
+          <div className="form-group mr-3" style={{ minWidth: "150px" }}>
+            <SingleDownshift
+              items={genres}
+              placeholder="Genre"
+              onChange={value => {
+                setGenre(value);
+                movieDispatch({ type: "RESET_PAGE" });
+              }}
+              selectedItem={genre}
+            />
+          </div>
+        )}
         <div className="form-group mr-3" style={{ minWidth: "150px" }}>
           <SingleDownshift
             items={range(new Date().getFullYear() + 3, 1999, -1)}
@@ -171,7 +245,7 @@ export const Finder = () => {
                       idAllocine: movie.allocine.code,
                       title: movie.allocine.title,
                       genre: movie.allocine.genre.map(m => m.$).sort(),
-                      type: "Film",
+                      type,
                       productionYear: getAllocineProductionYear(movie.allocine),
                       summary: movie.allocine.synopsisShort || movie.allocine.synopsis,
                       fileUrl: movie.allocine.poster ? movie.allocine.poster.href : ""

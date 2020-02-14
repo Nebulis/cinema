@@ -1,11 +1,18 @@
-import React, { useState } from "react";
+import React, { useContext, useState } from "react";
 import { TagList } from "./TagList";
 import { Statistics } from "../Statistics/Statistics";
 import { Finder } from "../Finder";
 import "./Admin.css";
+import { ApplicationContext, LOADING } from "../ApplicationContext";
 
 export const Admin = () => {
-  const [selectedTab, setSelectedTab] = useState("tags");
+  const [selectedTab, setSelectedTab] = useState("finder");
+  const { status } = useContext(ApplicationContext);
+
+  if (status === LOADING) {
+    return null;
+  }
+
   return (
     <>
       <div className="admin-tabs">
