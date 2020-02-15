@@ -1,10 +1,10 @@
 :root {
-  --movie-primary: #B0BEA9;
-  --movie-primary-darker: #717A6D;
-  --movie-secondary: #0B2027;
+  --movie-primary: #b0bea9;
+  --movie-primary-darker: #717a6d;
+  --movie-secondary: #0b2027;
   --movie-secondary-lighter: #424941;
-  --movie-highlight: #E7F59E;
-  --movie-accent: #F1F7EE;
+  --movie-highlight: #e7f59e;
+  --movie-accent: #f1f7ee;
 }
 
 body {
@@ -13,6 +13,11 @@ body {
   font-family: sans-serif;
   background-color: var(--movie-primary);
   color: var(--movie-secondary);
+  height: 100%;
+}
+
+html, #root {
+  height: 100%;
 }
 
 .ellipsis {

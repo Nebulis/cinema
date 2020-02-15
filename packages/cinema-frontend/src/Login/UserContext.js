@@ -39,10 +39,10 @@ export class UserProvider extends React.Component {
     }
   }
 
-  login(password) {
+  login(uuid) {
     fetch("/login", {
       method: "POST",
-      body: JSON.stringify({ password }),
+      body: JSON.stringify({ uuid }),
       headers: {
         Accept: "application/json",
         "Content-Type": "application/json"
