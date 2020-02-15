@@ -14,6 +14,9 @@ import { router as seasons } from "./routes/seasons";
 import { router as states } from "./routes/states";
 import { router as tags } from "./routes/tags";
 
+// tslint:disable-next-line:no-console
+console.log("boot");
+
 connect(
   `mongodb://${process.env.MONGO_USER}:${process.env.MONGO_PASSWD}@${
     process.env.MONGO_HOSTNAME
@@ -56,7 +59,11 @@ setInterval(() => {
 }, 1000 * 60 * 5); // 5 mins
 
 const secret = "shhhhhhared-secret";
+// tslint:disable-next-line:no-console
+console.log("process UUIDS");
 const uuids = JSON.parse(process.env.UUIDS || "[]");
+// tslint:disable-next-line:no-console
+console.log("UUIDS processes");
 app.use("/api", expressJwt({ secret }).unless({ path: ["/login"] }));
 app.post("/login", (req, res) => {
   if (uuids.includes(req.body.uuid)) {
