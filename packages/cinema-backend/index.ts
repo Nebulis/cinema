@@ -60,7 +60,7 @@ setInterval(() => {
 
 const secret = "shhhhhhared-secret";
 // tslint:disable-next-line:no-console
-console.log("process UUIDS", process.env.UUIDS);
+console.log("process UUIDS");
 const uuids = JSON.parse(process.env.UUIDS || "[]");
 // tslint:disable-next-line:no-console
 console.log("UUIDS processes");
