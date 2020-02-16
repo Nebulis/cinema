@@ -31,6 +31,15 @@ export const MovieCard = ({ movie, onEdit, onChange, onDelete }) => {
           {subtitle}
         </h6>
         <div className="movie-card-actions" style={{ position: "absolute", top: 2, right: 4 }}>
+          <i
+            className="fas fa-film"
+            style={{
+              cursor: "pointer",
+              color: movie.done ? "var(--success)" : "black"
+            }}
+            onClick={update("done", !movie.done)}
+            title={movie.done ? "Mark as not done" : "Mark as done"}
+          />
           {movie.type !== "Film" && (
             <i
               className="fas fa-ban"

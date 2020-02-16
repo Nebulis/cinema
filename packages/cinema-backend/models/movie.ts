@@ -16,9 +16,11 @@ interface IMovie extends Document {
   tags: string[];
   title: string;
   type: string;
+  done: boolean; // temp boolean to know which one has been updated
 }
 
 const movieSchema = new Schema({
+  done: Boolean, // temp boolean to know which one has been updated
   fileUrl: String,
   finished: Boolean, // is tv show finished ?
   genre: [String],
