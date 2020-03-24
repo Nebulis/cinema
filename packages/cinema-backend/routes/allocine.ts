@@ -3,89 +3,31 @@ import express from "express";
 import zipWith from "lodash/zipWith";
 import fetch from "node-fetch";
 import { Movie } from "../models/movie";
+import {
+  getMovie,
+  getMovieFromSearch,
+  getTvShowFromSearch
+} from "./allocine/getMovieFromSearch";
 
 // tslint:disable:no-console
 export const router = express.Router();
 
-const extractData = (body: string) => {
-  const $ = cheerio.load(body);
-  const root = $.root();
-  return root
-    .find(".totalwidth.noborder.purehtml tr")
-    .map(function() {
-      // @ts-ignore
-      const thisElement = $(this);
-      const cols = thisElement.find("td");
-      if (cols.length === 1) {
-        return null;
-      }
-      const image = cols
-        .first()
-        .find("img")
-        .attr("src")
-        .replace("75_106", "300_424");
-
-      const link = cols
-        .first()
-        .find("a")
-        .attr("href");
-
-      const titleAndYear = cols
-        .last()
-        .find("div div")
-        .first()
-        .text()
-        .split("\n");
-      const title = titleAndYear[2];
-      const year = titleAndYear[5] || titleAndYear[6];
-      return { title, year, image, link };
-    })
-    .get();
-};
 /*
  * GET
  */
 router.get("/", (req, res, _next) => {
   if (req.query.type === "Film") {
-    return fetch(`http://www.allocine.fr/recherche/1/?q=${req.query.title}`)
-      .then(response => response.text())
-      .then(async body => {
-        return extractData(body);
-      })
+    return getMovieFromSearch(req.query.title)
       .then(movies => {
-        res.json(
-          movies.map(movie => {
-            const id = movie.link.match(
-              /\/film\/fichefilm_gen_cfilm=(.*).html/
-            );
-            return {
-              ...movie,
-              code: id ? id[1] : ""
-            };
-          })
-        );
+        res.json(movies);
       })
       .catch(error => {
         console.error(error);
       });
   } else {
-    return fetch(`http://www.allocine.fr/recherche/6/?q=${req.query.title}`)
-      .then(response => response.text())
-      .then(async body => {
-        return extractData(body);
-      })
+    return getTvShowFromSearch(req.query.title)
       .then(movies => {
-        res.json(
-          movies.map(movie => {
-            const id = movie.link.match(
-              /\/series\/ficheserie_gen_cserie=(.*).html/
-            );
-            return {
-              ...movie,
-              code: id ? id[1] : ""
-            };
-          })
-        );
+        res.json(movies);
       })
       .catch(error => {
         console.error(error);
@@ -97,53 +39,7 @@ router.get("/", (req, res, _next) => {
  * GET
  */
 router.get("/movie/:id", (req, res) => {
-  return fetch(
-    `http://www.allocine.fr/film/fichefilm_gen_cfilm=${req.params.id}.html`
-  )
-    .then(response => response.text())
-    .then(async body => {
-      const $ = cheerio.load(body);
-      const root = $.root();
-      const title = root
-        .find(".titlebar-title")
-        .first()
-        .text();
-      const year = root
-        .find(".date")
-        .text()
-        .trim()
-        .replace(/\n/g, "")
-        .split(" ")[2];
-      const synopsis = root
-        .find(".content-txt")
-        .first()
-        .text()
-        .trim();
-
-      const image = root
-        .find(".thumbnail-img")
-        .attr("src")
-        .replace("215_290", "300_424");
-
-      const tmp = root
-        .find(".meta-body-info")
-        .text()
-        .trim()
-        .split("/");
-      const genres = tmp[tmp.length - 1].split(",").map(g => g.trim());
-      // year, image, link
-      return {
-        code: req.params.id,
-        genres,
-        image,
-        link: `http://www.allocine.fr/film/fichefilm_gen_cfilm=${
-          req.params.id
-        }.html`,
-        synopsis,
-        title,
-        year
-      };
-    })
+  return getMovie(req.params.id)
     .then(movie => {
       res.json(movie);
     })
