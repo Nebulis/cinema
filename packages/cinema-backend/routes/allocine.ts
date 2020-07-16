@@ -108,6 +108,38 @@ router.get("/serie/:id", (req, res) => {
     });
 });
 
+const mapGenres = {
+  Action: 13025,
+  Animation: 13026,
+  "Arts Martiaux": 13016,
+  Aventure: 13001,
+  Biopic: 13027,
+  Comédie: 13005,
+  "Comédie dramatique": 13002,
+  "Comédie musicale": 13013,
+  Divers: 13017,
+  Documentaire: 13007,
+  Drama: 13054,
+  Drame: 13008,
+  "Epouvante-horreur": 13009,
+  Espionnage: 13022,
+  Famille: 13036,
+  Fantastique: 13012,
+  Guerre: 13014,
+  Historique: 13015,
+  Judiciaire: 13031,
+  Musical: 13043,
+  Médical: 13030,
+  Policier: 13018,
+  Romance: 13024,
+  "Science fiction": 13021,
+  Soap: 13032,
+  "Sport event": 13050,
+  Thriller: 13023,
+  Websérie: 13045,
+  Western: 13018
+};
+
 const getAllocineMovie = async (id: string) => {
   console.log("Fetch movie with id", id);
   console.time(`fetch${id}`);
@@ -241,11 +273,21 @@ router.get("/find", async (req, res) => {
     }
     const bookmark = Number(req.query.bookmark) || 1;
     let hasNext = true;
+    console.log(
+      `http://www.allocine.fr/series-tv/genre-${
+        // @ts-ignore
+        mapGenres[req.query.genre]
+      }/decennie-${req.query.year.replace(/.$/, "0")}/annee-${
+        req.query.year
+      }/?page=${bookmark}`
+    );
     const allocineMovies = await fetch(
-      `http://www.allocine.fr/series-tv/genre-13025/decennie-${req.query.year.replace(
-        /.$/,
-        "0"
-      )}/annee-${req.query.year}/?page=${bookmark}`
+      `http://www.allocine.fr/series-tv/genre-${
+        // @ts-ignore
+        mapGenres[req.query.genre]
+      }/decennie-${req.query.year.replace(/.$/, "0")}/annee-${
+        req.query.year
+      }/?page=${bookmark}`
     )
       .then(response => response.text())
       .then(async body => {
