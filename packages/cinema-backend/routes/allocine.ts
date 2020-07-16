@@ -251,7 +251,10 @@ router.get("/find", async (req, res) => {
       .then(async body => {
         const $ = cheerio.load(body);
         const root = $.root();
-        hasNext = root.find(".button-right.button-disabled").length === 0;
+        // it has next if there is a next button in the page and it's not disabled
+        hasNext =
+          root.find(".button-right").length === 1 &&
+          root.find(".button-right.button-disabled").length === 0;
         return root
           .find(".entity-card-list")
           .map(function() {
