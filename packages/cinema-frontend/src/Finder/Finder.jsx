@@ -7,6 +7,7 @@ import { NotificationContext } from "../Notifications/NotificationContext";
 import { createNotification } from "../Movie/Movie.util";
 import { ApplicationContext } from "../ApplicationContext";
 
+const ALL_MONTHS = "All";
 const months = [
   { label: "Janvier", value: "1" },
   { label: "Février", value: "2" },
@@ -22,6 +23,7 @@ const months = [
   { label: "Décembre", value: "12" }
 ];
 
+const ALL_GENRES = "All";
 const genres = [
   "Action",
   "Animation",
@@ -97,10 +99,10 @@ export const Finder = () => {
   const { dispatch } = useContext(NotificationContext);
   const { types } = useContext(ApplicationContext);
   const [type, setType] = useState(types[0]);
-  const [genre, setGenre] = useState(genres[0]);
+  const [genre, setGenre] = useState(ALL_GENRES);
   const [year, setYear] = useState(new Date().getFullYear());
   const [displayLinked, setDisplayLinked] = useState(false);
-  const [month, setMonth] = useState(months.find(m => m.value === String(new Date().getMonth() + 1)).label);
+  const [month, setMonth] = useState(ALL_MONTHS);
   const [movieState, movieDispatch] = useReducer(movieReducer, { movies: [], bookmark: "" });
   const [movieToAdd, setMovieToAdd] = useState({ idAllocine: 0 });
   const showMovie = () => {
@@ -111,9 +113,9 @@ export const Finder = () => {
     () => {
       if (movieState.status === "FETCH_MOVIES_REQUESTED" && type === "Film") {
         fetch(
-          `/api/allocine/find?month=${months.find(m => m.label === month).value}&year=${year}&&bookmark=${
-            movieState.bookmark
-          }&type=movie`,
+          `/api/allocine/find?month=${
+            month === ALL_MONTHS ? "" : months.find(m => m.label === month).value
+          }&year=${year}&&bookmark=${movieState.bookmark}&type=movie`,
           {
             headers: {
               Accept: "application/json",
@@ -127,13 +129,18 @@ export const Finder = () => {
             movieDispatch({ type: "FETCH_MOVIES_SUCCEEDED", payload: movies });
           });
       } else if (movieState.status === "FETCH_MOVIES_REQUESTED" && type === "Série") {
-        fetch(`/api/allocine/find?genre=${genre}&year=${year}&&bookmark=${movieState.bookmark}&type=tvshow`, {
-          headers: {
-            Accept: "application/json",
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${user.token}`
+        fetch(
+          `/api/allocine/find?genre=${genre === ALL_GENRES ? "" : genre}&year=${year}&&bookmark=${
+            movieState.bookmark
+          }&type=tvshow`,
+          {
+            headers: {
+              Accept: "application/json",
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${user.token}`
+            }
           }
-        })
+        )
           .then(response => response.json())
           .then(movies => {
             movieDispatch({ type: "FETCH_MOVIES_SUCCEEDED", payload: movies });
@@ -177,7 +184,7 @@ export const Finder = () => {
         {type === "Film" && (
           <div className="form-group mr-3" style={{ minWidth: "150px" }}>
             <SingleDownshift
-              items={months.map(month => month.label)}
+              items={[ALL_MONTHS, ...months.map(month => month.label)]}
               placeholder="Month"
               onChange={value => {
                 setMonth(value);
@@ -190,7 +197,7 @@ export const Finder = () => {
         {type === "Série" && (
           <div className="form-group mr-3" style={{ minWidth: "150px" }}>
             <SingleDownshift
-              items={genres}
+              items={[ALL_GENRES, ...genres]}
               placeholder="Genre"
               onChange={value => {
                 setGenre(value);
