@@ -1,3 +1,4 @@
+/* eslint-disable jsx-a11y/anchor-is-valid */
 import React, { Component } from "react";
 import { LOGIN_FAILED, withUser } from "./UserContext";
 import { login } from "../firebase/configuration";
