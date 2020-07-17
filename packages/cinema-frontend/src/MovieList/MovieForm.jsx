@@ -201,11 +201,7 @@ class MovieFormWithContext extends React.Component {
                       <i
                         title="Search in allocine"
                         className="fab fa-angular fa-2x"
-                        style={{
-                          cursor: "pointer",
-                          color: "#fecc00",
-                          paddingTop: "35px"
-                        }}
+                        style={{ cursor: "pointer", color: "#fecc00", paddingTop: "35px" }}
                         onClick={this.search}
                       />
                     </div>
@@ -225,11 +221,7 @@ class MovieFormWithContext extends React.Component {
                             </div>
                             <div
                               className="row"
-                              style={{
-                                overflowX: "scroll",
-                                display: open ? "flex" : "none",
-                                flexWrap: "nowrap"
-                              }}
+                              style={{ overflowX: "scroll", display: open ? "flex" : "none", flexWrap: "nowrap" }}
                             >
                               {this.state.allocine.movies.map(movie => (
                                 <div
@@ -276,11 +268,7 @@ class MovieFormWithContext extends React.Component {
                             </div>
                             <div
                               className="row"
-                              style={{
-                                overflowX: "scroll",
-                                display: open ? "flex" : "none",
-                                flexWrap: "nowrap"
-                              }}
+                              style={{ overflowX: "scroll", display: open ? "flex" : "none", flexWrap: "nowrap" }}
                             >
                               {this.state.allocine.tvshows.map(tvshow => (
                                 <div
@@ -353,6 +341,22 @@ class MovieFormWithContext extends React.Component {
                       value={this.state.movie.summary}
                     />
                   </div>
+                  {this.state.movie.idAllocine && (
+                    <div className="d-flex justify-content-center">
+                      <a
+                        href={
+                          this.state.movie.type === "Film"
+                            ? `http://www.allocine.fr/film/fichefilm_gen_cfilm=${this.state.movie.idAllocine}.html`
+                            : `http://www.allocine.fr/series/ficheserie_gen_cserie=${this.state.movie.idAllocine}.html`
+                        }
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="btn btn-warning"
+                      >
+                        Go to allocine
+                      </a>
+                    </div>
+                  )}
                 </div>
                 <div className="modal-footer">
                   <button type="button" className="btn btn-secondary" data-dismiss="modal">
