@@ -160,7 +160,7 @@ export const EditableMultiSelect = props => (
       >
         <AsyncMultiDownshift
           placeholder={fieldProps.placeholder}
-          handleChange={fieldProps.onChange}
+          handleChange={values => fieldProps.onChange(values.sort())}
           items={fieldProps.items}
           selectedItems={fieldProps.value}
           className="form-group"
