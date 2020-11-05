@@ -3,10 +3,11 @@
     "lerna": "3.5.1"
   },
   "engines": {
-    "node": "10.12.0"
+    "node": "^14",
+    "npm": "^6"
   },
   "name": "cinema",
   "scripts": {
-    "postinstall": "npm install --prefix packages/cinema_backend"
+    "postinstall": "npm install --prefix packages/cinema-backend"
   }
 }
