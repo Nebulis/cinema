@@ -18,9 +18,9 @@ import { router as tags } from "./routes/tags";
 console.log("boot");
 
 connect(
-  `mongodb://${process.env.MONGO_USER}:${process.env.MONGO_PASSWD}@${
+  `mongodb+srv://${process.env.MONGO_USER}:${process.env.MONGO_PASSWD}@${
     process.env.MONGO_HOSTNAME
-  }:${process.env.MONGO_PORT}/cinema`,
+  }/cinema?retryWrites=true&w=majority`,
   { useNewUrlParser: true }
 ).catch(error => {
   logger.error(error);
