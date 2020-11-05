@@ -3,6 +3,9 @@
   "version": "0.0.1",
   "private": true,
   "main": "index.ts",
+  "engines": {
+    "node": "^14"
+  },
   "scripts": {
     "lint": "tslint -p .",
     "start": "ts-node-dev -r dotenv/config index",
