@@ -9,6 +9,7 @@ import uuid from "uuid/v4";
 import { logger } from "../logger";
 import { Movie } from "../models/movie";
 import { throwMe } from "./util";
+import { ParamsDictionary, Request } from "express-serve-static-core";
 
 const s3 = new AWS.S3({});
 export const router = express.Router();
@@ -208,26 +209,29 @@ const buildQuery = ({
   return query;
 };
 
-router.get("/", (req, res, next) => {
-  const { limit = "20", offset = "0" }: IListQueryParams = req.query;
-  // mongo treat limit = 0 as no limit
-  const returnNoResult = limit === "0";
-  Promise.all([
-    buildQuery(req.query)
-      .sort({ [req.query.sortField]: req.query.sortOrder })
-      .skip(parseInt(limit, 10) * parseInt(offset, 10))
-      .limit(returnNoResult ? -1 : parseInt(limit, 10)) // return -1 if we dont want values, otherwise use the limit
-      .select({ filedata: 0 })
-      .then(identity),
-    buildQuery(req.query)
-      .countDocuments()
-      .then(identity)
-  ])
-    .then(([movies, count]) =>
-      res.json({ data: returnNoResult ? [] : movies, count })
-    )
-    .catch(next);
-});
+router.get(
+  "/",
+  (req: Request<ParamsDictionary, {}, {}, IListQueryParams>, res, next) => {
+    const { limit = "20", offset = "0" } = req.query;
+    // mongo treat limit = 0 as no limit
+    const returnNoResult = limit === "0";
+    Promise.all([
+      buildQuery(req.query)
+        .sort({ [req.query.sortField]: req.query.sortOrder })
+        .skip(parseInt(limit, 10) * parseInt(offset, 10))
+        .limit(returnNoResult ? -1 : parseInt(limit, 10)) // return -1 if we dont want values, otherwise use the limit
+        .select({ filedata: 0 })
+        .then(identity),
+      buildQuery(req.query)
+        .countDocuments()
+        .then(identity)
+    ])
+      .then(([movies, count]) =>
+        res.json({ data: returnNoResult ? [] : movies, count })
+      )
+      .catch(next);
+  }
+);
 
 // get genres
 router.get("/genre", (_, res, next) => {
