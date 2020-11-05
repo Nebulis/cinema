@@ -4,7 +4,8 @@
   "private": true,
   "main": "index.ts",
   "engines": {
-    "node": "^14"
+    "node": "^14",
+    "npm": "^6"
   },
   "scripts": {
     "lint": "tslint -p .",
