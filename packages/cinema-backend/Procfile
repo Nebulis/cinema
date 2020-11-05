@@ -1,1 +1,1 @@
-web: cd packages/cinema-backend/ && npx ts-node --transpile-only index
+web: cd packages/cinema-backend/ && ts-node --transpile-only index
