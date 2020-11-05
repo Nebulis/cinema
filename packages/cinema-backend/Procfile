@@ -1,1 +1,1 @@
-web: cd packages/cinema-backend/ && ./node_modules/.bin/ts-node --transpile-only index
+web: cd packages/cinema-backend/ && npm run start:prod

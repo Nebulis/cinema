@@ -10,6 +10,7 @@
   "scripts": {
     "lint": "tslint -p .",
     "start": "ts-node-dev -r dotenv/config index",
+    "start:prod": "ts-node --transpile-only index",
     "test": "jest"
   },
   "dependencies": {
