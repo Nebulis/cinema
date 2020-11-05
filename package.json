@@ -5,5 +5,8 @@
   "engines": {
     "node": "10.12.0"
   },
-  "name": "cinema"
+  "name": "cinema",
+  "scripts": {
+    "postinstall": "npm install --prefix packages/cinema_backend"
+  }
 }
