@@ -1,1 +1,1 @@
-web: npm start:prod --prefix packages/cinema-backend
+web: npm start --prefix packages/cinema-backend
