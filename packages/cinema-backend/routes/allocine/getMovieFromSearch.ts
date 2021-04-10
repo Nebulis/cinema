@@ -46,7 +46,7 @@ export const getMovieFromSearch = (
 ): Promise<
   Array<{ title: string; year: string; image: string; link: string }>
 > => {
-  return fetch(`http://www.allocine.fr/recherche/movie/?q=${title}`)
+  return fetch(`http://www.allocine.fr/rechercher/movie/?q=${title}`)
     .then(response => response.text())
     .then(async body => {
       return extractData(body);
@@ -57,7 +57,7 @@ export const getTvShowFromSearch = (
 ): Promise<
   Array<{ title: string; year: string; image: string; link: string }>
 > => {
-  return fetch(`http://www.allocine.fr/recherche/series/?q=${title}`)
+  return fetch(`http://www.allocine.fr/rechercher/series/?q=${title}`)
     .then(response => response.text())
     .then(async body => {
       return extractData(body);
