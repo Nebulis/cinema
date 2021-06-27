@@ -54,6 +54,7 @@ export const MoviesFilter = () => {
           color,
           cursor: "pointer"
         }}
+        title="Filter by viewed"
         onClick={onClick}
       />
     );
@@ -73,6 +74,7 @@ export const MoviesFilter = () => {
           color,
           cursor: "pointer"
         }}
+        title="Filter by tv show finished"
         onClick={onClick}
       />
     );
@@ -93,6 +95,7 @@ export const MoviesFilter = () => {
           cursor: "pointer"
         }}
         onClick={onClick}
+        title="Filter by image verified"
       />
     );
   };
@@ -112,6 +115,7 @@ export const MoviesFilter = () => {
           cursor: "pointer"
         }}
         onClick={onClick}
+        title="Filter by hippo-text verified"
       />
     );
   };
