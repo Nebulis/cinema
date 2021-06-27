@@ -23,6 +23,7 @@ interface IListQueryParams {
   seen: string; // transform to boolean
   finished: string; // transform to boolean
   done: string; // transform to boolean
+  lala: string; // transform to boolean
   productionYear: string;
   sortField: string;
   sortOrder: string;
@@ -101,6 +102,7 @@ const buildQuery = ({
   title,
   finished,
   done,
+  lala,
   productionYear,
   seen,
   notGenres,
@@ -131,6 +133,15 @@ const buildQuery = ({
     query = query.and([
       {
         $or: [{ done: false }, { done: null }]
+      }
+    ]);
+  }
+  if (lala === "true") {
+    query = query.and([{ lala: true }]);
+  } else if (lala === "false") {
+    query = query.and([
+      {
+        $or: [{ lala: false }, { lala: null }]
       }
     ]);
   }
@@ -273,6 +284,7 @@ router.post("/", (req, res, next) => {
     finished: false,
     genre: req.body.genre,
     idAllocine: req.body.idAllocine,
+    lala: false,
     productionYear: req.body.productionYear,
     seen: false,
     state: req.body.state,
@@ -345,6 +357,7 @@ router.put("/:id", (req, res, next) => {
       movie.seen = req.body.seen;
       movie.finished = req.body.finished;
       movie.done = req.body.done;
+      movie.lala = req.body.lala;
       movie.summary = req.body.summary;
       movie.fileUrl = req.body.fileUrl;
       movie.tags = req.body.tags || movie.tags;

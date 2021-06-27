@@ -42,6 +42,7 @@ const initialState = {
     seen: null, // null = dont care, true = have seen, false = have not seen
     finished: null, // null = dont care, true = finished
     done: null, // null = dont care, false = not done
+    lala: null, // null = dont care, false = not done
     limit: 30,
     sort: SORTS[0]
   }

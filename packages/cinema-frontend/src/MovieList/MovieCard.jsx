@@ -32,6 +32,15 @@ export const MovieCard = ({ movie, onEdit, onChange, onDelete }) => {
         </h6>
         <div className="movie-card-actions" style={{ position: "absolute", top: 2, right: 4 }}>
           <i
+            className="fas fa-hippo"
+            style={{
+              cursor: "pointer",
+              color: movie.lala ? "#9932cc" : "black"
+            }}
+            onClick={update("lala", !movie.lala)}
+            title={movie.lala ? "Mark as not hippo " : "Mark as hippo"}
+          />
+          <i
             className="fas fa-film"
             style={{
               cursor: "pointer",

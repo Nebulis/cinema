@@ -26,7 +26,7 @@ export const MoviesFilter = () => {
     dispatch
   } = useContext(MoviesContext);
   const { genres, types, tags, years } = useContext(ApplicationContext);
-  const { seen, finished, done } = filters;
+  const { seen, finished, done, lala } = filters;
 
   const onChange = name => value => {
     dispatch({ type: "FILTERS_CHANGED", payload: { name, value } });
@@ -97,6 +97,25 @@ export const MoviesFilter = () => {
     );
   };
 
+  const renderLala = () => {
+    let color = "",
+      onClick = () => onChange("lala")(false);
+    if (lala === false) {
+      color = "var(--danger)";
+      onClick = () => onChange("lala")(null);
+    }
+    return (
+      <i
+        className={`fas fa-hippo`}
+        style={{
+          color,
+          cursor: "pointer"
+        }}
+        onClick={onClick}
+      />
+    );
+  };
+
   return (
     <form className="form-inline movies-filter mt-4 ml-3">
       <div className="form-group mr-2">
@@ -131,6 +150,7 @@ export const MoviesFilter = () => {
       <div className="form-group mr-2">{renderSeen()}</div>
       <div className="form-group mr-2">{renderFinished()}</div>
       <div className="form-group mr-2">{renderDone()}</div>
+      <div className="form-group mr-2">{renderLala()}</div>
       <div>
         {tags.map(tag => (
           <FilterTag

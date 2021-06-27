@@ -17,6 +17,7 @@ interface IMovie extends Document {
   title: string;
   type: string;
   done: boolean; // temp boolean to know which one has been updated
+  lala: boolean; // another boolean to know which one has been updated
 }
 
 const movieSchema = new Schema({
@@ -25,6 +26,7 @@ const movieSchema = new Schema({
   finished: Boolean, // is tv show finished ?
   genre: [String],
   idAllocine: Number,
+  lala: Boolean, // another boolean to know which one has been updated
   productionYear: Number,
   seasons: [seasonSchema],
   seen: Boolean,
