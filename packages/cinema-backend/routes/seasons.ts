@@ -2,7 +2,7 @@ import express from "express";
 import mongoose from "mongoose";
 import { Episode } from "../models/episode";
 import { Movie } from "../models/movie";
-import { ISeason, Season } from "../models/season";
+import { Season } from "../models/season";
 import { throwMe } from "./util";
 
 export const router = express.Router();
@@ -27,12 +27,14 @@ router.put("/:movieId/seasons/:seasonId", (req, res, next) => {
   // currently used to reorder episodes
   if (req.body.episodes) {
     Movie.findById(req.params.movieId)
-      .then(
-        movie =>
-          movie || throwMe(new Error(`Movie ${req.params.seasonId} not found`))
-      )
       .then(movie => {
+        if (!movie) {
+          throw new Error(`Movie ${req.params.seasonId} not found`);
+        }
         const season = movie.seasons.id(req.params.seasonId);
+        if (!season) {
+          throw new Error(`Movie ${req.params.seasonId} not found`);
+        }
         season.episodes = req.body.episodes;
         return season.save().then(_ => res.json(season));
       })
@@ -63,12 +65,15 @@ router.put("/:movieId/seasons/:seasonId", (req, res, next) => {
 // delete season
 router.delete("/:movieId/seasons/:seasonId", (req, res, next) => {
   Movie.findById(req.params.movieId)
-    .then(
-      movie =>
-        movie || throwMe(new Error(`Movie ${req.params.movieId} not found`))
-    )
     .then(movie => {
-      movie.seasons.id(req.params.seasonId).remove();
+      if (!movie) {
+        throw new Error(`Movie ${req.params.movieId} not found`);
+      }
+      const season = movie.seasons.id(req.params.seasonId);
+      if (!season) {
+        throw new Error(`Movie ${req.params.seasonId} not found`);
+      }
+      season.remove();
       return movie.save();
     })
     .then(_ => {
@@ -80,13 +85,15 @@ router.delete("/:movieId/seasons/:seasonId", (req, res, next) => {
 // create episode
 router.post("/:movieId/seasons/:seasonId/episodes", (req, res, next) => {
   Movie.findById(req.params.movieId)
-    .then(
-      movie =>
-        movie || throwMe(new Error(`Movie ${req.params.movieId} not found`))
-    )
     .then(movie => {
+      if (!movie) {
+        throw new Error(`Movie ${req.params.movieId} not found`);
+      }
       const episode = new Episode();
-      const season: ISeason = movie.seasons.id(req.params.seasonId);
+      const season = movie.seasons.id(req.params.seasonId);
+      if (!season) {
+        throw new Error(`Movie ${req.params.seasonId} not found`);
+      }
       season.episodes.push(episode);
       return movie.save().then(_ => res.json(episode));
     })
@@ -113,29 +120,28 @@ router.put(
         arrayFilters: [
           {
             // use ObjectId otherwise it doesn't work ....
-            "e._id": mongoose.Types.ObjectId(req.params.episodeId)
+            // @ts-ignore
+            "e._id": new mongoose.Types.ObjectId(req.params.episodeId)
           },
           {
             // use ObjectId otherwise it doesn't work ....
-            "s._id": mongoose.Types.ObjectId(req.params.seasonId)
+            // @ts-ignore
+            "s._id": new mongoose.Types.ObjectId(req.params.seasonId)
           }
         ]
       }
     )
       .then(() =>
-        Movie.findById(req.params.movieId)
-          .then(
-            movie =>
-              movie ||
-              throwMe(new Error(`Movie ${req.params.movieId} not found`))
-          )
-          .then(movie =>
-            res.json(
-              movie.seasons
-                .id(req.params.seasonId)
-                .episodes.id(req.params.episodeId)
-            )
-          )
+        Movie.findById(req.params.movieId).then(movie => {
+          if (!movie) {
+            throw new Error(`Movie ${req.params.movieId} not found`);
+          }
+          const season = movie.seasons.id(req.params.seasonId);
+          if (!season) {
+            throw new Error(`Movie ${req.params.seasonId} not found`);
+          }
+          return res.json(season.episodes.id(req.params.episodeId));
+        })
       )
       .catch(next);
   }
@@ -146,15 +152,19 @@ router.delete(
   "/:movieId/seasons/:seasonId/episodes/:episodeId",
   (req, res, next) => {
     Movie.findById(req.params.movieId)
-      .then(
-        movie =>
-          movie || throwMe(new Error(`Movie ${req.params.seasonId} not found`))
-      )
       .then(movie => {
-        movie.seasons
-          .id(req.params.seasonId)
-          .episodes.id(req.params.episodeId)
-          .remove();
+        if (!movie) {
+          throw new Error(`Movie ${req.params.movieId} not found`);
+        }
+        const season = movie.seasons.id(req.params.seasonId);
+        if (!season) {
+          throw new Error(`Movie ${req.params.seasonId} not found`);
+        }
+        const episode = season.episodes.id(req.params.episodeId);
+        if (!episode) {
+          throw new Error(`Movie ${req.params.episodeId} not found`);
+        }
+        episode.remove();
         return movie.save();
       })
       .then(_ => {

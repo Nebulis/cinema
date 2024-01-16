@@ -2,7 +2,6 @@ import bodyParser from "body-parser";
 import cookieParser from "cookie-parser";
 import express from "express";
 import expressJwt from "express-jwt";
-import http from "http"; // prevent app to sleep :)
 import jwt from "jsonwebtoken";
 import { connect } from "mongoose";
 import morgan from "morgan";
@@ -20,8 +19,7 @@ console.log("boot");
 connect(
   `mongodb+srv://${process.env.MONGO_USER}:${process.env.MONGO_PASSWD}@${
     process.env.MONGO_HOSTNAME
-  }/cinema?retryWrites=true&w=majority`,
-  { useNewUrlParser: true }
+  }/cinema?retryWrites=true&w=majority`
 ).catch(error => {
   logger.error(error);
   process.exit(1);
@@ -54,9 +52,6 @@ app.get("/", (_, res) => {
 app.get("/ping", (_, res) => {
   res.send({ message: "pong" });
 });
-setInterval(() => {
-  http.get("http://cinema-backend.herokuapp.com/ping");
-}, 1000 * 60 * 5); // 5 mins
 
 const secret = "shhhhhhared-secret";
 // tslint:disable-next-line:no-console

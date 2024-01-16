@@ -1,5 +1,12 @@
-import firebase from "firebase/app";
-import "firebase/auth";
+import { initializeApp } from "firebase/app";
+import {
+  GoogleAuthProvider,
+  signInWithPopup,
+  signOut,
+  setPersistence,
+  browserSessionPersistence,
+  getAuth
+} from "firebase/auth";
 
 const config = {
   apiKey: "AIzaSyCYC4F66N57djADFvaz5i30cAaYVzWqq1o",
@@ -10,21 +17,19 @@ const config = {
   storageBucket: "recipes-ebe53.appspot.com"
 };
 
-firebase.initializeApp(config);
-
-const provider = new firebase.auth.GoogleAuthProvider();
+initializeApp(config);
+const auth = getAuth();
+const provider = new GoogleAuthProvider();
 provider.setCustomParameters({ prompt: "select_account" });
 
 export const login = () => {
-  return firebase
-    .auth()
-    .setPersistence(firebase.auth.Auth.Persistence.NONE)
-    .then(() => firebase.auth().signInWithPopup(provider))
+  return setPersistence(auth, browserSessionPersistence)
+    .then(() => signInWithPopup(auth, provider))
     .catch(error => {
       console.error(error);
     });
 };
 
 export const logout = () => {
-  return firebase.auth().signOut();
+  return signOut(auth);
 };

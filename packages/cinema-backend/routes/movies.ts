@@ -3,7 +3,7 @@ import express from "express";
 import identity from "lodash/identity";
 import last from "lodash/last";
 import union from "lodash/union";
-import { DocumentQuery } from "mongoose";
+import { FilterQuery, Query } from "mongoose";
 import multer from "multer";
 import uuid from "uuid/v4";
 import { logger } from "../logger";
@@ -26,7 +26,7 @@ interface IListQueryParams {
   lala: string; // transform to boolean
   productionYear: string;
   sortField: string;
-  sortOrder: string;
+  sortOrder: "asc" | "desc";
   limit?: string;
   offset?: string;
 }
@@ -110,7 +110,7 @@ const buildQuery = ({
   tags,
   types
 }: IListQueryParams) => {
-  let query: DocumentQuery<any[], any>; // fixme
+  let query: Query<any[], any>; // fixme
 
   const titleFilter = title
     ? // escape regex special chars to be able to search them
@@ -171,30 +171,32 @@ const buildQuery = ({
   }
   if (seen !== null && seen !== undefined) {
     // todo => handle seen for tv shows
-    query = query.and([
-      {
-        $or: [
-          seen === "partial"
-            ? null
-            : {
-                $and: [
-                  {
-                    type: "Film"
-                  },
-                  {
-                    seen: seen === "true"
-                  }
-                ]
-              },
-          {
+    const filters: FilterQuery<any>[] = [
+      seen === "partial"
+        ? null
+        : {
             $and: [
               {
-                type: "Série"
+                type: "Film"
               },
-              ...buildSeen(seen)
+              {
+                seen: seen === "true"
+              }
             ]
-          }
-        ].filter(Boolean)
+          },
+      {
+        $and: [
+          {
+            type: "Série"
+          },
+          ...buildSeen(seen)
+        ]
+      }
+    ].filter(Boolean) as FilterQuery<any>[];
+
+    query = query.and([
+      {
+        $or: filters
       }
     ]);
   }

@@ -3,8 +3,9 @@ import React, { Component } from "react";
 import { LOGIN_FAILED, withUser } from "./UserContext";
 import { login } from "../firebase/configuration";
 import styled from "@emotion/styled";
-import firebase from "firebase/app";
-import "firebase/auth";
+import { getAuth } from "firebase/auth";
+
+const auth = getAuth();
 
 const Container = styled.div`
   height: 100%;
@@ -21,7 +22,7 @@ class LoginWithContext extends Component {
   constructor(props) {
     super(props);
 
-    firebase.auth().onAuthStateChanged(user => {
+    auth.onAuthStateChanged(user => {
       console.log(user);
       if (user && user.uid) {
         props.user.login(user.uid);
