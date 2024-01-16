@@ -1,4 +1,4 @@
-/login     https://cinema-backend.herokuapp.com/login        200
-/account   https://cinema-backend.herokuapp.com/account      200
-/api/*     https://cinema-backend.herokuapp.com/api/:splat   200
+/login     https://cinema-backend-dmgo.onrender.com/login        200
+/account   https://cinema-backend-dmgo.onrender.com/account      200
+/api/*     https://cinema-backend-dmgo.onrender.com/api/:splat   200
 /*         /index.html                                       200
