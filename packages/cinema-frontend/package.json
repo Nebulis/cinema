@@ -16,7 +16,7 @@
   },
   "scripts": {
     "start": "NODE_OPTIONS=--openssl-legacy-provider PORT=3001 node scripts/start.js",
-    "build": "node scripts/build.js && cp ./_redirects ./build/",
+    "build": "NODE_OPTIONS=--openssl-legacy-provider node scripts/build.js && cp ./_redirects ./build/",
     "test": "node scripts/test.js",
     "lint": "eslint --ext .js,.jsx ."
   },
